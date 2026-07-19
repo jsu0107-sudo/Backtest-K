@@ -10,9 +10,9 @@
   "listing_date": "2020-07-06",
   "listing_date_source": "한국예탁결제원 SEIBro",
   "data_as_of": "2026-07-16",
-  "first_month": "2023-10",
+  "first_month": "2024-07",
   "last_month": "2026-06",
-  "monthly_return_count": 26,
+  "monthly_return_count": 24,
   "distribution": {
     "included": true,
     "method": "adjusted_close",
@@ -41,6 +41,7 @@
   "data_quality": {
     "status": "provisional",
     "warnings": [
+      "원천 데이터에 월 갭이 있어 비연속 2개월을 제외하고 연속 구간 2024-06~2026-06만 사용했습니다.",
       "프로토타입 수집 경로이며 수정종가와 분배금은 별도 원장으로 독립 대사하지 않았습니다.",
       "상업적 서비스 전 데이터 제공자 이용조건과 재배포 권한을 다시 확인해야 합니다."
     ]
@@ -51,17 +52,49 @@
     "date": "2026-07-16",
     "close": 57780.0
   },
+  "recent_raw_closes": [
+    {
+      "date": "2026-07-03",
+      "close": 57710.0
+    },
+    {
+      "date": "2026-07-06",
+      "close": 57710.0
+    },
+    {
+      "date": "2026-07-07",
+      "close": 57715.0
+    },
+    {
+      "date": "2026-07-08",
+      "close": 57725.0
+    },
+    {
+      "date": "2026-07-09",
+      "close": 57740.0
+    },
+    {
+      "date": "2026-07-10",
+      "close": 57745.0
+    },
+    {
+      "date": "2026-07-13",
+      "close": 57750.0
+    },
+    {
+      "date": "2026-07-14",
+      "close": 57750.0
+    },
+    {
+      "date": "2026-07-15",
+      "close": 57770.0
+    },
+    {
+      "date": "2026-07-16",
+      "close": 57780.0
+    }
+  ],
   "monthly_returns": [
-    {
-      "month": "2023-10",
-      "return": 0.0099800223,
-      "observation_date": "2023-10-06"
-    },
-    {
-      "month": "2024-06",
-      "return": 0.0265386764,
-      "observation_date": "2024-06-28"
-    },
     {
       "month": "2024-07",
       "return": 0.0029336885,

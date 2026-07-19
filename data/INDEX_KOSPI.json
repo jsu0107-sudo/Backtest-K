@@ -10,9 +10,9 @@
   "listing_date": "1996-12-11",
   "listing_date_source": "Yahoo Finance 최초 거래일",
   "data_as_of": "2026-07-16",
-  "first_month": "2000-02",
+  "first_month": "1997-01",
   "last_month": "2026-06",
-  "monthly_return_count": 317,
+  "monthly_return_count": 354,
   "distribution": {
     "included": false,
     "method": "price_index",
@@ -37,7 +37,193 @@
   "universe_rank": null,
   "market_value_krw_100m": null,
   "latest_raw_close": null,
+  "recent_raw_closes": null,
   "monthly_returns": [
+    {
+      "month": "1997-01",
+      "return": 0.0531618465,
+      "observation_date": "1997-01-31"
+    },
+    {
+      "month": "1997-02",
+      "return": -0.0135745906,
+      "observation_date": "1997-02-28"
+    },
+    {
+      "month": "1997-03",
+      "return": 0.0011972825,
+      "observation_date": "1997-03-31"
+    },
+    {
+      "month": "1997-04",
+      "return": 0.038222979,
+      "observation_date": "1997-04-30"
+    },
+    {
+      "month": "1997-05",
+      "return": 0.0613312943,
+      "observation_date": "1997-05-30"
+    },
+    {
+      "month": "1997-06",
+      "return": -0.0012861903,
+      "observation_date": "1997-06-30"
+    },
+    {
+      "month": "1997-07",
+      "return": -0.0258653457,
+      "observation_date": "1997-07-31"
+    },
+    {
+      "month": "1997-08",
+      "return": -0.0300914115,
+      "observation_date": "1997-08-29"
+    },
+    {
+      "month": "1997-09",
+      "return": -0.0811621006,
+      "observation_date": "1997-09-30"
+    },
+    {
+      "month": "1997-10",
+      "return": -0.2724729656,
+      "observation_date": "1997-10-31"
+    },
+    {
+      "month": "1997-11",
+      "return": -0.1250663859,
+      "observation_date": "1997-11-28"
+    },
+    {
+      "month": "1997-12",
+      "return": -0.0892428187,
+      "observation_date": "1997-12-26"
+    },
+    {
+      "month": "1998-01",
+      "return": 0.4882847559,
+      "observation_date": "1998-01-30"
+    },
+    {
+      "month": "1998-02",
+      "return": -0.0177494204,
+      "observation_date": "1998-02-27"
+    },
+    {
+      "month": "1998-03",
+      "return": -0.1228619971,
+      "observation_date": "1998-03-31"
+    },
+    {
+      "month": "1998-04",
+      "return": -0.124355576,
+      "observation_date": "1998-04-30"
+    },
+    {
+      "month": "1998-05",
+      "return": -0.2008214142,
+      "observation_date": "1998-05-29"
+    },
+    {
+      "month": "1998-06",
+      "return": -0.1151115451,
+      "observation_date": "1998-06-30"
+    },
+    {
+      "month": "1998-07",
+      "return": 0.1525781554,
+      "observation_date": "1998-07-31"
+    },
+    {
+      "month": "1998-08",
+      "return": -0.0966125425,
+      "observation_date": "1998-08-31"
+    },
+    {
+      "month": "1998-09",
+      "return": 0.0005158746,
+      "observation_date": "1998-09-30"
+    },
+    {
+      "month": "1998-10",
+      "return": 0.2398491587,
+      "observation_date": "1998-10-30"
+    },
+    {
+      "month": "1998-11",
+      "return": 0.1744769458,
+      "observation_date": "1998-11-30"
+    },
+    {
+      "month": "1998-12",
+      "return": 0.2447110204,
+      "observation_date": "1998-12-28"
+    },
+    {
+      "month": "1999-01",
+      "return": 0.015947748,
+      "observation_date": "1999-01-29"
+    },
+    {
+      "month": "1999-02",
+      "return": -0.0898972679,
+      "observation_date": "1999-02-26"
+    },
+    {
+      "month": "1999-03",
+      "return": 0.1902087901,
+      "observation_date": "1999-03-31"
+    },
+    {
+      "month": "1999-04",
+      "return": 0.2158551982,
+      "observation_date": "1999-04-30"
+    },
+    {
+      "month": "1999-05",
+      "return": -0.0220173092,
+      "observation_date": "1999-05-31"
+    },
+    {
+      "month": "1999-06",
+      "return": 0.1996956286,
+      "observation_date": "1999-06-30"
+    },
+    {
+      "month": "1999-07",
+      "return": 0.0982106123,
+      "observation_date": "1999-07-30"
+    },
+    {
+      "month": "1999-08",
+      "return": -0.0328341859,
+      "observation_date": "1999-08-31"
+    },
+    {
+      "month": "1999-09",
+      "return": -0.1084360597,
+      "observation_date": "1999-09-30"
+    },
+    {
+      "month": "1999-10",
+      "return": -0.003193072,
+      "observation_date": "1999-10-29"
+    },
+    {
+      "month": "1999-11",
+      "return": 0.1957384572,
+      "observation_date": "1999-11-30"
+    },
+    {
+      "month": "1999-12",
+      "return": 0.0315152349,
+      "observation_date": "1999-12-28"
+    },
+    {
+      "month": "2000-01",
+      "return": -0.0818912582,
+      "observation_date": "2000-01-31"
+    },
     {
       "month": "2000-02",
       "return": -0.1223672494,

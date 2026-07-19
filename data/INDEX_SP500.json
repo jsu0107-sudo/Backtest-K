@@ -10,9 +10,9 @@
   "listing_date": "1927-12-30",
   "listing_date_source": "Yahoo Finance 최초 거래일",
   "data_as_of": "2026-07-17",
-  "first_month": "2000-02",
+  "first_month": "1970-02",
   "last_month": "2026-06",
-  "monthly_return_count": 317,
+  "monthly_return_count": 677,
   "distribution": {
     "included": false,
     "method": "price_index",
@@ -37,7 +37,1808 @@
   "universe_rank": null,
   "market_value_krw_100m": null,
   "latest_raw_close": null,
+  "recent_raw_closes": null,
   "monthly_returns": [
+    {
+      "month": "1970-02",
+      "return": 0.0526935255,
+      "observation_date": "1970-02-27"
+    },
+    {
+      "month": "1970-03",
+      "return": 0.0014524833,
+      "observation_date": "1970-03-31"
+    },
+    {
+      "month": "1970-04",
+      "return": -0.0904831068,
+      "observation_date": "1970-04-30"
+    },
+    {
+      "month": "1970-05",
+      "return": -0.0609665579,
+      "observation_date": "1970-05-29"
+    },
+    {
+      "month": "1970-06",
+      "return": -0.0500326803,
+      "observation_date": "1970-06-30"
+    },
+    {
+      "month": "1970-07",
+      "return": 0.0732948534,
+      "observation_date": "1970-07-31"
+    },
+    {
+      "month": "1970-08",
+      "return": 0.0444585965,
+      "observation_date": "1970-08-31"
+    },
+    {
+      "month": "1970-09",
+      "return": 0.0341021409,
+      "observation_date": "1970-09-30"
+    },
+    {
+      "month": "1970-10",
+      "return": -0.0124555518,
+      "observation_date": "1970-10-30"
+    },
+    {
+      "month": "1970-11",
+      "return": 0.0474474108,
+      "observation_date": "1970-11-30"
+    },
+    {
+      "month": "1970-12",
+      "return": 0.0567661095,
+      "observation_date": "1970-12-31"
+    },
+    {
+      "month": "1971-01",
+      "return": 0.0404774353,
+      "observation_date": "1971-01-29"
+    },
+    {
+      "month": "1971-02",
+      "return": 0.0090738712,
+      "observation_date": "1971-02-26"
+    },
+    {
+      "month": "1971-03",
+      "return": 0.0367958404,
+      "observation_date": "1971-03-31"
+    },
+    {
+      "month": "1971-04",
+      "return": 0.0362875035,
+      "observation_date": "1971-04-30"
+    },
+    {
+      "month": "1971-05",
+      "return": -0.0415584398,
+      "observation_date": "1971-05-28"
+    },
+    {
+      "month": "1971-06",
+      "return": -0.0093345411,
+      "observation_date": "1971-06-30"
+    },
+    {
+      "month": "1971-07",
+      "return": -0.0316108938,
+      "observation_date": "1971-07-30"
+    },
+    {
+      "month": "1971-08",
+      "return": 0.0360953848,
+      "observation_date": "1971-08-31"
+    },
+    {
+      "month": "1971-09",
+      "return": -0.0069676103,
+      "observation_date": "1971-09-30"
+    },
+    {
+      "month": "1971-10",
+      "return": -0.0417937069,
+      "observation_date": "1971-10-29"
+    },
+    {
+      "month": "1971-11",
+      "return": -0.0025470178,
+      "observation_date": "1971-11-30"
+    },
+    {
+      "month": "1971-12",
+      "return": 0.0861793665,
+      "observation_date": "1971-12-31"
+    },
+    {
+      "month": "1972-01",
+      "return": 0.018121326,
+      "observation_date": "1972-01-31"
+    },
+    {
+      "month": "1972-02",
+      "return": 0.0253030324,
+      "observation_date": "1972-02-29"
+    },
+    {
+      "month": "1972-03",
+      "return": 0.0059115816,
+      "observation_date": "1972-03-30"
+    },
+    {
+      "month": "1972-04",
+      "return": 0.0043843399,
+      "observation_date": "1972-04-28"
+    },
+    {
+      "month": "1972-05",
+      "return": 0.0172750129,
+      "observation_date": "1972-05-31"
+    },
+    {
+      "month": "1972-06",
+      "return": -0.0218205005,
+      "observation_date": "1972-06-30"
+    },
+    {
+      "month": "1972-07",
+      "return": 0.0023333956,
+      "observation_date": "1972-07-31"
+    },
+    {
+      "month": "1972-08",
+      "return": 0.0344538315,
+      "observation_date": "1972-08-31"
+    },
+    {
+      "month": "1972-09",
+      "return": -0.0048608633,
+      "observation_date": "1972-09-29"
+    },
+    {
+      "month": "1972-10",
+      "return": 0.0093170398,
+      "observation_date": "1972-10-31"
+    },
+    {
+      "month": "1972-11",
+      "return": 0.0456174606,
+      "observation_date": "1972-11-30"
+    },
+    {
+      "month": "1972-12",
+      "return": 0.0118282755,
+      "observation_date": "1972-12-29"
+    },
+    {
+      "month": "1973-01",
+      "return": -0.0171114292,
+      "observation_date": "1973-01-31"
+    },
+    {
+      "month": "1973-02",
+      "return": -0.0374902915,
+      "observation_date": "1973-02-28"
+    },
+    {
+      "month": "1973-03",
+      "return": -0.0014326975,
+      "observation_date": "1973-03-30"
+    },
+    {
+      "month": "1973-04",
+      "return": -0.0407998167,
+      "observation_date": "1973-04-30"
+    },
+    {
+      "month": "1973-05",
+      "return": -0.0188838389,
+      "observation_date": "1973-05-31"
+    },
+    {
+      "month": "1973-06",
+      "return": -0.0065745101,
+      "observation_date": "1973-06-29"
+    },
+    {
+      "month": "1973-07",
+      "return": 0.0379819586,
+      "observation_date": "1973-07-31"
+    },
+    {
+      "month": "1973-08",
+      "return": -0.0366845424,
+      "observation_date": "1973-08-31"
+    },
+    {
+      "month": "1973-09",
+      "return": 0.0400959262,
+      "observation_date": "1973-09-28"
+    },
+    {
+      "month": "1973-10",
+      "return": -0.00129115,
+      "observation_date": "1973-10-31"
+    },
+    {
+      "month": "1973-11",
+      "return": -0.1138609449,
+      "observation_date": "1973-11-30"
+    },
+    {
+      "month": "1973-12",
+      "return": 0.0165694454,
+      "observation_date": "1973-12-31"
+    },
+    {
+      "month": "1974-01",
+      "return": -0.0100461643,
+      "observation_date": "1974-01-31"
+    },
+    {
+      "month": "1974-02",
+      "return": -0.0036242982,
+      "observation_date": "1974-02-28"
+    },
+    {
+      "month": "1974-03",
+      "return": -0.0232799609,
+      "observation_date": "1974-03-29"
+    },
+    {
+      "month": "1974-04",
+      "return": -0.0390509222,
+      "observation_date": "1974-04-30"
+    },
+    {
+      "month": "1974-05",
+      "return": -0.0335510892,
+      "observation_date": "1974-05-31"
+    },
+    {
+      "month": "1974-06",
+      "return": -0.0146654308,
+      "observation_date": "1974-06-28"
+    },
+    {
+      "month": "1974-07",
+      "return": -0.0777907261,
+      "observation_date": "1974-07-31"
+    },
+    {
+      "month": "1974-08",
+      "return": -0.0902786061,
+      "observation_date": "1974-08-30"
+    },
+    {
+      "month": "1974-09",
+      "return": -0.1193347253,
+      "observation_date": "1974-09-30"
+    },
+    {
+      "month": "1974-10",
+      "return": 0.1630469068,
+      "observation_date": "1974-10-31"
+    },
+    {
+      "month": "1974-11",
+      "return": -0.053179976,
+      "observation_date": "1974-11-29"
+    },
+    {
+      "month": "1974-12",
+      "return": -0.0201515455,
+      "observation_date": "1974-12-31"
+    },
+    {
+      "month": "1975-01",
+      "return": 0.1228122243,
+      "observation_date": "1975-01-31"
+    },
+    {
+      "month": "1975-02",
+      "return": 0.0598855908,
+      "observation_date": "1975-02-28"
+    },
+    {
+      "month": "1975-03",
+      "return": 0.0216938884,
+      "observation_date": "1975-03-31"
+    },
+    {
+      "month": "1975-04",
+      "return": 0.0472649042,
+      "observation_date": "1975-04-30"
+    },
+    {
+      "month": "1975-05",
+      "return": 0.0441007828,
+      "observation_date": "1975-05-30"
+    },
+    {
+      "month": "1975-06",
+      "return": 0.0443225546,
+      "observation_date": "1975-06-30"
+    },
+    {
+      "month": "1975-07",
+      "return": -0.0676541893,
+      "observation_date": "1975-07-31"
+    },
+    {
+      "month": "1975-08",
+      "return": -0.0210704535,
+      "observation_date": "1975-08-29"
+    },
+    {
+      "month": "1975-09",
+      "return": -0.0346454259,
+      "observation_date": "1975-09-30"
+    },
+    {
+      "month": "1975-10",
+      "return": 0.0616429951,
+      "observation_date": "1975-10-31"
+    },
+    {
+      "month": "1975-11",
+      "return": 0.0247079619,
+      "observation_date": "1975-11-28"
+    },
+    {
+      "month": "1975-12",
+      "return": -0.0115080606,
+      "observation_date": "1975-12-31"
+    },
+    {
+      "month": "1976-01",
+      "return": 0.1183057754,
+      "observation_date": "1976-01-30"
+    },
+    {
+      "month": "1976-02",
+      "return": -0.0114019583,
+      "observation_date": "1976-02-27"
+    },
+    {
+      "month": "1976-03",
+      "return": 0.0306889739,
+      "observation_date": "1976-03-31"
+    },
+    {
+      "month": "1976-04",
+      "return": -0.0109954003,
+      "observation_date": "1976-04-30"
+    },
+    {
+      "month": "1976-05",
+      "return": -0.0143644145,
+      "observation_date": "1976-05-28"
+    },
+    {
+      "month": "1976-06",
+      "return": 0.0409263172,
+      "observation_date": "1976-06-30"
+    },
+    {
+      "month": "1976-07",
+      "return": -0.0080552009,
+      "observation_date": "1976-07-30"
+    },
+    {
+      "month": "1976-08",
+      "return": -0.0051237313,
+      "observation_date": "1976-08-31"
+    },
+    {
+      "month": "1976-09",
+      "return": 0.0226410856,
+      "observation_date": "1976-09-30"
+    },
+    {
+      "month": "1976-10",
+      "return": -0.0222348573,
+      "observation_date": "1976-10-29"
+    },
+    {
+      "month": "1976-11",
+      "return": -0.0077745679,
+      "observation_date": "1976-11-30"
+    },
+    {
+      "month": "1976-12",
+      "return": 0.0524975582,
+      "observation_date": "1976-12-31"
+    },
+    {
+      "month": "1977-01",
+      "return": -0.0505304332,
+      "observation_date": "1977-01-31"
+    },
+    {
+      "month": "1977-02",
+      "return": -0.0216602873,
+      "observation_date": "1977-02-28"
+    },
+    {
+      "month": "1977-03",
+      "return": -0.0140252608,
+      "observation_date": "1977-03-31"
+    },
+    {
+      "month": "1977-04",
+      "return": 0.0002032541,
+      "observation_date": "1977-04-29"
+    },
+    {
+      "month": "1977-05",
+      "return": -0.0235676517,
+      "observation_date": "1977-05-31"
+    },
+    {
+      "month": "1977-06",
+      "return": 0.0453599718,
+      "observation_date": "1977-06-30"
+    },
+    {
+      "month": "1977-07",
+      "return": -0.0162221818,
+      "observation_date": "1977-07-29"
+    },
+    {
+      "month": "1977-08",
+      "return": -0.0210420017,
+      "observation_date": "1977-08-31"
+    },
+    {
+      "month": "1977-09",
+      "return": -0.0024800855,
+      "observation_date": "1977-09-30"
+    },
+    {
+      "month": "1977-10",
+      "return": -0.0434062208,
+      "observation_date": "1977-10-31"
+    },
+    {
+      "month": "1977-11",
+      "return": 0.0269656226,
+      "observation_date": "1977-11-30"
+    },
+    {
+      "month": "1977-12",
+      "return": 0.0028471648,
+      "observation_date": "1977-12-30"
+    },
+    {
+      "month": "1978-01",
+      "return": -0.0615141805,
+      "observation_date": "1978-01-31"
+    },
+    {
+      "month": "1978-02",
+      "return": -0.0247618945,
+      "observation_date": "1978-02-28"
+    },
+    {
+      "month": "1978-03",
+      "return": 0.0249310449,
+      "observation_date": "1978-03-31"
+    },
+    {
+      "month": "1978-04",
+      "return": 0.0854164648,
+      "observation_date": "1978-04-28"
+    },
+    {
+      "month": "1978-05",
+      "return": 0.0042341839,
+      "observation_date": "1978-05-31"
+    },
+    {
+      "month": "1978-06",
+      "return": -0.0175853468,
+      "observation_date": "1978-06-30"
+    },
+    {
+      "month": "1978-07",
+      "return": 0.0539097832,
+      "observation_date": "1978-07-31"
+    },
+    {
+      "month": "1978-08",
+      "return": 0.0259237247,
+      "observation_date": "1978-08-31"
+    },
+    {
+      "month": "1978-09",
+      "return": -0.0072611094,
+      "observation_date": "1978-09-29"
+    },
+    {
+      "month": "1978-10",
+      "return": -0.0915740131,
+      "observation_date": "1978-10-31"
+    },
+    {
+      "month": "1978-11",
+      "return": 0.0166397788,
+      "observation_date": "1978-11-30"
+    },
+    {
+      "month": "1978-12",
+      "return": 0.0148891627,
+      "observation_date": "1978-12-29"
+    },
+    {
+      "month": "1979-01",
+      "return": 0.0397461208,
+      "observation_date": "1979-01-31"
+    },
+    {
+      "month": "1979-02",
+      "return": -0.0365255831,
+      "observation_date": "1979-02-28"
+    },
+    {
+      "month": "1979-03",
+      "return": 0.0551516164,
+      "observation_date": "1979-03-30"
+    },
+    {
+      "month": "1979-04",
+      "return": 0.0016734502,
+      "observation_date": "1979-04-30"
+    },
+    {
+      "month": "1979-05",
+      "return": -0.0263364804,
+      "observation_date": "1979-05-31"
+    },
+    {
+      "month": "1979-06",
+      "return": 0.0386556496,
+      "observation_date": "1979-06-29"
+    },
+    {
+      "month": "1979-07",
+      "return": 0.0087454462,
+      "observation_date": "1979-07-31"
+    },
+    {
+      "month": "1979-08",
+      "return": 0.05307776,
+      "observation_date": "1979-08-31"
+    },
+    {
+      "month": "1979-09",
+      "return": 0.0,
+      "observation_date": "1979-09-28"
+    },
+    {
+      "month": "1979-10",
+      "return": -0.0686059277,
+      "observation_date": "1979-10-31"
+    },
+    {
+      "month": "1979-11",
+      "return": 0.0426242779,
+      "observation_date": "1979-11-30"
+    },
+    {
+      "month": "1979-12",
+      "return": 0.0167671319,
+      "observation_date": "1979-12-31"
+    },
+    {
+      "month": "1980-01",
+      "return": 0.0576246163,
+      "observation_date": "1980-01-31"
+    },
+    {
+      "month": "1980-02",
+      "return": -0.0043798177,
+      "observation_date": "1980-02-29"
+    },
+    {
+      "month": "1980-03",
+      "return": -0.1017948878,
+      "observation_date": "1980-03-31"
+    },
+    {
+      "month": "1980-04",
+      "return": 0.0411402168,
+      "observation_date": "1980-04-30"
+    },
+    {
+      "month": "1980-05",
+      "return": 0.0465706737,
+      "observation_date": "1980-05-30"
+    },
+    {
+      "month": "1980-06",
+      "return": 0.0269687168,
+      "observation_date": "1980-06-30"
+    },
+    {
+      "month": "1980-07",
+      "return": 0.0650385193,
+      "observation_date": "1980-07-31"
+    },
+    {
+      "month": "1980-08",
+      "return": 0.0058354491,
+      "observation_date": "1980-08-29"
+    },
+    {
+      "month": "1980-09",
+      "return": 0.0251675266,
+      "observation_date": "1980-09-30"
+    },
+    {
+      "month": "1980-10",
+      "return": 0.0160210597,
+      "observation_date": "1980-10-31"
+    },
+    {
+      "month": "1980-11",
+      "return": 0.1023770528,
+      "observation_date": "1980-11-28"
+    },
+    {
+      "month": "1980-12",
+      "return": -0.0338742501,
+      "observation_date": "1980-12-31"
+    },
+    {
+      "month": "1981-01",
+      "return": -0.0457424257,
+      "observation_date": "1981-01-30"
+    },
+    {
+      "month": "1981-02",
+      "return": 0.0132767362,
+      "observation_date": "1981-02-27"
+    },
+    {
+      "month": "1981-03",
+      "return": 0.0360325708,
+      "observation_date": "1981-03-31"
+    },
+    {
+      "month": "1981-04",
+      "return": -0.0234559003,
+      "observation_date": "1981-04-30"
+    },
+    {
+      "month": "1981-05",
+      "return": -0.001656511,
+      "observation_date": "1981-05-29"
+    },
+    {
+      "month": "1981-06",
+      "return": -0.0104079468,
+      "observation_date": "1981-06-30"
+    },
+    {
+      "month": "1981-07",
+      "return": -0.0022102624,
+      "observation_date": "1981-07-31"
+    },
+    {
+      "month": "1981-08",
+      "return": -0.0620989716,
+      "observation_date": "1981-08-31"
+    },
+    {
+      "month": "1981-09",
+      "return": -0.0538317498,
+      "observation_date": "1981-09-30"
+    },
+    {
+      "month": "1981-10",
+      "return": 0.049147866,
+      "observation_date": "1981-10-30"
+    },
+    {
+      "month": "1981-11",
+      "return": 0.036590361,
+      "observation_date": "1981-11-30"
+    },
+    {
+      "month": "1981-12",
+      "return": -0.0300751521,
+      "observation_date": "1981-12-31"
+    },
+    {
+      "month": "1982-01",
+      "return": -0.0175438717,
+      "observation_date": "1982-01-29"
+    },
+    {
+      "month": "1982-02",
+      "return": -0.0605481796,
+      "observation_date": "1982-02-26"
+    },
+    {
+      "month": "1982-03",
+      "return": -0.0101671074,
+      "observation_date": "1982-03-31"
+    },
+    {
+      "month": "1982-04",
+      "return": 0.0400143211,
+      "observation_date": "1982-04-30"
+    },
+    {
+      "month": "1982-05",
+      "return": -0.0391618438,
+      "observation_date": "1982-05-28"
+    },
+    {
+      "month": "1982-06",
+      "return": -0.0202895665,
+      "observation_date": "1982-06-30"
+    },
+    {
+      "month": "1982-07",
+      "return": -0.0229906419,
+      "observation_date": "1982-07-30"
+    },
+    {
+      "month": "1982-08",
+      "return": 0.1159772735,
+      "observation_date": "1982-08-31"
+    },
+    {
+      "month": "1982-09",
+      "return": 0.0076143922,
+      "observation_date": "1982-09-30"
+    },
+    {
+      "month": "1982-10",
+      "return": 0.1104467967,
+      "observation_date": "1982-10-29"
+    },
+    {
+      "month": "1982-11",
+      "return": 0.0359706664,
+      "observation_date": "1982-11-30"
+    },
+    {
+      "month": "1982-12",
+      "return": 0.0152313624,
+      "observation_date": "1982-12-31"
+    },
+    {
+      "month": "1983-01",
+      "return": 0.0331342696,
+      "observation_date": "1983-01-31"
+    },
+    {
+      "month": "1983-02",
+      "return": 0.0189951442,
+      "observation_date": "1983-02-28"
+    },
+    {
+      "month": "1983-03",
+      "return": 0.0330947537,
+      "observation_date": "1983-03-31"
+    },
+    {
+      "month": "1983-04",
+      "return": 0.0749868296,
+      "observation_date": "1983-04-29"
+    },
+    {
+      "month": "1983-05",
+      "return": -0.0124064549,
+      "observation_date": "1983-05-31"
+    },
+    {
+      "month": "1983-06",
+      "return": 0.0323295771,
+      "observation_date": "1983-06-30"
+    },
+    {
+      "month": "1983-07",
+      "return": -0.0303030413,
+      "observation_date": "1983-07-29"
+    },
+    {
+      "month": "1983-08",
+      "return": 0.0113188753,
+      "observation_date": "1983-08-31"
+    },
+    {
+      "month": "1983-09",
+      "return": 0.0101582329,
+      "observation_date": "1983-09-30"
+    },
+    {
+      "month": "1983-10",
+      "return": -0.0151743491,
+      "observation_date": "1983-10-31"
+    },
+    {
+      "month": "1983-11",
+      "return": 0.0174258073,
+      "observation_date": "1983-11-30"
+    },
+    {
+      "month": "1983-12",
+      "return": -0.0088341423,
+      "observation_date": "1983-12-30"
+    },
+    {
+      "month": "1984-01",
+      "return": -0.0092159648,
+      "observation_date": "1984-01-31"
+    },
+    {
+      "month": "1984-02",
+      "return": -0.0388593474,
+      "observation_date": "1984-02-29"
+    },
+    {
+      "month": "1984-03",
+      "return": 0.0134979954,
+      "observation_date": "1984-03-30"
+    },
+    {
+      "month": "1984-04",
+      "return": 0.0054655762,
+      "observation_date": "1984-04-30"
+    },
+    {
+      "month": "1984-05",
+      "return": -0.05935645,
+      "observation_date": "1984-05-31"
+    },
+    {
+      "month": "1984-06",
+      "return": 0.01746921,
+      "observation_date": "1984-06-29"
+    },
+    {
+      "month": "1984-07",
+      "return": -0.0164511629,
+      "observation_date": "1984-07-31"
+    },
+    {
+      "month": "1984-08",
+      "return": 0.1063320631,
+      "observation_date": "1984-08-31"
+    },
+    {
+      "month": "1984-09",
+      "return": -0.0034796412,
+      "observation_date": "1984-09-28"
+    },
+    {
+      "month": "1984-10",
+      "return": -6.02635e-05,
+      "observation_date": "1984-10-31"
+    },
+    {
+      "month": "1984-11",
+      "return": -0.0151122558,
+      "observation_date": "1984-11-30"
+    },
+    {
+      "month": "1984-12",
+      "return": 0.0223743955,
+      "observation_date": "1984-12-31"
+    },
+    {
+      "month": "1985-01",
+      "return": 0.074085141,
+      "observation_date": "1985-01-31"
+    },
+    {
+      "month": "1985-02",
+      "return": 0.00862878,
+      "observation_date": "1985-02-28"
+    },
+    {
+      "month": "1985-03",
+      "return": -0.0028700134,
+      "observation_date": "1985-03-29"
+    },
+    {
+      "month": "1985-04",
+      "return": -0.0045942755,
+      "observation_date": "1985-04-30"
+    },
+    {
+      "month": "1985-05",
+      "return": 0.0540510544,
+      "observation_date": "1985-05-31"
+    },
+    {
+      "month": "1985-06",
+      "return": 0.0121340175,
+      "observation_date": "1985-06-28"
+    },
+    {
+      "month": "1985-07",
+      "return": -0.0048475783,
+      "observation_date": "1985-07-31"
+    },
+    {
+      "month": "1985-08",
+      "return": -0.0119945176,
+      "observation_date": "1985-08-30"
+    },
+    {
+      "month": "1985-09",
+      "return": -0.0347240783,
+      "observation_date": "1985-09-30"
+    },
+    {
+      "month": "1985-10",
+      "return": 0.0425088171,
+      "observation_date": "1985-10-31"
+    },
+    {
+      "month": "1985-11",
+      "return": 0.0650615866,
+      "observation_date": "1985-11-29"
+    },
+    {
+      "month": "1985-12",
+      "return": 0.0450610906,
+      "observation_date": "1985-12-31"
+    },
+    {
+      "month": "1986-01",
+      "return": 0.0023665278,
+      "observation_date": "1986-01-31"
+    },
+    {
+      "month": "1986-02",
+      "return": 0.0714892789,
+      "observation_date": "1986-02-28"
+    },
+    {
+      "month": "1986-03",
+      "return": 0.0527939178,
+      "observation_date": "1986-03-31"
+    },
+    {
+      "month": "1986-04",
+      "return": -0.0141481361,
+      "observation_date": "1986-04-30"
+    },
+    {
+      "month": "1986-05",
+      "return": 0.0502292868,
+      "observation_date": "1986-05-30"
+    },
+    {
+      "month": "1986-06",
+      "return": 0.0141095215,
+      "observation_date": "1986-06-30"
+    },
+    {
+      "month": "1986-07",
+      "return": -0.0586828314,
+      "observation_date": "1986-07-31"
+    },
+    {
+      "month": "1986-08",
+      "return": 0.0711926051,
+      "observation_date": "1986-08-29"
+    },
+    {
+      "month": "1986-09",
+      "return": -0.0854386035,
+      "observation_date": "1986-09-30"
+    },
+    {
+      "month": "1986-10",
+      "return": 0.0547293273,
+      "observation_date": "1986-10-31"
+    },
+    {
+      "month": "1986-11",
+      "return": 0.0214771932,
+      "observation_date": "1986-11-28"
+    },
+    {
+      "month": "1986-12",
+      "return": -0.0282882715,
+      "observation_date": "1986-12-31"
+    },
+    {
+      "month": "1987-01",
+      "return": 0.1317668937,
+      "observation_date": "1987-01-30"
+    },
+    {
+      "month": "1987-02",
+      "return": 0.0369236213,
+      "observation_date": "1987-02-27"
+    },
+    {
+      "month": "1987-03",
+      "return": 0.0263898652,
+      "observation_date": "1987-03-31"
+    },
+    {
+      "month": "1987-04",
+      "return": -0.0114502116,
+      "observation_date": "1987-04-30"
+    },
+    {
+      "month": "1987-05",
+      "return": 0.0060341963,
+      "observation_date": "1987-05-29"
+    },
+    {
+      "month": "1987-06",
+      "return": 0.0479144902,
+      "observation_date": "1987-06-30"
+    },
+    {
+      "month": "1987-07",
+      "return": 0.0482236963,
+      "observation_date": "1987-07-31"
+    },
+    {
+      "month": "1987-08",
+      "return": 0.0349588402,
+      "observation_date": "1987-08-31"
+    },
+    {
+      "month": "1987-09",
+      "return": -0.0241661659,
+      "observation_date": "1987-09-30"
+    },
+    {
+      "month": "1987-10",
+      "return": -0.2176304142,
+      "observation_date": "1987-10-30"
+    },
+    {
+      "month": "1987-11",
+      "return": -0.0853488654,
+      "observation_date": "1987-11-30"
+    },
+    {
+      "month": "1987-12",
+      "return": 0.0728614788,
+      "observation_date": "1987-12-31"
+    },
+    {
+      "month": "1988-01",
+      "return": 0.0404322706,
+      "observation_date": "1988-01-29"
+    },
+    {
+      "month": "1988-02",
+      "return": 0.0418174026,
+      "observation_date": "1988-02-29"
+    },
+    {
+      "month": "1988-03",
+      "return": -0.033343262,
+      "observation_date": "1988-03-31"
+    },
+    {
+      "month": "1988-04",
+      "return": 0.0094247433,
+      "observation_date": "1988-04-29"
+    },
+    {
+      "month": "1988-05",
+      "return": 0.0031761265,
+      "observation_date": "1988-05-31"
+    },
+    {
+      "month": "1988-06",
+      "return": 0.0432560123,
+      "observation_date": "1988-06-30"
+    },
+    {
+      "month": "1988-07",
+      "return": -0.0054113747,
+      "observation_date": "1988-07-29"
+    },
+    {
+      "month": "1988-08",
+      "return": -0.0386001045,
+      "observation_date": "1988-08-31"
+    },
+    {
+      "month": "1988-09",
+      "return": 0.0397293327,
+      "observation_date": "1988-09-30"
+    },
+    {
+      "month": "1988-10",
+      "return": 0.0259644642,
+      "observation_date": "1988-10-31"
+    },
+    {
+      "month": "1988-11",
+      "return": -0.0188908807,
+      "observation_date": "1988-11-30"
+    },
+    {
+      "month": "1988-12",
+      "return": 0.0146875734,
+      "observation_date": "1988-12-30"
+    },
+    {
+      "month": "1989-01",
+      "return": 0.0711147916,
+      "observation_date": "1989-01-31"
+    },
+    {
+      "month": "1989-02",
+      "return": -0.0289441484,
+      "observation_date": "1989-02-28"
+    },
+    {
+      "month": "1989-03",
+      "return": 0.0208059616,
+      "observation_date": "1989-03-31"
+    },
+    {
+      "month": "1989-04",
+      "return": 0.0500899372,
+      "observation_date": "1989-04-28"
+    },
+    {
+      "month": "1989-05",
+      "return": 0.0351374947,
+      "observation_date": "1989-05-31"
+    },
+    {
+      "month": "1989-06",
+      "return": -0.0079245542,
+      "observation_date": "1989-06-30"
+    },
+    {
+      "month": "1989-07",
+      "return": 0.0883702579,
+      "observation_date": "1989-07-31"
+    },
+    {
+      "month": "1989-08",
+      "return": 0.0155167182,
+      "observation_date": "1989-08-31"
+    },
+    {
+      "month": "1989-09",
+      "return": -0.0065443683,
+      "observation_date": "1989-09-29"
+    },
+    {
+      "month": "1989-10",
+      "return": -0.0251754509,
+      "observation_date": "1989-10-31"
+    },
+    {
+      "month": "1989-11",
+      "return": 0.0165413243,
+      "observation_date": "1989-11-30"
+    },
+    {
+      "month": "1989-12",
+      "return": 0.0214168151,
+      "observation_date": "1989-12-29"
+    },
+    {
+      "month": "1990-01",
+      "return": -0.0688172262,
+      "observation_date": "1990-01-31"
+    },
+    {
+      "month": "1990-02",
+      "return": 0.0085390428,
+      "observation_date": "1990-02-28"
+    },
+    {
+      "month": "1990-03",
+      "return": 0.0242549864,
+      "observation_date": "1990-03-30"
+    },
+    {
+      "month": "1990-04",
+      "return": -0.0268871406,
+      "observation_date": "1990-04-30"
+    },
+    {
+      "month": "1990-05",
+      "return": 0.0919891908,
+      "observation_date": "1990-05-31"
+    },
+    {
+      "month": "1990-06",
+      "return": -0.0088863657,
+      "observation_date": "1990-06-29"
+    },
+    {
+      "month": "1990-07",
+      "return": -0.0052231584,
+      "observation_date": "1990-07-31"
+    },
+    {
+      "month": "1990-08",
+      "return": -0.0943141848,
+      "observation_date": "1990-08-31"
+    },
+    {
+      "month": "1990-09",
+      "return": -0.0511843065,
+      "observation_date": "1990-09-28"
+    },
+    {
+      "month": "1990-10",
+      "return": -0.0066982123,
+      "observation_date": "1990-10-31"
+    },
+    {
+      "month": "1990-11",
+      "return": 0.0599342145,
+      "observation_date": "1990-11-30"
+    },
+    {
+      "month": "1990-12",
+      "return": 0.0248277573,
+      "observation_date": "1990-12-31"
+    },
+    {
+      "month": "1991-01",
+      "return": 0.04151775,
+      "observation_date": "1991-01-31"
+    },
+    {
+      "month": "1991-02",
+      "return": 0.0672811768,
+      "observation_date": "1991-02-28"
+    },
+    {
+      "month": "1991-03",
+      "return": 0.0222028325,
+      "observation_date": "1991-03-28"
+    },
+    {
+      "month": "1991-04",
+      "return": 0.0003197994,
+      "observation_date": "1991-04-30"
+    },
+    {
+      "month": "1991-05",
+      "return": 0.0386049725,
+      "observation_date": "1991-05-31"
+    },
+    {
+      "month": "1991-06",
+      "return": -0.047892629,
+      "observation_date": "1991-06-28"
+    },
+    {
+      "month": "1991-07",
+      "return": 0.044859343,
+      "observation_date": "1991-07-31"
+    },
+    {
+      "month": "1991-08",
+      "return": 0.0196487846,
+      "observation_date": "1991-08-30"
+    },
+    {
+      "month": "1991-09",
+      "return": -0.0191437358,
+      "observation_date": "1991-09-30"
+    },
+    {
+      "month": "1991-10",
+      "return": 0.0118342367,
+      "observation_date": "1991-10-31"
+    },
+    {
+      "month": "1991-11",
+      "return": -0.0439037086,
+      "observation_date": "1991-11-29"
+    },
+    {
+      "month": "1991-12",
+      "return": 0.1115878551,
+      "observation_date": "1991-12-31"
+    },
+    {
+      "month": "1992-01",
+      "return": -0.0199237518,
+      "observation_date": "1992-01-31"
+    },
+    {
+      "month": "1992-02",
+      "return": 0.0095895431,
+      "observation_date": "1992-02-28"
+    },
+    {
+      "month": "1992-03",
+      "return": -0.0218318621,
+      "observation_date": "1992-03-31"
+    },
+    {
+      "month": "1992-04",
+      "return": 0.027892714,
+      "observation_date": "1992-04-30"
+    },
+    {
+      "month": "1992-05",
+      "return": 0.0009639568,
+      "observation_date": "1992-05-29"
+    },
+    {
+      "month": "1992-06",
+      "return": -0.0173588332,
+      "observation_date": "1992-06-30"
+    },
+    {
+      "month": "1992-07",
+      "return": 0.0393736861,
+      "observation_date": "1992-07-31"
+    },
+    {
+      "month": "1992-08",
+      "return": -0.0239975316,
+      "observation_date": "1992-08-31"
+    },
+    {
+      "month": "1992-09",
+      "return": 0.0091055939,
+      "observation_date": "1992-09-30"
+    },
+    {
+      "month": "1992-10",
+      "return": 0.0021062827,
+      "observation_date": "1992-10-30"
+    },
+    {
+      "month": "1992-11",
+      "return": 0.0302618077,
+      "observation_date": "1992-11-30"
+    },
+    {
+      "month": "1992-12",
+      "return": 0.010107767,
+      "observation_date": "1992-12-31"
+    },
+    {
+      "month": "1993-01",
+      "return": 0.0070459879,
+      "observation_date": "1993-01-29"
+    },
+    {
+      "month": "1993-02",
+      "return": 0.0104836276,
+      "observation_date": "1993-02-26"
+    },
+    {
+      "month": "1993-03",
+      "return": 0.0186972991,
+      "observation_date": "1993-03-31"
+    },
+    {
+      "month": "1993-04",
+      "return": -0.0254168102,
+      "observation_date": "1993-04-30"
+    },
+    {
+      "month": "1993-05",
+      "return": 0.0227174628,
+      "observation_date": "1993-05-28"
+    },
+    {
+      "month": "1993-06",
+      "return": 0.0007552285,
+      "observation_date": "1993-06-30"
+    },
+    {
+      "month": "1993-07",
+      "return": -0.0053270457,
+      "observation_date": "1993-07-30"
+    },
+    {
+      "month": "1993-08",
+      "return": 0.0344319561,
+      "observation_date": "1993-08-31"
+    },
+    {
+      "month": "1993-09",
+      "return": -0.0099879302,
+      "observation_date": "1993-09-30"
+    },
+    {
+      "month": "1993-10",
+      "return": 0.0193929228,
+      "observation_date": "1993-10-29"
+    },
+    {
+      "month": "1993-11",
+      "return": -0.0129106261,
+      "observation_date": "1993-11-30"
+    },
+    {
+      "month": "1993-12",
+      "return": 0.0100911747,
+      "observation_date": "1993-12-31"
+    },
+    {
+      "month": "1994-01",
+      "return": 0.0325007455,
+      "observation_date": "1994-01-31"
+    },
+    {
+      "month": "1994-02",
+      "return": -0.0300449973,
+      "observation_date": "1994-02-28"
+    },
+    {
+      "month": "1994-03",
+      "return": -0.0457465106,
+      "observation_date": "1994-03-31"
+    },
+    {
+      "month": "1994-04",
+      "return": 0.0115306431,
+      "observation_date": "1994-04-29"
+    },
+    {
+      "month": "1994-05",
+      "return": 0.0123971442,
+      "observation_date": "1994-05-31"
+    },
+    {
+      "month": "1994-06",
+      "return": -0.0267908236,
+      "observation_date": "1994-06-30"
+    },
+    {
+      "month": "1994-07",
+      "return": 0.0314899073,
+      "observation_date": "1994-07-29"
+    },
+    {
+      "month": "1994-08",
+      "return": 0.0375986996,
+      "observation_date": "1994-08-31"
+    },
+    {
+      "month": "1994-09",
+      "return": -0.0268775348,
+      "observation_date": "1994-09-30"
+    },
+    {
+      "month": "1994-10",
+      "return": 0.0208338156,
+      "observation_date": "1994-10-31"
+    },
+    {
+      "month": "1994-11",
+      "return": -0.0395046119,
+      "observation_date": "1994-11-30"
+    },
+    {
+      "month": "1994-12",
+      "return": 0.0122991173,
+      "observation_date": "1994-12-30"
+    },
+    {
+      "month": "1995-01",
+      "return": 0.0242777118,
+      "observation_date": "1995-01-31"
+    },
+    {
+      "month": "1995-02",
+      "return": 0.0360741481,
+      "observation_date": "1995-02-28"
+    },
+    {
+      "month": "1995-03",
+      "return": 0.0273291951,
+      "observation_date": "1995-03-31"
+    },
+    {
+      "month": "1995-04",
+      "return": 0.0279603578,
+      "observation_date": "1995-04-28"
+    },
+    {
+      "month": "1995-05",
+      "return": 0.0363117127,
+      "observation_date": "1995-05-31"
+    },
+    {
+      "month": "1995-06",
+      "return": 0.0212785434,
+      "observation_date": "1995-06-30"
+    },
+    {
+      "month": "1995-07",
+      "return": 0.0317760396,
+      "observation_date": "1995-07-31"
+    },
+    {
+      "month": "1995-08",
+      "return": -0.0003202375,
+      "observation_date": "1995-08-31"
+    },
+    {
+      "month": "1995-09",
+      "return": 0.0400974729,
+      "observation_date": "1995-09-29"
+    },
+    {
+      "month": "1995-10",
+      "return": -0.0049793352,
+      "observation_date": "1995-10-31"
+    },
+    {
+      "month": "1995-11",
+      "return": 0.0410490028,
+      "observation_date": "1995-11-30"
+    },
+    {
+      "month": "1995-12",
+      "return": 0.0174438734,
+      "observation_date": "1995-12-29"
+    },
+    {
+      "month": "1996-01",
+      "return": 0.0326173869,
+      "observation_date": "1996-01-31"
+    },
+    {
+      "month": "1996-02",
+      "return": 0.0069337018,
+      "observation_date": "1996-02-29"
+    },
+    {
+      "month": "1996-03",
+      "return": 0.0079165676,
+      "observation_date": "1996-03-29"
+    },
+    {
+      "month": "1996-04",
+      "return": 0.013431422,
+      "observation_date": "1996-04-30"
+    },
+    {
+      "month": "1996-05",
+      "return": 0.022853406,
+      "observation_date": "1996-05-31"
+    },
+    {
+      "month": "1996-06",
+      "return": 0.00225671,
+      "observation_date": "1996-06-28"
+    },
+    {
+      "month": "1996-07",
+      "return": -0.0457480167,
+      "observation_date": "1996-07-31"
+    },
+    {
+      "month": "1996-08",
+      "return": 0.0188139351,
+      "observation_date": "1996-08-30"
+    },
+    {
+      "month": "1996-09",
+      "return": 0.0542033273,
+      "observation_date": "1996-09-30"
+    },
+    {
+      "month": "1996-10",
+      "return": 0.0261010024,
+      "observation_date": "1996-10-31"
+    },
+    {
+      "month": "1996-11",
+      "return": 0.0733761518,
+      "observation_date": "1996-11-29"
+    },
+    {
+      "month": "1996-12",
+      "return": -0.0215054145,
+      "observation_date": "1996-12-31"
+    },
+    {
+      "month": "1997-01",
+      "return": 0.0613170391,
+      "observation_date": "1997-01-31"
+    },
+    {
+      "month": "1997-02",
+      "return": 0.0059275902,
+      "observation_date": "1997-02-28"
+    },
+    {
+      "month": "1997-03",
+      "return": -0.0426140106,
+      "observation_date": "1997-03-31"
+    },
+    {
+      "month": "1997-04",
+      "return": 0.0584055791,
+      "observation_date": "1997-04-30"
+    },
+    {
+      "month": "1997-05",
+      "return": 0.0585768848,
+      "observation_date": "1997-05-30"
+    },
+    {
+      "month": "1997-06",
+      "return": 0.0434526148,
+      "observation_date": "1997-06-30"
+    },
+    {
+      "month": "1997-07",
+      "return": 0.0781458094,
+      "observation_date": "1997-07-31"
+    },
+    {
+      "month": "1997-08",
+      "return": -0.0574656317,
+      "observation_date": "1997-08-29"
+    },
+    {
+      "month": "1997-09",
+      "return": 0.0531535906,
+      "observation_date": "1997-09-30"
+    },
+    {
+      "month": "1997-10",
+      "return": -0.0344776974,
+      "observation_date": "1997-10-31"
+    },
+    {
+      "month": "1997-11",
+      "return": 0.0445868552,
+      "observation_date": "1997-11-28"
+    },
+    {
+      "month": "1997-12",
+      "return": 0.0157315971,
+      "observation_date": "1997-12-31"
+    },
+    {
+      "month": "1998-01",
+      "return": 0.0101501774,
+      "observation_date": "1998-01-30"
+    },
+    {
+      "month": "1998-02",
+      "return": 0.0704491925,
+      "observation_date": "1998-02-27"
+    },
+    {
+      "month": "1998-03",
+      "return": 0.0499457143,
+      "observation_date": "1998-03-31"
+    },
+    {
+      "month": "1998-04",
+      "return": 0.0090764693,
+      "observation_date": "1998-04-30"
+    },
+    {
+      "month": "1998-05",
+      "return": -0.0188262233,
+      "observation_date": "1998-05-29"
+    },
+    {
+      "month": "1998-06",
+      "return": 0.0394382406,
+      "observation_date": "1998-06-30"
+    },
+    {
+      "month": "1998-07",
+      "return": -0.0116153269,
+      "observation_date": "1998-07-31"
+    },
+    {
+      "month": "1998-08",
+      "return": -0.1457967183,
+      "observation_date": "1998-08-31"
+    },
+    {
+      "month": "1998-09",
+      "return": 0.062395515,
+      "observation_date": "1998-09-30"
+    },
+    {
+      "month": "1998-10",
+      "return": 0.0802942286,
+      "observation_date": "1998-10-30"
+    },
+    {
+      "month": "1998-11",
+      "return": 0.0591259963,
+      "observation_date": "1998-11-30"
+    },
+    {
+      "month": "1998-12",
+      "return": 0.0563752871,
+      "observation_date": "1998-12-31"
+    },
+    {
+      "month": "1999-01",
+      "return": 0.0410094409,
+      "observation_date": "1999-01-29"
+    },
+    {
+      "month": "1999-02",
+      "return": -0.0322825624,
+      "observation_date": "1999-02-26"
+    },
+    {
+      "month": "1999-03",
+      "return": 0.0387942154,
+      "observation_date": "1999-03-31"
+    },
+    {
+      "month": "1999-04",
+      "return": 0.0379440276,
+      "observation_date": "1999-04-30"
+    },
+    {
+      "month": "1999-05",
+      "return": -0.0249704808,
+      "observation_date": "1999-05-28"
+    },
+    {
+      "month": "1999-06",
+      "return": 0.0544383311,
+      "observation_date": "1999-06-30"
+    },
+    {
+      "month": "1999-07",
+      "return": -0.0320460924,
+      "observation_date": "1999-07-30"
+    },
+    {
+      "month": "1999-08",
+      "return": -0.0062540917,
+      "observation_date": "1999-08-31"
+    },
+    {
+      "month": "1999-09",
+      "return": -0.0285517924,
+      "observation_date": "1999-09-30"
+    },
+    {
+      "month": "1999-10",
+      "return": 0.0625395415,
+      "observation_date": "1999-10-29"
+    },
+    {
+      "month": "1999-11",
+      "return": 0.019061859,
+      "observation_date": "1999-11-30"
+    },
+    {
+      "month": "1999-12",
+      "return": 0.0578438947,
+      "observation_date": "1999-12-31"
+    },
+    {
+      "month": "2000-01",
+      "return": -0.0509035488,
+      "observation_date": "2000-01-31"
+    },
     {
       "month": "2000-02",
       "return": -0.0201080833,
