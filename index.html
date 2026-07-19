@@ -6,6 +6,16 @@
   <meta name="description" content="한국 투자자를 위한 원화 기준 포트폴리오 백테스트·적립식 투자·몬테카를로 시뮬레이션 도구" />
   <meta name="theme-color" content="#07111f" />
   <title>백테스트K — 한국 투자자용 포트폴리오 시뮬레이터</title>
+  <link rel="canonical" href="https://backtest-k.vercel.app/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="백테스트K" />
+  <meta property="og:title" content="백테스트K — 한국 투자자용 포트폴리오 시뮬레이터" />
+  <meta property="og:description" content="원화·월 적립·리밸런싱·거래비용을 반영한 한국형 포트폴리오 백테스트와 몬테카를로 시뮬레이션" />
+  <meta property="og:url" content="https://backtest-k.vercel.app/" />
+  <meta property="og:image" content="https://backtest-k.vercel.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
@@ -111,7 +121,13 @@
               <h2 id="resultTitle">균형 성장 포트폴리오</h2>
               <p id="resultPeriod">2016.01 – 2025.12 · 연 1회 리밸런싱</p>
             </div>
-            <div class="result-status"><span></span>계산 완료</div>
+            <div class="toolbar-actions">
+              <button id="shareButton" class="secondary-btn compact" title="시뮬레이션 결과 공유 링크 만들기">
+                <svg viewBox="0 0 24 24"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="m16 6-4-4-4 4"/><path d="M12 2v13"/></svg>
+                공유하기
+              </button>
+              <div class="result-status"><span></span>계산 완료</div>
+            </div>
           </div>
 
           <div id="priceIndexNotice" class="notice-banner" role="note" hidden></div>

@@ -2163,6 +2163,84 @@
     }
   }
 
+  function encodeShareConfig(settings) {
+    const payload = {
+      v: 1,
+      n: settings.name,
+      a: settings.allocations.map((item) => [item.assetId, Math.round(item.weight * 1000) / 10]),
+      b: settings.benchmarkId,
+      s: settings.startDate,
+      e: settings.endDate,
+      i: settings.initialAmount,
+      m: settings.monthlyContribution,
+      t: settings.contributionTiming,
+      r: settings.rebalance,
+      c: settings.tradingCostBps,
+      f: Math.round(settings.inflationRate * 1000) / 10,
+      rf: Math.round(settings.riskFreeRate * 1000) / 10,
+    };
+    const bytes = new TextEncoder().encode(JSON.stringify(payload));
+    let binary = "";
+    bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
+    return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+  }
+
+  function decodeShareConfig(raw) {
+    try {
+      let base64 = String(raw).replaceAll("-", "+").replaceAll("_", "/");
+      while (base64.length % 4) base64 += "=";
+      const bytes = Uint8Array.from(atob(base64), (ch) => ch.charCodeAt(0));
+      const payload = JSON.parse(new TextDecoder().decode(bytes));
+      if (payload?.v !== 1 || !Array.isArray(payload.a) || !payload.a.length) return null;
+      return payload;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  async function shareBacktest() {
+    if (!state.lastBacktest) {
+      showToast("먼저 백테스트를 실행하세요.");
+      return;
+    }
+    const url = new URL("share.html", window.location.href);
+    url.searchParams.set("c", encodeShareConfig(state.lastBacktest.settings));
+    let copied = false;
+    try {
+      await navigator.clipboard.writeText(url.toString());
+      copied = true;
+    } catch (_) {
+      copied = false;
+    }
+    window.open(url.toString(), "_blank", "noopener");
+    showToast(copied ? "공유 링크를 복사하고 미리보기를 열었습니다." : "공유 페이지를 열었습니다. 주소를 복사해 공유하세요.");
+  }
+
+  function applySharedConfig() {
+    const raw = new URLSearchParams(window.location.search).get("c");
+    if (!raw) return false;
+    const config = decodeShareConfig(raw);
+    if (!config) return false;
+    const rows = config.a
+      .filter((pair) => Array.isArray(pair) && state.assets[pair[0]])
+      .map(([assetId, weight]) => ({ assetId, weight: Number(weight) || 0 }));
+    if (!rows.length) return false;
+    state.portfolio = rows;
+    state.portfolioName = config.n || "공유된 포트폴리오";
+    state.activePreset = null;
+    if (config.b && state.assets[config.b]) $("#benchmark").value = config.b;
+    if (config.s) $("#startDate").value = config.s;
+    if (config.e) $("#endDate").value = config.e;
+    if (config.i !== undefined) $("#initialAmount").value = formatCurrencyInputValue(String(config.i));
+    if (config.m !== undefined) $("#monthlyContribution").value = formatCurrencyInputValue(String(config.m));
+    if (config.t) $("#contributionTiming").value = config.t;
+    if (config.r) $("#rebalance").value = config.r;
+    if (config.c !== undefined) $("#tradingCost").value = config.c;
+    if (config.f !== undefined) $("#inflationRate").value = config.f;
+    if (config.rf !== undefined) $("#riskFreeRate").value = config.rf;
+    return true;
+  }
+
   function switchView(viewName) {
     $$(".app-view").forEach((view) => view.classList.toggle("active", view.id === `view-${viewName}`));
     $$(".nav-btn").forEach((button) => button.classList.toggle("active", button.dataset.view === viewName));
@@ -2247,6 +2325,7 @@
     $("#loadSample").addEventListener("click", () => applyPreset("balanced"));
     $("#saveSettings").addEventListener("click", saveSettings);
     $("#exportButton").addEventListener("click", exportBacktestCsv);
+    $("#shareButton")?.addEventListener("click", shareBacktest);
     $$(".analysis-tab").forEach((button) => button.addEventListener("click", () => switchResultTab(button.dataset.resultTab)));
     $("#runMonteCarlo").addEventListener("click", runMonteCarlo);
     $("#compareStart").addEventListener("change", renderComparison);
@@ -2305,7 +2384,8 @@
     state.portfolio = preset.rows.filter(([assetId]) => state.assets[assetId]).map(([assetId, weight]) => ({ assetId, weight }));
     $("#benchmark").value = state.assets[preset.benchmark] ? preset.benchmark : state.portfolio[0]?.assetId || state.assetOrder[0];
     renderBenchmarkOptions();
-    const restored = restoreSettings();
+    const shared = applySharedConfig();
+    const restored = shared ? false : restoreSettings();
     renderBenchmarkOptions();
     renderAllAssetDependentUi();
     renderPresetState();
@@ -2317,7 +2397,7 @@
         $("#benchmark").value,
         ...state.compareSelected,
       ]);
-      syncDateInputs(!restored);
+      syncDateInputs(!restored && !shared);
       renderAllAssetDependentUi();
       await runBacktest();
     } catch (error) {
@@ -2326,7 +2406,8 @@
     }
     const view = location.hash.slice(1);
     if (["backtest", "montecarlo", "compare", "data"].includes(view) && view !== "backtest") switchView(view);
-    if (restored) showToast("저장된 포트폴리오 설정을 불러왔습니다.");
+    if (shared) showToast("공유된 포트폴리오 조합을 불러왔습니다.");
+    else if (restored) showToast("저장된 포트폴리오 설정을 불러왔습니다.");
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
