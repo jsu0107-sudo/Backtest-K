@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="한국 투자자를 위한 원화 기준 포트폴리오 백테스트·적립식 투자·몬테카를로 시뮬레이션 도구" />
+  <meta name="theme-color" content="#07111f" />
+  <title>백테스트K — 한국 투자자용 포트폴리오 시뮬레이터</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#backtest" aria-label="백테스트K 홈">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" role="img"><path d="M6 23.5 12.2 17l4.4 4.2L26 10.8"/><path d="M20.5 10.8H26v5.5"/></svg>
+      </span>
+      <span class="brand-copy"><strong>백테스트<span>K</span></strong><small>PORTFOLIO ANALYTICS</small></span>
+      <span class="mvp-badge">MVP</span>
+    </a>
+
+    <nav class="main-nav" aria-label="주요 메뉴">
+      <button class="nav-btn active" data-view="backtest">백테스트</button>
+      <button class="nav-btn" data-view="montecarlo">몬테카를로</button>
+      <button class="nav-btn" data-view="compare">자산 비교</button>
+      <button class="nav-btn" data-view="data">데이터</button>
+    </nav>
+
+    <div class="top-actions">
+      <button id="themeToggle" class="icon-btn" aria-label="테마 전환" title="테마 전환">
+        <svg class="sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button id="exportButton" class="secondary-btn compact">결과 CSV</button>
+    </div>
+  </header>
+
+  <div class="data-banner" role="status">
+    <span class="status-dot"></span>
+    현재 내장 자산은 <strong>합성 데모 수익률</strong>입니다. 실제 분석은 데이터 메뉴에서 월별 수정주가 CSV를 업로드하세요.
+    <button class="text-btn" data-view-link="data">데이터 안내</button>
+  </div>
+
+  <main class="app-shell">
+    <section id="view-backtest" class="app-view active" aria-labelledby="backtest-title">
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">HISTORICAL BACKTEST</p>
+          <h1 id="backtest-title">내 포트폴리오, 한국 투자자의 조건으로 검증</h1>
+          <p>원화 금액·월 적립·리밸런싱·거래비용을 반영해 수익과 위험을 함께 봅니다.</p>
+        </div>
+        <div class="heading-actions">
+          <button id="loadSample" class="secondary-btn">샘플 불러오기</button>
+          <button id="saveSettings" class="secondary-btn">설정 저장</button>
+        </div>
+      </div>
+
+      <div class="workspace-grid">
+        <aside class="control-panel card" aria-label="백테스트 설정">
+          <div class="panel-heading">
+            <div><span class="step-index">01</span><h2>포트폴리오 구성</h2></div>
+            <span id="allocationState" class="allocation-state valid">100%</span>
+          </div>
+
+          <div class="preset-row" role="group" aria-label="포트폴리오 프리셋">
+            <button class="preset-chip" data-preset="balanced">균형형</button>
+            <button class="preset-chip" data-preset="growth">성장형</button>
+            <button class="preset-chip" data-preset="allweather">올웨더</button>
+            <button class="preset-chip" data-preset="korea6040">한국 60/40</button>
+          </div>
+
+          <div id="assetRows" class="asset-rows"></div>
+          <button id="addAsset" class="add-row-btn">+ 자산 추가</button>
+
+          <div class="allocation-meter" aria-hidden="true"><span id="allocationMeter"></span></div>
+          <div class="allocation-summary"><span>총 비중</span><strong id="allocationTotal">100.0%</strong></div>
+
+          <div class="section-divider"></div>
+
+          <div class="panel-heading compact-heading">
+            <div><span class="step-index">02</span><h2>투자 조건</h2></div>
+          </div>
+
+          <div class="form-grid two-col">
+            <label class="field"><span>시작월</span><input id="startDate" type="month" min="2015-01" max="2025-12" value="2016-01" /></label>
+            <label class="field"><span>종료월</span><input id="endDate" type="month" min="2015-01" max="2025-12" value="2025-12" /></label>
+          </div>
+          <label class="field"><span>초기 투자금</span><div class="input-affix"><input id="initialAmount" type="number" min="0" step="1000000" value="50000000" /><span>원</span></div></label>
+          <label class="field"><span>월 적립금</span><div class="input-affix"><input id="monthlyContribution" type="number" min="0" step="100000" value="1000000" /><span>원</span></div></label>
+
+          <div class="form-grid two-col">
+            <label class="field"><span>적립 시점</span><select id="contributionTiming"><option value="start">월초</option><option value="end">월말</option></select></label>
+            <label class="field"><span>리밸런싱</span><select id="rebalance"><option value="none">안 함</option><option value="monthly">매월</option><option value="quarterly">분기</option><option value="semiannual">반기</option><option value="annual" selected>연 1회</option></select></label>
+          </div>
+
+          <div class="form-grid two-col">
+            <label class="field"><span>거래비용</span><div class="input-affix"><input id="tradingCost" type="number" min="0" max="100" step="0.1" value="1.5" /><span>bp</span></div></label>
+            <label class="field"><span>물가상승률</span><div class="input-affix"><input id="inflationRate" type="number" min="-5" max="20" step="0.1" value="2.0" /><span>%</span></div></label>
+          </div>
+
+          <div class="form-grid two-col">
+            <label class="field"><span>무위험수익률</span><div class="input-affix"><input id="riskFreeRate" type="number" min="0" max="20" step="0.1" value="3.0" /><span>%</span></div></label>
+            <label class="field"><span>벤치마크</span><select id="benchmark"></select></label>
+          </div>
+
+          <div id="formError" class="form-error" role="alert"></div>
+          <button id="runBacktest" class="primary-btn full-width">
+            <span>백테스트 실행</span>
+            <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+          <p class="control-footnote">수익률은 월 단위로 계산됩니다. 과거 성과는 미래 성과를 보장하지 않습니다.</p>
+        </aside>
+
+        <section class="results-area" aria-live="polite">
+          <div class="results-toolbar card">
+            <div>
+              <p class="eyebrow">ANALYSIS RESULT</p>
+              <h2 id="resultTitle">균형 성장 포트폴리오</h2>
+              <p id="resultPeriod">2016.01 – 2025.12 · 연 1회 리밸런싱</p>
+            </div>
+            <div class="result-status"><span></span>계산 완료</div>
+          </div>
+
+          <div id="metricCards" class="metric-grid"></div>
+
+          <div class="card chart-card hero-chart-card">
+            <div class="card-header">
+              <div><p class="eyebrow">GROWTH OF ₩1</p><h3>자산 성장</h3></div>
+              <div class="chart-legend" id="growthLegend"></div>
+            </div>
+            <div class="chart-wrap large"><canvas id="growthChart"></canvas><div id="growthTooltip" class="chart-tooltip"></div></div>
+          </div>
+
+          <div class="analysis-tabs card" role="tablist" aria-label="분석 결과 탭">
+            <button class="analysis-tab active" data-result-tab="risk">위험 분석</button>
+            <button class="analysis-tab" data-result-tab="returns">연도별 수익</button>
+            <button class="analysis-tab" data-result-tab="diversification">분산 효과</button>
+            <button class="analysis-tab" data-result-tab="insights">해석</button>
+          </div>
+
+          <div id="result-risk" class="result-tab-panel active">
+            <div class="two-card-grid">
+              <div class="card chart-card">
+                <div class="card-header"><div><p class="eyebrow">DRAWDOWN</p><h3>고점 대비 하락폭</h3></div><span id="drawdownSummary" class="small-stat"></span></div>
+                <div class="chart-wrap medium"><canvas id="drawdownChart"></canvas><div id="drawdownTooltip" class="chart-tooltip"></div></div>
+              </div>
+              <div class="card risk-summary-card">
+                <div class="card-header"><div><p class="eyebrow">RISK SNAPSHOT</p><h3>위험 요약</h3></div></div>
+                <div id="riskSnapshot" class="risk-list"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="result-returns" class="result-tab-panel">
+            <div class="card table-card">
+              <div class="card-header"><div><p class="eyebrow">CALENDAR RETURNS</p><h3>연도별 수익률</h3></div><span class="small-note">TWRR 기준</span></div>
+              <div class="table-scroll"><table><thead><tr><th>연도</th><th>포트폴리오</th><th>벤치마크</th><th>초과수익</th><th>평가</th></tr></thead><tbody id="annualReturnsBody"></tbody></table></div>
+            </div>
+          </div>
+
+          <div id="result-diversification" class="result-tab-panel">
+            <div class="two-card-grid">
+              <div class="card allocation-card">
+                <div class="card-header"><div><p class="eyebrow">ALLOCATION</p><h3>목표 비중</h3></div></div>
+                <div class="allocation-visual"><div id="allocationDonut" class="donut"><div><strong>100%</strong><span>투자</span></div></div><div id="allocationLegend" class="allocation-legend"></div></div>
+              </div>
+              <div class="card">
+                <div class="card-header"><div><p class="eyebrow">RISK CONTRIBUTION</p><h3>위험 기여도</h3></div></div>
+                <div id="riskContribution" class="bar-list"></div>
+              </div>
+            </div>
+            <div class="card table-card correlation-card">
+              <div class="card-header"><div><p class="eyebrow">CORRELATION</p><h3>자산 상관관계</h3></div><span class="small-note">1에 가까울수록 함께 움직임</span></div>
+              <div id="correlationMatrix" class="correlation-wrap"></div>
+            </div>
+          </div>
+
+          <div id="result-insights" class="result-tab-panel">
+            <div id="insightCards" class="insight-grid"></div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section id="view-montecarlo" class="app-view" aria-labelledby="montecarlo-title">
+      <div class="page-heading">
+        <div><p class="eyebrow">FORWARD SIMULATION</p><h1 id="montecarlo-title">미래 자산 범위를 확률로 보기</h1><p>현재 포트폴리오의 월 수익률을 재표본추출해 목표 달성 가능성과 하방 위험을 계산합니다.</p></div>
+      </div>
+      <div class="workspace-grid monte-grid">
+        <aside class="control-panel card">
+          <div class="panel-heading"><div><span class="step-index">01</span><h2>시뮬레이션 조건</h2></div></div>
+          <label class="field"><span>시작 자산</span><div class="input-affix"><input id="mcInitial" type="number" min="0" step="1000000" value="100000000"/><span>원</span></div></label>
+          <label class="field"><span>월 적립금</span><div class="input-affix"><input id="mcContribution" type="number" min="0" step="100000" value="1000000"/><span>원</span></div></label>
+          <label class="field"><span>월 인출금</span><div class="input-affix"><input id="mcWithdrawal" type="number" min="0" step="100000" value="0"/><span>원</span></div></label>
+          <label class="field"><span>목표 자산</span><div class="input-affix"><input id="mcGoal" type="number" min="0" step="10000000" value="500000000"/><span>원</span></div></label>
+          <div class="form-grid two-col">
+            <label class="field"><span>기간</span><select id="mcYears"><option value="10">10년</option><option value="20" selected>20년</option><option value="30">30년</option><option value="40">40년</option></select></label>
+            <label class="field"><span>경로 수</span><select id="mcSimulations"><option value="300">300회</option><option value="500" selected>500회</option><option value="1000">1,000회</option></select></label>
+          </div>
+          <label class="field"><span>모형</span><select id="mcMethod"><option value="bootstrap">과거 월 수익률 재표본추출</option><option value="normal">정규분포 근사</option></select></label>
+          <button id="runMonteCarlo" class="primary-btn full-width"><span>시뮬레이션 실행</span><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+          <p class="control-footnote">확률은 입력한 과거 자료와 모형에 의존합니다. 예측치가 아니라 조건부 시나리오입니다.</p>
+        </aside>
+        <section class="results-area">
+          <div id="mcMetricCards" class="metric-grid four"></div>
+          <div class="card chart-card hero-chart-card">
+            <div class="card-header"><div><p class="eyebrow">PERCENTILE FAN</p><h3>예상 자산 범위</h3></div><div class="chart-legend" id="mcLegend"></div></div>
+            <div class="chart-wrap xlarge"><canvas id="mcChart"></canvas><div id="mcTooltip" class="chart-tooltip"></div></div>
+          </div>
+          <div class="two-card-grid">
+            <div class="card"><div class="card-header"><div><p class="eyebrow">INTERPRETATION</p><h3>결과 해석</h3></div></div><div id="mcInsights" class="risk-list"></div></div>
+            <div class="card"><div class="card-header"><div><p class="eyebrow">ASSUMPTIONS</p><h3>모형 전제</h3></div></div><ul class="assumption-list"><li>백테스트에서 계산한 월 수익률 분포를 사용</li><li>세금·추가 보수·시장 충격의 구조 변화는 별도 미반영</li><li>인출 후 자산이 0원 이하면 파산 경로로 집계</li><li>결과는 투자 권유가 아닌 위험 이해용 시뮬레이션</li></ul></div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section id="view-compare" class="app-view" aria-labelledby="compare-title">
+      <div class="page-heading">
+        <div><p class="eyebrow">ASSET COMPARISON</p><h1 id="compare-title">수익만이 아니라 위험 대비 효율로 비교</h1><p>같은 기간의 연환산 수익률·변동성·최대 낙폭·샤프지수를 나란히 봅니다.</p></div>
+        <div class="heading-actions"><label class="inline-field">비교 시작월 <input id="compareStart" type="month" min="2015-01" max="2025-12" value="2016-01" /></label></div>
+      </div>
+      <div class="card selection-card">
+        <div class="card-header"><div><p class="eyebrow">SELECT ASSETS</p><h3>비교 자산 선택</h3></div><span id="compareCount" class="small-stat">4개 선택</span></div>
+        <div id="compareAssetSelector" class="asset-selector-grid"></div>
+      </div>
+      <div id="comparisonCards" class="comparison-card-grid"></div>
+      <div class="card table-card">
+        <div class="card-header"><div><p class="eyebrow">METRIC TABLE</p><h3>핵심 지표 비교</h3></div></div>
+        <div class="table-scroll"><table><thead><tr><th>자산</th><th>연환산 수익률</th><th>변동성</th><th>최대 낙폭</th><th>샤프</th><th>최악의 해</th></tr></thead><tbody id="comparisonTableBody"></tbody></table></div>
+      </div>
+      <div class="card table-card correlation-card">
+        <div class="card-header"><div><p class="eyebrow">CORRELATION</p><h3>비교 자산 상관관계</h3></div></div>
+        <div id="compareCorrelationMatrix" class="correlation-wrap"></div>
+      </div>
+    </section>
+
+    <section id="view-data" class="app-view" aria-labelledby="data-title">
+      <div class="page-heading">
+        <div><p class="eyebrow">DATA WORKSPACE</p><h1 id="data-title">실제 월별 수정주가 데이터를 연결</h1><p>CSV를 브라우저에서만 처리합니다. 업로드한 파일은 서버로 전송되지 않습니다.</p></div>
+      </div>
+      <div class="data-grid">
+        <div class="card upload-card">
+          <div class="card-header"><div><p class="eyebrow">CSV IMPORT</p><h3>가격·수익률 데이터 업로드</h3></div></div>
+          <label id="dropZone" class="drop-zone" for="csvFile">
+            <input id="csvFile" type="file" accept=".csv,text/csv" hidden />
+            <span class="upload-icon"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 14v5h14v-5"/></svg></span>
+            <strong>CSV 파일을 선택하거나 끌어놓으세요</strong>
+            <span>date, ticker, adjusted_close 또는 return 열 지원</span>
+          </label>
+          <div id="uploadStatus" class="upload-status"></div>
+          <div class="upload-actions"><button id="downloadSampleCsv" class="secondary-btn">샘플 CSV 받기</button><button id="clearCustomData" class="secondary-btn danger-text">사용자 데이터 삭제</button></div>
+        </div>
+        <div class="card schema-card">
+          <div class="card-header"><div><p class="eyebrow">SCHEMA</p><h3>지원 형식</h3></div></div>
+          <div class="code-block"><code>date,ticker,name,adjusted_close
+2023-01-31,069500,KODEX 200,31542.18
+2023-02-28,069500,KODEX 200,32211.05</code></div>
+          <p>또는 월 수익률을 소수로 입력할 수 있습니다.</p>
+          <div class="code-block"><code>date,ticker,name,return
+2023-01,MYETF,나의 ETF,0.031
+2023-02,MYETF,나의 ETF,-0.018</code></div>
+          <ul class="schema-notes"><li>일별 가격을 올리면 월말 값으로 자동 변환</li><li>수정주가 사용 권장: 분배금·분할 반영 여부 확인</li><li>여러 종목을 한 파일에 함께 업로드 가능</li></ul>
+        </div>
+      </div>
+      <div class="card table-card">
+        <div class="card-header"><div><p class="eyebrow">AVAILABLE DATA</p><h3>사용 가능한 자산</h3></div><span id="assetDataCount" class="small-stat"></span></div>
+        <div class="table-scroll"><table><thead><tr><th>코드</th><th>자산명</th><th>분류</th><th>기간</th><th>관측치</th><th>출처 상태</th></tr></thead><tbody id="assetDataTableBody"></tbody></table></div>
+      </div>
+      <div class="card production-card">
+        <div class="card-header"><div><p class="eyebrow">PRODUCTION DATA PIPELINE</p><h3>상용화 시 권장 구조</h3></div></div>
+        <div class="pipeline">
+          <div><span>1</span><strong>KRX·공공 API</strong><small>일별 시세·지수·ETF 거래자료 수집</small></div><i></i>
+          <div><span>2</span><strong>정규화 ETL</strong><small>휴장일·분할·분배금·상장폐지 처리</small></div><i></i>
+          <div><span>3</span><strong>시계열 저장소</strong><small>수정주가·총수익지수·메타데이터 버전관리</small></div><i></i>
+          <div><span>4</span><strong>계산 API</strong><small>백테스트·최적화·시뮬레이션 서버 실행</small></div>
+        </div>
+        <p class="production-note">공개 서비스 전에는 데이터 재배포 권한, 지수 라이선스, 총수익 데이터 산식, 세금 로직을 별도로 검증해야 합니다.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div><strong>백테스트K</strong><span>한국 투자자용 포트폴리오 분석 MVP</span></div>
+    <p>교육·연구용 도구입니다. 투자 권유 또는 개인화된 투자자문을 제공하지 않습니다.</p>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
