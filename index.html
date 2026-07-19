@@ -34,9 +34,9 @@
     </div>
   </header>
 
-  <div class="data-banner" role="status">
+  <div id="dataBanner" class="data-banner" role="status">
     <span class="status-dot"></span>
-    현재 내장 자산은 <strong>합성 데모 수익률</strong>입니다. 실제 분석은 데이터 메뉴에서 월별 수정주가 CSV를 업로드하세요.
+    <span id="dataBannerText">실데이터 카탈로그를 불러오는 중입니다.</span>
     <button class="text-btn" data-view-link="data">데이터 안내</button>
   </div>
 
@@ -99,7 +99,7 @@
 
           <div class="form-grid two-col">
             <label class="field"><span>무위험수익률</span><div class="input-affix"><input id="riskFreeRate" type="number" min="0" max="20" step="0.1" value="3.0" /><span>%</span></div></label>
-            <label class="field"><span>벤치마크</span><select id="benchmark"></select></label>
+            <label class="field"><span>벤치마크</span><input id="benchmark" type="hidden" /><div id="benchmarkSearch" class="benchmark-search"></div></label>
           </div>
 
           <div id="formError" class="form-error" role="alert"></div>
@@ -221,6 +221,7 @@
       </div>
       <div class="card selection-card">
         <div class="card-header"><div><p class="eyebrow">SELECT ASSETS</p><h3>비교 자산 선택</h3></div><span id="compareCount" class="small-stat">4개 선택</span></div>
+        <label class="compare-search"><span class="sr-only">비교 자산 검색</span><input id="compareAssetSearch" type="search" placeholder="티커 또는 ETF명 검색" autocomplete="off" /></label>
         <div id="compareAssetSelector" class="asset-selector-grid"></div>
       </div>
       <div id="comparisonCards" class="comparison-card-grid"></div>
@@ -236,8 +237,9 @@
 
     <section id="view-data" class="app-view" aria-labelledby="data-title">
       <div class="page-heading">
-        <div><p class="eyebrow">DATA WORKSPACE</p><h1 id="data-title">실제 월별 수정주가 데이터를 연결</h1><p>CSV를 브라우저에서만 처리합니다. 업로드한 파일은 서버로 전송되지 않습니다.</p></div>
+        <div><p class="eyebrow">DATA WORKSPACE</p><h1 id="data-title">매일 갱신되는 월 수익률 데이터</h1><p>정적 JSON은 CDN에서, 추가 CSV는 현재 브라우저에서만 처리합니다.</p></div>
       </div>
+      <div id="marketDataStatus" class="card market-data-status" role="status" aria-live="polite"></div>
       <div class="data-grid">
         <div class="card upload-card">
           <div class="card-header"><div><p class="eyebrow">CSV IMPORT</p><h3>가격·수익률 데이터 업로드</h3></div></div>
@@ -267,14 +269,14 @@
         <div class="table-scroll"><table><thead><tr><th>코드</th><th>자산명</th><th>분류</th><th>기간</th><th>관측치</th><th>출처 상태</th></tr></thead><tbody id="assetDataTableBody"></tbody></table></div>
       </div>
       <div class="card production-card">
-        <div class="card-header"><div><p class="eyebrow">PRODUCTION DATA PIPELINE</p><h3>상용화 시 권장 구조</h3></div></div>
+        <div class="card-header"><div><p class="eyebrow">STATIC DATA PIPELINE</p><h3>현재 자동 갱신 구조</h3></div></div>
         <div class="pipeline">
-          <div><span>1</span><strong>KRX·공공 API</strong><small>일별 시세·지수·ETF 거래자료 수집</small></div><i></i>
-          <div><span>2</span><strong>정규화 ETL</strong><small>휴장일·분할·분배금·상장폐지 처리</small></div><i></i>
-          <div><span>3</span><strong>시계열 저장소</strong><small>수정주가·총수익지수·메타데이터 버전관리</small></div><i></i>
-          <div><span>4</span><strong>계산 API</strong><small>백테스트·최적화·시뮬레이션 서버 실행</small></div>
+          <div><span>1</span><strong>Python 수집</strong><small>ETF 순위·수정종가·설정일 정규화</small></div><i></i>
+          <div><span>2</span><strong>GitHub Actions</strong><small>평일 1회 생성·스키마 검증</small></div><i></i>
+          <div><span>3</span><strong>정적 JSON</strong><small>종목별 월 수익률과 출처 메타데이터</small></div><i></i>
+          <div><span>4</span><strong>Vercel CDN</strong><small>서버·DB 없이 브라우저에서 필요 시 로드</small></div>
         </div>
-        <p class="production-note">공개 서비스 전에는 데이터 재배포 권한, 지수 라이선스, 총수익 데이터 산식, 세금 로직을 별도로 검증해야 합니다.</p>
+        <p class="production-note">현재 수정주가 경로는 프로토타입이며 공급자 조정계수에 의존합니다. 상업화 전에는 공공 API 키 기반 수집, 분배금 원장 대사, 데이터 재배포 권한과 지수 라이선스를 별도로 검증해야 합니다.</p>
       </div>
     </section>
   </main>

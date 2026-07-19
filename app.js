@@ -3,6 +3,7 @@
 
   const COLORS = ["#45e3b5", "#5ea9ff", "#ffb45e", "#a58bff", "#ff7f8c", "#ffd166", "#44c7dd", "#8bd17c", "#f28e6b", "#85a0ff"];
   const BUILTIN_DATES = makeMonthRange("2015-01", "2025-12");
+  const DATA_CATALOG_URL = "data/assets.json";
   const state = {
     assets: {},
     assetOrder: [],
@@ -11,7 +12,13 @@
     portfolioName: "균형 성장 포트폴리오",
     lastBacktest: null,
     monteCarlo: null,
-    compareSelected: new Set(["US_EQ", "KR_EQ", "KR_BOND10", "GOLD_KRW"]),
+    compareSelected: new Set(["360750", "069500", "114260", "411060"]),
+    compareFilter: "",
+    dataCatalog: null,
+    marketDataReady: false,
+    marketDataError: null,
+    assetLoads: new Map(),
+    backtestLoading: false,
     toastTimer: null,
     chartConfigs: new Map(),
   };
@@ -174,6 +181,96 @@
     });
   }
 
+  function registerMarketCatalog(catalog) {
+    if (!catalog || !Array.isArray(catalog.assets) || !catalog.assets.length) throw new Error("데이터 카탈로그 형식이 올바르지 않습니다.");
+    state.assets = {};
+    state.assetOrder = [];
+    catalog.assets.forEach((item, index) => {
+      const id = String(item.id || "").trim();
+      if (!id || !item.file || !item.ticker || !item.name) return;
+      state.assets[id] = {
+        id,
+        code: String(item.ticker),
+        name: String(item.name),
+        category: String(item.category || "기타"),
+        color: COLORS[index % COLORS.length],
+        description: String(item.description || ""),
+        source: "market",
+        sourceLabel: String(item.source_label || "정적 실데이터"),
+        file: String(item.file),
+        returnMap: null,
+        listingDate: item.listing_date || null,
+        dataAsOf: item.data_as_of || catalog.data_as_of || null,
+        firstMonth: item.first_month || null,
+        lastMonth: item.last_month || null,
+        observationCount: Number(item.monthly_return_count) || 0,
+        distributionIncluded: item.distribution_included === true,
+        distributionMethod: item.distribution_method || "unknown",
+        providerStatus: item.provider_status || catalog.provider_status || "unknown",
+        universeRank: Number(item.universe_rank) || null,
+      };
+      state.assetOrder.push(id);
+    });
+    if (!state.assetOrder.length) throw new Error("사용 가능한 실데이터 자산이 없습니다.");
+    state.dataCatalog = catalog;
+    state.marketDataReady = true;
+    state.marketDataError = null;
+    state.compareSelected = new Set(["360750", "069500", "114260", "411060"].filter((id) => state.assets[id]));
+    state.assetOrder.forEach((id) => {
+      if (state.compareSelected.size < 2) state.compareSelected.add(id);
+    });
+  }
+
+  async function loadMarketCatalog() {
+    const response = await fetch(DATA_CATALOG_URL, { cache: "no-cache" });
+    if (!response.ok) throw new Error(`실데이터 카탈로그를 불러오지 못했습니다. (${response.status})`);
+    registerMarketCatalog(await response.json());
+  }
+
+  function validateMonthlyReturns(payload) {
+    if (!payload || !Array.isArray(payload.monthly_returns)) throw new Error("월 수익률 배열이 없습니다.");
+    const returns = new Map();
+    payload.monthly_returns.forEach((row) => {
+      const month = normalizeMonth(row.month);
+      const value = Number(row.return);
+      if (!month || !Number.isFinite(value) || value <= -1) return;
+      returns.set(month, value);
+    });
+    if (returns.size < 2) throw new Error("유효한 월 수익률이 2개월 미만입니다.");
+    return new Map([...returns.entries()].sort((a, b) => a[0].localeCompare(b[0])));
+  }
+
+  async function ensureAssetLoaded(id) {
+    const asset = state.assets[id];
+    if (!asset) throw new Error(`알 수 없는 자산입니다: ${id}`);
+    if (asset.returnMap instanceof Map) return asset;
+    if (state.assetLoads.has(id)) return state.assetLoads.get(id);
+    if (!asset.file) throw new Error(`${asset.name}의 데이터 파일 경로가 없습니다.`);
+    const task = (async () => {
+      const response = await fetch(asset.file, { cache: "no-cache" });
+      if (!response.ok) throw new Error(`${asset.name} 데이터를 불러오지 못했습니다. (${response.status})`);
+      const payload = await response.json();
+      if (String(payload.id) !== id) throw new Error(`${asset.name} 데이터 식별자가 일치하지 않습니다.`);
+      asset.returnMap = validateMonthlyReturns(payload);
+      asset.listingDate = payload.listing_date || asset.listingDate;
+      asset.dataAsOf = payload.data_as_of || asset.dataAsOf;
+      asset.firstMonth = payload.first_month || [...asset.returnMap.keys()][0];
+      asset.lastMonth = payload.last_month || [...asset.returnMap.keys()].at(-1);
+      asset.observationCount = asset.returnMap.size;
+      asset.distributionIncluded = payload.distribution?.included === true;
+      asset.distributionMethod = payload.distribution?.method || asset.distributionMethod;
+      asset.sources = payload.sources || [];
+      asset.dataQuality = payload.data_quality || null;
+      return asset;
+    })().finally(() => state.assetLoads.delete(id));
+    state.assetLoads.set(id, task);
+    return task;
+  }
+
+  async function ensureAssetsLoaded(ids) {
+    await Promise.all([...new Set(ids.filter(Boolean))].map(ensureAssetLoaded));
+  }
+
   function restoreCustomAssets() {
     try {
       const raw = storage.getItem("backtestK.customAssets");
@@ -215,11 +312,91 @@
     }
   }
 
-  function assetOptions(selectedId) {
-    return state.assetOrder.map((id) => {
+  function assetDisplayName(asset) {
+    return asset ? `${asset.code} · ${asset.name}` : "";
+  }
+
+  function searchAssets(query, selectedId, limit = 9) {
+    const needle = String(query || "").trim().toLocaleLowerCase("ko-KR");
+    const scored = state.assetOrder.map((id, order) => {
       const asset = state.assets[id];
-      return `<option value="${escapeHtml(id)}" ${id === selectedId ? "selected" : ""}>${escapeHtml(asset.name)} · ${escapeHtml(asset.code)}</option>`;
-    }).join("");
+      const code = asset.code.toLocaleLowerCase("ko-KR");
+      const name = asset.name.toLocaleLowerCase("ko-KR");
+      const category = asset.category.toLocaleLowerCase("ko-KR");
+      let score = 0;
+      if (!needle) score = id === selectedId ? 1000 : Math.max(0, 500 - (asset.universeRank || order + 300));
+      else if (code === needle) score = 2000;
+      else if (code.startsWith(needle)) score = 1500;
+      else if (name.startsWith(needle)) score = 1200;
+      else if (code.includes(needle)) score = 1000;
+      else if (name.includes(needle)) score = 800;
+      else if (category.includes(needle)) score = 500;
+      return { id, asset, score, order };
+    }).filter((row) => row.score > 0);
+    return scored.sort((a, b) => b.score - a.score || a.order - b.order).slice(0, limit);
+  }
+
+  function assetSuggestionHtml(matches) {
+    if (!matches.length) return `<li class="asset-suggestion-empty">일치하는 티커나 자산명이 없습니다.</li>`;
+    return matches.map(({ id, asset }, index) => `<li role="option" aria-selected="false">
+      <button type="button" class="asset-suggestion ${index === 0 ? "active" : ""}" data-asset-id="${escapeHtml(id)}">
+        <span class="asset-suggestion-code">${escapeHtml(asset.code)}</span>
+        <span class="asset-suggestion-copy"><strong>${escapeHtml(asset.name)}</strong><small>${escapeHtml(asset.category)} · ${escapeHtml(asset.firstMonth || "기간 미확인")}–${escapeHtml(asset.lastMonth || "")}</small></span>
+        <span class="asset-suggestion-badge ${asset.distributionIncluded ? "" : "price"}">${asset.distributionIncluded ? "TR" : "가격"}</span>
+      </button>
+    </li>`).join("");
+  }
+
+  function bindAssetSearch(root, selectedId, onSelect) {
+    const input = $(".asset-search-input", root);
+    const list = $(".asset-suggestions", root);
+    let matches = [];
+    let activeIndex = 0;
+    const paint = () => {
+      $$(".asset-suggestion", list).forEach((button, index) => button.classList.toggle("active", index === activeIndex));
+    };
+    const open = () => {
+      matches = searchAssets(input.value === assetDisplayName(state.assets[selectedId]) ? "" : input.value, selectedId);
+      activeIndex = 0;
+      list.innerHTML = assetSuggestionHtml(matches);
+      list.hidden = false;
+      input.setAttribute("aria-expanded", "true");
+      $$(".asset-suggestion", list).forEach((button, index) => {
+        button.addEventListener("mousedown", (event) => event.preventDefault());
+        button.addEventListener("click", async () => choose(matches[index]?.id));
+      });
+    };
+    const close = () => {
+      list.hidden = true;
+      input.setAttribute("aria-expanded", "false");
+    };
+    const choose = async (id) => {
+      if (!id || !state.assets[id]) return;
+      close();
+      input.disabled = true;
+      input.value = `${state.assets[id].code} · 불러오는 중…`;
+      try {
+        await ensureAssetLoaded(id);
+        await onSelect(id);
+      } catch (error) {
+        input.value = assetDisplayName(state.assets[selectedId]);
+        showToast(error.message);
+      } finally {
+        input.disabled = false;
+      }
+    };
+    input.addEventListener("focus", open);
+    input.addEventListener("input", open);
+    input.addEventListener("blur", () => setTimeout(() => {
+      input.value = assetDisplayName(state.assets[selectedId]);
+      close();
+    }, 100));
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowDown") { event.preventDefault(); if (list.hidden) open(); else { activeIndex = Math.min(activeIndex + 1, matches.length - 1); paint(); } }
+      if (event.key === "ArrowUp") { event.preventDefault(); activeIndex = Math.max(activeIndex - 1, 0); paint(); }
+      if (event.key === "Enter" && !list.hidden && matches[activeIndex]) { event.preventDefault(); choose(matches[activeIndex].id); }
+      if (event.key === "Escape") { close(); input.value = assetDisplayName(state.assets[selectedId]); }
+    });
   }
 
   function renderAssetRows() {
@@ -229,7 +406,10 @@
       return `<div class="asset-row" data-index="${index}">
         <div class="asset-select-wrap">
           <span class="asset-dot" style="background:${asset.color}"></span>
-          <select class="asset-select" aria-label="자산 ${index + 1}">${assetOptions(asset.id)}</select>
+          <div class="asset-combobox">
+            <input class="asset-search-input" type="search" value="${escapeHtml(assetDisplayName(asset))}" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-label="자산 ${index + 1} 검색" autocomplete="off" />
+            <ul class="asset-suggestions" role="listbox" hidden></ul>
+          </div>
         </div>
         <div class="input-affix"><input class="weight-input" type="number" min="0" max="100" step="0.5" value="${row.weight}" aria-label="${escapeHtml(asset.name)} 비중"/><span>%</span></div>
         <button class="remove-asset" type="button" aria-label="자산 삭제">×</button>
@@ -238,12 +418,13 @@
 
     $$(".asset-row", container).forEach((rowElement) => {
       const index = Number(rowElement.dataset.index);
-      $(".asset-select", rowElement).addEventListener("change", (event) => {
-        state.portfolio[index].assetId = event.target.value;
+      bindAssetSearch($(".asset-combobox", rowElement), state.portfolio[index].assetId, async (id) => {
+        state.portfolio[index].assetId = id;
         state.activePreset = null;
         renderAssetRows();
         renderPresetState();
         renderBenchmarkOptions();
+        syncDateInputs();
         updateAllocationState();
       });
       $(".weight-input", rowElement).addEventListener("input", (event) => {
@@ -268,10 +449,51 @@
   }
 
   function renderBenchmarkOptions() {
-    const select = $("#benchmark");
-    const current = select.value || "KR_EQ";
-    select.innerHTML = state.assetOrder.map((id) => `<option value="${escapeHtml(id)}">${escapeHtml(state.assets[id].name)}</option>`).join("");
-    select.value = state.assets[current] ? current : "KR_EQ";
+    const hidden = $("#benchmark");
+    const fallback = state.marketDataReady && state.assets.INDEX_KOSPI ? "INDEX_KOSPI" : state.assetOrder[0];
+    const current = state.assets[hidden.value] ? hidden.value : fallback;
+    hidden.value = current;
+    const root = $("#benchmarkSearch");
+    const asset = state.assets[current];
+    root.innerHTML = `<div class="asset-combobox"><input class="asset-search-input" type="search" value="${escapeHtml(assetDisplayName(asset))}" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-label="벤치마크 검색" autocomplete="off" /><ul class="asset-suggestions" role="listbox" hidden></ul></div>`;
+    bindAssetSearch($(".asset-combobox", root), current, async (id) => {
+      hidden.value = id;
+      renderBenchmarkOptions();
+      syncDateInputs();
+    });
+  }
+
+  function shiftMonth(month, offset) {
+    const [year, monthNumber] = month.split("-").map(Number);
+    const date = new Date(Date.UTC(year, monthNumber - 1 + offset, 1));
+    return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
+  }
+
+  function syncDateInputs(resetToAvailable = false) {
+    const benchmarkId = $("#benchmark")?.value;
+    const ids = [...state.portfolio.map((row) => row.assetId), benchmarkId].filter(Boolean);
+    if (!ids.length || ids.some((id) => !(state.assets[id]?.returnMap instanceof Map))) return;
+    const dates = commonDatesFor(ids, "0000-01", "9999-12");
+    if (!dates.length) return;
+    const min = dates[0];
+    const max = dates.at(-1);
+    const startInput = $("#startDate");
+    const endInput = $("#endDate");
+    startInput.min = min;
+    startInput.max = max;
+    endInput.min = min;
+    endInput.max = max;
+    if (resetToAvailable || !endInput.value || endInput.value > max || endInput.value < min) endInput.value = max;
+    const defaultStart = shiftMonth(endInput.value || max, -119);
+    if (resetToAvailable || !startInput.value || startInput.value < min || startInput.value >= endInput.value) startInput.value = defaultStart < min ? min : defaultStart;
+    const compareInput = $("#compareStart");
+    if (compareInput) {
+      const allFirstMonths = [...state.compareSelected].map((id) => state.assets[id]?.firstMonth).filter(Boolean).sort();
+      const compareMin = allFirstMonths.at(-1) || min;
+      compareInput.min = compareMin;
+      compareInput.max = max;
+      if (!compareInput.value || compareInput.value < compareMin || compareInput.value > max) compareInput.value = compareMin;
+    }
   }
 
   function updateAllocationState() {
@@ -284,45 +506,67 @@
     const meter = $("#allocationMeter");
     meter.style.width = `${clamp(total, 0, 100)}%`;
     meter.style.background = total > 100 ? "var(--red)" : "linear-gradient(90deg, var(--accent), var(--blue))";
-    $("#runBacktest").disabled = !valid;
+    $("#runBacktest").disabled = !valid || state.backtestLoading;
     $("#formError").textContent = valid ? "" : "자산 비중의 합계를 100%로 맞춰주세요.";
   }
 
-  const PRESETS = {
+  const MARKET_PRESETS = {
     balanced: {
       name: "균형 성장 포트폴리오",
-      rows: [["US_EQ", 40], ["KR_EQ", 20], ["KR_BOND10", 30], ["GOLD_KRW", 10]],
-      benchmark: "KR_EQ",
+      rows: [["360750", 40], ["069500", 20], ["114260", 30], ["411060", 10]],
+      benchmark: "INDEX_KOSPI",
     },
     growth: {
       name: "글로벌 성장 포트폴리오",
-      rows: [["US_EQ", 40], ["NASDAQ_KRW", 30], ["KR_EQ", 20], ["GOLD_KRW", 10]],
-      benchmark: "US_EQ",
+      rows: [["360750", 40], ["133690", 30], ["069500", 20], ["411060", 10]],
+      benchmark: "360750",
     },
     allweather: {
       name: "한국형 올웨더 포트폴리오",
-      rows: [["US_EQ", 30], ["KR_BOND10", 35], ["US_BOND_KRW", 20], ["GOLD_KRW", 15]],
-      benchmark: "KR_EQ",
+      rows: [["360750", 30], ["114260", 35], ["453850", 20], ["411060", 15]],
+      benchmark: "INDEX_KOSPI",
     },
     korea6040: {
       name: "한국 60/40 포트폴리오",
-      rows: [["KR_EQ", 60], ["KR_BOND10", 40]],
-      benchmark: "KR_EQ",
+      rows: [["069500", 60], ["114260", 40]],
+      benchmark: "INDEX_KOSPI",
     },
   };
 
-  function applyPreset(key, run = true) {
-    const preset = PRESETS[key];
+  const DEMO_PRESETS = {
+    balanced: { name: "균형 성장 포트폴리오", rows: [["US_EQ", 40], ["KR_EQ", 20], ["KR_BOND10", 30], ["GOLD_KRW", 10]], benchmark: "KR_EQ" },
+    growth: { name: "글로벌 성장 포트폴리오", rows: [["US_EQ", 40], ["NASDAQ_KRW", 30], ["KR_EQ", 20], ["GOLD_KRW", 10]], benchmark: "US_EQ" },
+    allweather: { name: "한국형 올웨더 포트폴리오", rows: [["US_EQ", 30], ["KR_BOND10", 35], ["US_BOND_KRW", 20], ["GOLD_KRW", 15]], benchmark: "KR_EQ" },
+    korea6040: { name: "한국 60/40 포트폴리오", rows: [["KR_EQ", 60], ["KR_BOND10", 40]], benchmark: "KR_EQ" },
+  };
+
+  function getPreset(key) {
+    return (state.marketDataReady ? MARKET_PRESETS : DEMO_PRESETS)[key];
+  }
+
+  async function applyPreset(key, run = true) {
+    const preset = getPreset(key);
     if (!preset) return;
+    const rows = preset.rows.filter(([assetId]) => state.assets[assetId]);
+    if (!rows.length) return;
     state.activePreset = key;
     state.portfolioName = preset.name;
-    state.portfolio = preset.rows.map(([assetId, weight]) => ({ assetId, weight }));
+    state.portfolio = rows.map(([assetId, weight]) => ({ assetId, weight }));
     renderAssetRows();
     renderPresetState();
     renderBenchmarkOptions();
-    $("#benchmark").value = preset.benchmark;
+    $("#benchmark").value = state.assets[preset.benchmark] ? preset.benchmark : rows[0][0];
+    renderBenchmarkOptions();
     updateAllocationState();
-    if (run) runBacktest();
+    try {
+      await ensureAssetsLoaded([...rows.map(([id]) => id), $("#benchmark").value]);
+      syncDateInputs(true);
+      renderDataTable();
+      if (run) await runBacktest();
+    } catch (error) {
+      $("#formError").textContent = error.message;
+      showToast(error.message);
+    }
   }
 
   function renderPresetState() {
@@ -372,8 +616,8 @@
     return false;
   }
 
-  function runBacktest() {
-    const settings = gatherBacktestSettings();
+  async function runBacktest() {
+    let settings = gatherBacktestSettings();
     const totalWeight = sum(settings.allocations.map((item) => item.weight));
     if (Math.abs(totalWeight - 1) > 0.0001) {
       $("#formError").textContent = "자산 비중의 합계를 100%로 맞춰주세요.";
@@ -389,6 +633,22 @@
     }
 
     const ids = [...settings.allocations.map((item) => item.assetId), settings.benchmarkId];
+    state.backtestLoading = true;
+    $("#runBacktest span").textContent = "데이터 불러오는 중";
+    updateAllocationState();
+    try {
+      await ensureAssetsLoaded(ids);
+      syncDateInputs();
+      settings = gatherBacktestSettings();
+    } catch (error) {
+      $("#formError").textContent = error.message;
+      showToast(error.message);
+      return;
+    } finally {
+      state.backtestLoading = false;
+      $("#runBacktest span").textContent = "백테스트 실행";
+      updateAllocationState();
+    }
     const dates = commonDatesFor(ids, settings.startDate, settings.endDate);
     if (dates.length < 12) {
       $("#formError").textContent = "선택한 자산들의 공통 데이터가 12개월 미만입니다.";
@@ -1205,11 +1465,19 @@
 
   function renderCompareSelector() {
     const container = $("#compareAssetSelector");
-    container.innerHTML = state.assetOrder.map((id) => {
+    const needle = state.compareFilter.trim().toLocaleLowerCase("ko-KR");
+    let visibleIds = state.assetOrder.filter((id) => {
+      if (!needle) return state.compareSelected.has(id) || (state.assets[id].universeRank || 9999) <= 20 || state.assets[id].source !== "market";
       const asset = state.assets[id];
-      return `<label class="asset-check"><input type="checkbox" value="${escapeHtml(id)}" ${state.compareSelected.has(id) ? "checked" : ""}/><span class="asset-check-dot" style="background:${asset.color}"></span><span class="asset-check-copy"><strong>${escapeHtml(asset.name)}</strong><span>${escapeHtml(asset.code)} · ${escapeHtml(asset.category)}</span></span></label>`;
+      return `${asset.code} ${asset.name} ${asset.category}`.toLocaleLowerCase("ko-KR").includes(needle);
+    });
+    if (!needle) visibleIds = [...new Set([...state.compareSelected, ...visibleIds])];
+    container.innerHTML = visibleIds.slice(0, 60).map((id) => {
+      const asset = state.assets[id];
+      return `<label class="asset-check"><input type="checkbox" value="${escapeHtml(id)}" ${state.compareSelected.has(id) ? "checked" : ""}/><span class="asset-check-dot" style="background:${asset.color}"></span><span class="asset-check-copy"><strong>${escapeHtml(asset.name)}</strong><span>${escapeHtml(asset.code)} · ${escapeHtml(asset.category)} · ${asset.distributionIncluded ? "TR" : "가격"}</span></span></label>`;
     }).join("");
-    $$("input", container).forEach((input) => input.addEventListener("change", () => {
+    if (!visibleIds.length) container.innerHTML = `<p class="asset-suggestion-empty">검색 결과가 없습니다.</p>`;
+    $$("input", container).forEach((input) => input.addEventListener("change", async () => {
       const id = input.value;
       if (input.checked) {
         if (state.compareSelected.size >= 6) {
@@ -1217,7 +1485,17 @@
           showToast("비교 자산은 최대 6개까지 선택할 수 있습니다.");
           return;
         }
-        state.compareSelected.add(id);
+        input.disabled = true;
+        try {
+          await ensureAssetLoaded(id);
+          state.compareSelected.add(id);
+        } catch (error) {
+          input.checked = false;
+          showToast(error.message);
+          return;
+        } finally {
+          input.disabled = false;
+        }
       } else {
         if (state.compareSelected.size <= 2) {
           input.checked = true;
@@ -1227,6 +1505,7 @@
         state.compareSelected.delete(id);
       }
       renderComparison();
+      syncDateInputs();
       $("#compareCount").textContent = `${state.compareSelected.size}개 선택`;
     }));
     $("#compareCount").textContent = `${state.compareSelected.size}개 선택`;
@@ -1234,6 +1513,7 @@
 
   function assetMetrics(id, startDate) {
     const asset = state.assets[id];
+    if (!(asset?.returnMap instanceof Map)) return null;
     const dates = [...asset.returnMap.keys()].filter((date) => date >= startDate).sort();
     const returns = dates.map((date) => asset.returnMap.get(date));
     if (returns.length < 2) return null;
@@ -1254,7 +1534,7 @@
     const cardsContainer = $("#comparisonCards");
     if (!cardsContainer) return;
     const startDate = $("#compareStart").value || "2016-01";
-    const selected = [...state.compareSelected].filter((id) => state.assets[id]);
+    const selected = [...state.compareSelected].filter((id) => state.assets[id]?.returnMap instanceof Map);
     const metrics = selected.map((id) => assetMetrics(id, startDate)).filter(Boolean);
     cardsContainer.innerHTML = metrics.map((metric) => {
       const asset = state.assets[metric.id];
@@ -1404,10 +1684,32 @@
     if (!body) return;
     body.innerHTML = state.assetOrder.map((id) => {
       const asset = state.assets[id];
-      const dates = [...asset.returnMap.keys()].sort();
-      return `<tr><td>${escapeHtml(asset.code)}</td><td>${escapeHtml(asset.name)}</td><td>${escapeHtml(asset.category)}</td><td>${fmtDate(dates[0])} – ${fmtDate(dates.at(-1))}</td><td>${dates.length.toLocaleString()}개월</td><td><span class="source-pill ${asset.source}">${asset.source === "custom" ? "사용자 CSV" : "합성 데모"}</span></td></tr>`;
+      const dates = asset.returnMap instanceof Map ? [...asset.returnMap.keys()].sort() : [];
+      const firstMonth = dates[0] || asset.firstMonth || "";
+      const lastMonth = dates.at(-1) || asset.lastMonth || "";
+      const count = dates.length || asset.observationCount || 0;
+      const sourceText = asset.source === "custom" ? "사용자 CSV" : asset.source === "market" ? `${asset.distributionIncluded ? "수정종가 TR" : "가격지수"} · ${asset.dataAsOf || ""}` : "합성 데모";
+      return `<tr><td>${escapeHtml(asset.code)}</td><td>${escapeHtml(asset.name)}</td><td>${escapeHtml(asset.category)}</td><td>${fmtDate(firstMonth)} – ${fmtDate(lastMonth)}</td><td>${count.toLocaleString()}개월</td><td><span class="source-pill ${asset.source}">${escapeHtml(sourceText)}</span></td></tr>`;
     }).join("");
     $("#assetDataCount").textContent = `총 ${state.assetOrder.length}개`;
+  }
+
+  function renderMarketDataStatus() {
+    const banner = $("#dataBanner");
+    const bannerText = $("#dataBannerText");
+    const status = $("#marketDataStatus");
+    if (state.marketDataReady && state.dataCatalog) {
+      const catalog = state.dataCatalog;
+      banner.classList.add("ready");
+      banner.classList.remove("fallback");
+      bannerText.innerHTML = `<strong>실데이터 ${catalog.asset_count.toLocaleString()}개</strong> · 기준일 ${escapeHtml(catalog.data_as_of)} · 필요할 때 종목별 JSON을 불러옵니다.`;
+      status.innerHTML = `<div class="market-data-status-copy"><strong>정적 실데이터 카탈로그 연결 완료</strong><span>ETF 수정종가는 분배금 조정값을 사용하지만 공급자 계수와 별도 원장을 아직 독립 대사하지 않은 프로토타입입니다.</span></div><div class="market-data-stats"><span>ETF <strong>${catalog.etf_count.toLocaleString()}개</strong></span><span>대표지수 <strong>${catalog.index_count.toLocaleString()}개</strong></span><span>기준일 <strong>${escapeHtml(catalog.data_as_of)}</strong></span><span>상태 <strong>${escapeHtml(catalog.provider_status)}</strong></span></div>`;
+    } else {
+      banner.classList.add("fallback");
+      banner.classList.remove("ready");
+      bannerText.innerHTML = `<strong>실데이터 로드 실패</strong> · 합성 데모 데이터로 전환했습니다.`;
+      status.innerHTML = `<div class="market-data-status-copy"><strong>데모 폴백 사용 중</strong><span>${escapeHtml(state.marketDataError?.message || "정적 JSON을 불러오지 못했습니다.")}</span></div>`;
+    }
   }
 
   function renderAllAssetDependentUi() {
@@ -1417,6 +1719,7 @@
     renderCompareSelector();
     renderComparison();
     renderDataTable();
+    renderMarketDataStatus();
   }
 
   function clearCustomData() {
@@ -1562,6 +1865,10 @@
     $$(".analysis-tab").forEach((button) => button.addEventListener("click", () => switchResultTab(button.dataset.resultTab)));
     $("#runMonteCarlo").addEventListener("click", runMonteCarlo);
     $("#compareStart").addEventListener("change", renderComparison);
+    $("#compareAssetSearch").addEventListener("input", (event) => {
+      state.compareFilter = event.target.value;
+      renderCompareSelector();
+    });
     $("#themeToggle").addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
 
     const csvFile = $("#csvFile");
@@ -1592,21 +1899,42 @@
     });
   }
 
-  function init() {
+  async function init() {
     const savedTheme = storage.getItem("backtestK.theme");
     if (savedTheme === "light" || savedTheme === "dark") document.documentElement.dataset.theme = savedTheme;
-    buildDemoAssets();
+    try {
+      await loadMarketCatalog();
+    } catch (error) {
+      console.warn("실데이터 카탈로그 로드 실패, 데모로 전환", error);
+      state.marketDataError = error;
+      state.marketDataReady = false;
+      buildDemoAssets();
+      state.compareSelected = new Set(["US_EQ", "KR_EQ", "KR_BOND10", "GOLD_KRW"]);
+    }
     restoreCustomAssets();
-    state.portfolio = PRESETS.balanced.rows.map(([assetId, weight]) => ({ assetId, weight }));
+    const preset = getPreset("balanced");
+    state.portfolio = preset.rows.filter(([assetId]) => state.assets[assetId]).map(([assetId, weight]) => ({ assetId, weight }));
+    $("#benchmark").value = state.assets[preset.benchmark] ? preset.benchmark : state.portfolio[0]?.assetId || state.assetOrder[0];
     renderBenchmarkOptions();
     const restored = restoreSettings();
+    renderBenchmarkOptions();
     renderAllAssetDependentUi();
     renderPresetState();
     updateAllocationState();
     bindEvents();
-    runBacktest();
-    renderCompareSelector();
-    renderDataTable();
+    try {
+      await ensureAssetsLoaded([
+        ...state.portfolio.map((row) => row.assetId),
+        $("#benchmark").value,
+        ...state.compareSelected,
+      ]);
+      syncDateInputs(!restored);
+      renderAllAssetDependentUi();
+      await runBacktest();
+    } catch (error) {
+      $("#formError").textContent = error.message;
+      showToast(error.message);
+    }
     const view = location.hash.slice(1);
     if (["backtest", "montecarlo", "compare", "data"].includes(view) && view !== "backtest") switchView(view);
     if (restored) showToast("저장된 포트폴리오 설정을 불러왔습니다.");

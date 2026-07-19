@@ -1,0 +1,347 @@
+{
+  "schema_version": "1.0",
+  "id": "395270",
+  "ticker": "395270",
+  "name": "HANARO Fn K-반도체",
+  "asset_type": "etf",
+  "category": "국내주식",
+  "currency": "KRW",
+  "description": "순자산 상위 ETF #23 (수집 시점 시가총액 기준)",
+  "listing_date": "2021-07-29",
+  "listing_date_source": "한국예탁결제원 SEIBro",
+  "data_as_of": "2026-07-16",
+  "first_month": "2021-08",
+  "last_month": "2026-06",
+  "monthly_return_count": 59,
+  "distribution": {
+    "included": true,
+    "method": "adjusted_close",
+    "verification_status": "provider_adjusted_not_independently_reconciled",
+    "event_count": 9,
+    "note": "월말 수정종가 비율로 계산했습니다. 분배금 반영은 공급자의 조정계수에 의존합니다."
+  },
+  "provider_status": "provisional",
+  "sources": [
+    {
+      "name": "네이버페이 증권 ETF 목록",
+      "url": "https://finance.naver.com/sise/etf.naver",
+      "role": "ETF 종목 및 시가총액 순위"
+    },
+    {
+      "name": "Yahoo Finance chart",
+      "url": "https://finance.yahoo.com/quote/395270.KS/history/",
+      "role": "일별 수정종가 및 분배 이벤트"
+    },
+    {
+      "name": "한국예탁결제원 SEIBro",
+      "url": "https://m.seibro.or.kr/cnts/etf/selectKindDetailInfo.do?InKindShort=0&InKinds=0&InMSect=0&shotnIsin=395270&txt_sch=HANARO+Fn+K-%EB%B0%98%EB%8F%84%EC%B2%B4",
+      "role": "설정일"
+    }
+  ],
+  "data_quality": {
+    "status": "provisional",
+    "warnings": [
+      "프로토타입 수집 경로이며 수정종가와 분배금은 별도 원장으로 독립 대사하지 않았습니다.",
+      "상업적 서비스 전 데이터 제공자 이용조건과 재배포 권한을 다시 확인해야 합니다."
+    ]
+  },
+  "universe_rank": 23,
+  "market_value_krw_100m": 37410.0,
+  "monthly_returns": [
+    {
+      "month": "2021-08",
+      "return": -0.034395635,
+      "observation_date": "2021-08-31"
+    },
+    {
+      "month": "2021-09",
+      "return": -0.028286935,
+      "observation_date": "2021-09-30"
+    },
+    {
+      "month": "2021-10",
+      "return": -0.0258762801,
+      "observation_date": "2021-10-29"
+    },
+    {
+      "month": "2021-11",
+      "return": 0.0653018169,
+      "observation_date": "2021-11-30"
+    },
+    {
+      "month": "2021-12",
+      "return": 0.1298701941,
+      "observation_date": "2021-12-30"
+    },
+    {
+      "month": "2022-01",
+      "return": -0.0905748502,
+      "observation_date": "2022-01-28"
+    },
+    {
+      "month": "2022-02",
+      "return": -0.0237611487,
+      "observation_date": "2022-02-28"
+    },
+    {
+      "month": "2022-03",
+      "return": 0.0181252316,
+      "observation_date": "2022-03-31"
+    },
+    {
+      "month": "2022-04",
+      "return": -0.036990576,
+      "observation_date": "2022-04-29"
+    },
+    {
+      "month": "2022-05",
+      "return": -0.002129946,
+      "observation_date": "2022-05-31"
+    },
+    {
+      "month": "2022-06",
+      "return": -0.1664887923,
+      "observation_date": "2022-06-30"
+    },
+    {
+      "month": "2022-07",
+      "return": 0.0595389838,
+      "observation_date": "2022-07-29"
+    },
+    {
+      "month": "2022-08",
+      "return": -0.0314198805,
+      "observation_date": "2022-08-31"
+    },
+    {
+      "month": "2022-09",
+      "return": -0.1603243097,
+      "observation_date": "2022-09-30"
+    },
+    {
+      "month": "2022-10",
+      "return": 0.0757409681,
+      "observation_date": "2022-10-31"
+    },
+    {
+      "month": "2022-11",
+      "return": 0.0670815035,
+      "observation_date": "2022-11-30"
+    },
+    {
+      "month": "2022-12",
+      "return": -0.1056383003,
+      "observation_date": "2022-12-29"
+    },
+    {
+      "month": "2023-01",
+      "return": 0.1195196639,
+      "observation_date": "2023-01-31"
+    },
+    {
+      "month": "2023-02",
+      "return": 0.0181465157,
+      "observation_date": "2023-02-28"
+    },
+    {
+      "month": "2023-03",
+      "return": 0.0636538429,
+      "observation_date": "2023-03-31"
+    },
+    {
+      "month": "2023-04",
+      "return": -0.0279768145,
+      "observation_date": "2023-04-28"
+    },
+    {
+      "month": "2023-05",
+      "return": 0.1035979067,
+      "observation_date": "2023-05-31"
+    },
+    {
+      "month": "2023-06",
+      "return": 0.0342890053,
+      "observation_date": "2023-06-30"
+    },
+    {
+      "month": "2023-07",
+      "return": 0.0538043915,
+      "observation_date": "2023-07-28"
+    },
+    {
+      "month": "2023-08",
+      "return": -0.0515729792,
+      "observation_date": "2023-08-31"
+    },
+    {
+      "month": "2023-09",
+      "return": -0.0342578539,
+      "observation_date": "2023-09-27"
+    },
+    {
+      "month": "2023-10",
+      "return": -0.032657518,
+      "observation_date": "2023-10-31"
+    },
+    {
+      "month": "2023-11",
+      "return": 0.1717111535,
+      "observation_date": "2023-11-30"
+    },
+    {
+      "month": "2023-12",
+      "return": 0.0452061817,
+      "observation_date": "2023-12-28"
+    },
+    {
+      "month": "2024-01",
+      "return": -0.0674904371,
+      "observation_date": "2024-01-31"
+    },
+    {
+      "month": "2024-02",
+      "return": 0.0728848115,
+      "observation_date": "2024-02-29"
+    },
+    {
+      "month": "2024-03",
+      "return": 0.1524940395,
+      "observation_date": "2024-03-29"
+    },
+    {
+      "month": "2024-04",
+      "return": -0.0391334395,
+      "observation_date": "2024-04-30"
+    },
+    {
+      "month": "2024-05",
+      "return": 0.0250107325,
+      "observation_date": "2024-05-31"
+    },
+    {
+      "month": "2024-06",
+      "return": 0.1165335186,
+      "observation_date": "2024-06-28"
+    },
+    {
+      "month": "2024-07",
+      "return": -0.0900527624,
+      "observation_date": "2024-07-31"
+    },
+    {
+      "month": "2024-08",
+      "return": -0.1080745309,
+      "observation_date": "2024-08-30"
+    },
+    {
+      "month": "2024-09",
+      "return": -0.0733518538,
+      "observation_date": "2024-09-30"
+    },
+    {
+      "month": "2024-10",
+      "return": -0.0260522508,
+      "observation_date": "2024-10-31"
+    },
+    {
+      "month": "2024-11",
+      "return": -0.1311727519,
+      "observation_date": "2024-11-29"
+    },
+    {
+      "month": "2024-12",
+      "return": 0.0692718002,
+      "observation_date": "2024-12-30"
+    },
+    {
+      "month": "2025-01",
+      "return": 0.0891018221,
+      "observation_date": "2025-01-31"
+    },
+    {
+      "month": "2025-02",
+      "return": -0.002544507,
+      "observation_date": "2025-02-28"
+    },
+    {
+      "month": "2025-03",
+      "return": -0.0183673471,
+      "observation_date": "2025-03-31"
+    },
+    {
+      "month": "2025-04",
+      "return": -0.0510559715,
+      "observation_date": "2025-04-30"
+    },
+    {
+      "month": "2025-05",
+      "return": 0.0585958804,
+      "observation_date": "2025-05-30"
+    },
+    {
+      "month": "2025-06",
+      "return": 0.2062663372,
+      "observation_date": "2025-06-30"
+    },
+    {
+      "month": "2025-07",
+      "return": 0.0467824921,
+      "observation_date": "2025-07-31"
+    },
+    {
+      "month": "2025-08",
+      "return": -0.0041390548,
+      "observation_date": "2025-08-29"
+    },
+    {
+      "month": "2025-09",
+      "return": 0.2285951545,
+      "observation_date": "2025-09-30"
+    },
+    {
+      "month": "2025-10",
+      "return": 0.3193505522,
+      "observation_date": "2025-10-31"
+    },
+    {
+      "month": "2025-11",
+      "return": -0.0307692956,
+      "observation_date": "2025-11-28"
+    },
+    {
+      "month": "2025-12",
+      "return": 0.1100529906,
+      "observation_date": "2025-12-30"
+    },
+    {
+      "month": "2026-01",
+      "return": 0.3913250483,
+      "observation_date": "2026-01-30"
+    },
+    {
+      "month": "2026-02",
+      "return": 0.2612195681,
+      "observation_date": "2026-02-27"
+    },
+    {
+      "month": "2026-03",
+      "return": -0.1848431298,
+      "observation_date": "2026-03-31"
+    },
+    {
+      "month": "2026-04",
+      "return": 0.5354714213,
+      "observation_date": "2026-04-30"
+    },
+    {
+      "month": "2026-05",
+      "return": 0.6437343767,
+      "observation_date": "2026-05-29"
+    },
+    {
+      "month": "2026-06",
+      "return": 0.0773604866,
+      "observation_date": "2026-06-30"
+    }
+  ]
+}

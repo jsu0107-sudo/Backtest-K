@@ -1,0 +1,47 @@
+name: Update market data
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 20:15 KST on Korean market weekdays (GitHub cron is UTC).
+    - cron: "15 11 * * 1-5"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-market-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build top-150 ETF and index data
+        run: python scripts/build_market_data.py --limit 150 --min-etfs 100 --workers 8
+
+      - name: Validate static data contract
+        run: |
+          python -m unittest discover -s tests -v
+          python scripts/validate_market_data.py data --min-etfs 100 --max-etfs 200
+
+      - name: Commit refreshed JSON
+        shell: bash
+        run: |
+          if git diff --quiet -- data; then
+            echo "Market data is unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          git commit -m "chore(data): refresh market data $(date -u +%F)"
+          git push

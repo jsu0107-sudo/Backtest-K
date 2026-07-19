@@ -1,12 +1,14 @@
 # 백테스트K MVP
 
-한국 투자자가 원화 기준으로 포트폴리오 백테스트, 적립식 투자, 리밸런싱, 자산 비교, 몬테카를로 시뮬레이션을 실행할 수 있는 정적 웹앱입니다.
+한국 투자자가 원화 기준으로 포트폴리오 백테스트, 적립식 투자, 리밸런싱, 자산 비교, 몬테카를로 시뮬레이션을 실행할 수 있는 정적 웹앱입니다. 국내 상장 ETF 상위권과 대표지수의 월 수익률을 정적 JSON으로 제공하므로 별도 서버나 DB가 필요 없습니다.
 
 ## 바로 실행
 
 ### 방법 1 — 단일 파일
 
 `backtestK_single.html`을 더블클릭하면 브라우저에서 바로 실행됩니다.
+
+> 단일 파일판은 오프라인 UI 확인용 합성 데모입니다. 자동 갱신 실데이터는 HTTP로 실행하는 프로젝트판과 Vercel 배포판에서만 로드됩니다.
 
 ### 방법 2 — 프로젝트 폴더
 
@@ -19,7 +21,9 @@ python3 -m http.server 8080
 
 ## 구현 기능
 
-- 최대 8개 자산으로 포트폴리오 구성
+- 티커·ETF명 자동완성으로 최대 8개 자산 구성
+- 국내 상장 ETF 시가총액 상위권 147개 + KOSPI·KOSPI 200·S&P 500
+- 종목별 JSON 지연 로딩과 공통 분석기간 자동 조정
 - 초기 투자금과 월 적립금 반영
 - 월초/월말 적립 시점 선택
 - 리밸런싱 없음·월·분기·반기·연 단위 선택
@@ -35,11 +39,57 @@ python3 -m http.server 8080
 - 결과 CSV 내보내기
 - 다크·라이트 테마, 모바일 반응형 UI
 
-## 중요: 내장 데이터의 성격
+## 실데이터의 성격과 한계
 
-내장된 8개 자산은 화면과 계산 기능을 검증하기 위한 **합성 데모 월 수익률**입니다. 실제 KRX 시세나 ETF 총수익 데이터를 복제한 것이 아니며, 투자 판단에 사용하면 안 됩니다.
+현재 `data/`는 다음 프로토타입 수집 경로로 생성됩니다.
 
-실제 분석은 `데이터` 메뉴에서 수정주가 또는 월 수익률 CSV를 업로드해 수행합니다. CSV는 서버로 전송되지 않고 현재 브라우저에서 파싱되며, 사용자 자산은 `localStorage`에 저장됩니다. 단일 파일을 `file://`로 직접 열었을 때 브라우저가 로컬 저장을 제한하면 해당 세션의 메모리에만 유지됩니다.
+- 네이버페이 증권 ETF 목록: 국내 ETF 종목과 시가총액 순위
+- Yahoo Finance chart: 일별 수정종가, 분배 이벤트, 대표지수 종가
+- 한국예탁결제원 SEIBro: ETF 설정일
+
+ETF 월 수익률은 월말 **수정종가**의 변화율이라 공급자가 제공하는 분배금 조정계수를 반영합니다. 다만 분배금 원장과 조정계수를 독립적으로 대사하지 않았으므로 모든 JSON의 `provider_status`와 `data_quality.status`를 `provisional`로 표시합니다. KOSPI·KOSPI 200·S&P 500은 배당을 포함하지 않는 가격지수입니다.
+
+추가 CSV는 서버로 전송되지 않고 현재 브라우저에서 파싱되며 사용자 자산은 `localStorage`에 저장됩니다.
+
+## 정적 데이터 파이프라인
+
+```text
+Python 수집기
+  → 종목별 월 수익률 JSON + data/assets.json
+  → 스키마·범위 검증
+  → GitHub Actions 평일 1회 실행 및 변경 커밋
+  → Vercel이 같은 정적 사이트/CDN으로 자동 배포
+  → 브라우저가 카탈로그와 선택 종목만 fetch
+```
+
+로컬 갱신과 검증:
+
+```bash
+python scripts/build_market_data.py --limit 150 --min-etfs 100 --workers 8
+python -m unittest discover -s tests -v
+python scripts/validate_market_data.py data --min-etfs 100 --max-etfs 200
+```
+
+GitHub Actions 워크플로는 `.github/workflows/update-market-data.yml`에 있으며 `workflow_dispatch`로도 실행할 수 있습니다. 정적 데이터 계약과 공급자 교체 지침은 `docs/DATA_PIPELINE.md`를 참고하세요.
+
+종목 JSON의 핵심 필드:
+
+```json
+{
+  "ticker": "069500",
+  "listing_date": "2002-10-11",
+  "data_as_of": "2026-07-16",
+  "distribution": {
+    "included": true,
+    "method": "adjusted_close",
+    "verification_status": "provider_adjusted_not_independently_reconciled"
+  },
+  "sources": [],
+  "monthly_returns": [
+    { "month": "2026-06", "return": 0.1234, "observation_date": "2026-06-30" }
+  ]
+}
+```
 
 ## CSV 형식
 
@@ -96,13 +146,13 @@ npx vercel --prod
 
 ### 다른 정적 호스팅
 
-`index.html`, `styles.css`, `app.js`, `favicon.svg`를 동일한 디렉터리에 업로드하면 됩니다. GitHub Pages, Cloudflare Pages, Netlify 등에서도 별도 빌드 없이 배포할 수 있습니다.
+`index.html`, `styles.css`, `app.js`, `favicon.svg`, `data/`를 동일한 디렉터리에 업로드하면 됩니다. GitHub Pages, Cloudflare Pages, Netlify 등에서도 별도 빌드 없이 배포할 수 있습니다.
 
 ## 상용화 전 필수 작업
 
-1. KRX·공공데이터·민간 데이터 공급자를 추상화한 데이터 수집 계층 구축
-2. ETF 분배금, 주식 분할, 합병, 상장폐지, 생존편향 처리
-3. 수정주가와 총수익지수 산식·버전·출처 저장
+1. 공공데이터포털 금융위원회 ETF 시세 API 키 기반 원시 종가 수집으로 교체
+2. ETF 분배금 원장, 분할, 합병, 상장폐지, 생존편향 처리와 독립 대사
+3. 수정주가와 총수익지수 산식·버전·출처의 외부 검증
 4. 국내/해외 ETF의 환율 기준과 환헤지 처리 명문화
 5. ISA·연금저축·IRP·일반계좌별 세금 로직을 검증 가능한 규칙 엔진으로 분리
 6. 데이터 재배포, 지수 사용, 상표·라이선스 권한 검토
@@ -115,6 +165,15 @@ npx vercel --prod
 
 ```text
 backtest-k-mvp/
+├── .github/workflows/update-market-data.yml
+├── data/
+│   ├── assets.json
+│   ├── 069500.json
+│   └── INDEX_KOSPI.json
+├── scripts/
+│   ├── build_market_data.py
+│   └── validate_market_data.py
+├── tests/test_market_data.py
 ├── index.html
 ├── styles.css
 ├── app.js
@@ -125,6 +184,7 @@ backtest-k-mvp/
 ├── README.md
 └── docs/
     ├── CALCULATION_METHODS.md
+    ├── DATA_PIPELINE.md
     └── PRODUCT_ROADMAP.md
 ```
 
