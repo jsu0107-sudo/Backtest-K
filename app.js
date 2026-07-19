@@ -62,6 +62,12 @@
     return `${sign}${Math.round(abs).toLocaleString("ko-KR")}원`;
   };
   const fmtDate = (date) => date ? date.replace("-", ".") : "";
+  const currencyDigits = (value) => String(value ?? "").replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+  const formatCurrencyInputValue = (value) => currencyDigits(value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const parseCurrencyInputValue = (value) => {
+    const digits = currencyDigits(value);
+    return digits ? Number(digits) : 0;
+  };
   const escapeHtml = (value) => String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -591,8 +597,8 @@
       allocations: state.portfolio.map((row) => ({ assetId: row.assetId, weight: Number(row.weight) / 100 })),
       startDate: $("#startDate").value,
       endDate: $("#endDate").value,
-      initialAmount: Number($("#initialAmount").value),
-      monthlyContribution: Number($("#monthlyContribution").value),
+      initialAmount: parseCurrencyInputValue($("#initialAmount").value),
+      monthlyContribution: parseCurrencyInputValue($("#monthlyContribution").value),
       contributionTiming: $("#contributionTiming").value,
       rebalance: $("#rebalance").value,
       tradingCostBps: Number($("#tradingCost").value),
@@ -2207,7 +2213,34 @@
     state.toastTimer = setTimeout(() => toast.classList.remove("show"), 2800);
   }
 
+  function bindCurrencyInput(input) {
+    const format = () => {
+      const before = input.value;
+      const caret = input.selectionStart ?? before.length;
+      const digitsBeforeCaret = before.slice(0, caret).replace(/\D/g, "").length;
+      const formatted = formatCurrencyInputValue(before);
+      input.value = formatted;
+
+      if (document.activeElement !== input) return;
+      let nextCaret = 0;
+      let seenDigits = 0;
+      while (nextCaret < formatted.length && seenDigits < digitsBeforeCaret) {
+        if (/\d/.test(formatted[nextCaret])) seenDigits += 1;
+        nextCaret += 1;
+      }
+      input.setSelectionRange(nextCaret, nextCaret);
+    };
+
+    input.addEventListener("input", format);
+    input.addEventListener("blur", () => {
+      if (!currencyDigits(input.value)) input.value = "0";
+      format();
+    });
+    format();
+  }
+
   function bindEvents() {
+    ["#initialAmount", "#monthlyContribution"].forEach((selector) => bindCurrencyInput($(selector)));
     $$(".nav-btn").forEach((button) => button.addEventListener("click", () => switchView(button.dataset.view)));
     $$("[data-view-link]").forEach((button) => button.addEventListener("click", () => switchView(button.dataset.viewLink)));
     $$(".preset-chip").forEach((button) => button.addEventListener("click", () => applyPreset(button.dataset.preset)));

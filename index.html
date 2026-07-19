@@ -84,8 +84,8 @@
             <label class="field"><span>시작월</span><input id="startDate" type="month" min="1970-01" max="2030-12" value="2016-01" /></label>
             <label class="field"><span>종료월</span><input id="endDate" type="month" min="1970-01" max="2030-12" value="2025-12" /></label>
           </div>
-          <label class="field"><span>초기 투자금</span><div class="input-affix"><input id="initialAmount" type="number" min="0" step="1000000" value="50000000" /><span>원</span></div></label>
-          <label class="field"><span>월 적립금</span><div class="input-affix"><input id="monthlyContribution" type="number" min="0" step="100000" value="1000000" /><span>원</span></div></label>
+          <label class="field"><span>초기 투자금</span><div class="input-affix currency-affix"><span class="currency-prefix" aria-hidden="true">₩</span><input id="initialAmount" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="50,000,000" aria-label="초기 투자금(원)" /></div></label>
+          <label class="field"><span>월 적립금</span><div class="input-affix currency-affix"><span class="currency-prefix" aria-hidden="true">₩</span><input id="monthlyContribution" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="1,000,000" aria-label="월 적립금(원)" /></div></label>
 
           <div class="form-grid two-col">
             <label class="field"><span>적립 시점</span><select id="contributionTiming"><option value="start">월초</option><option value="end">월말</option></select></label>
