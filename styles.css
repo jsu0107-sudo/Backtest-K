@@ -118,20 +118,6 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
 .icon-btn:hover { color: var(--text); border-color: var(--border-strong); }
 .icon-btn svg { width: 18px; height: 18px; }
 
-.data-banner {
-  min-height: 38px; padding: 8px 24px; display: flex; justify-content: center; align-items: center; gap: 7px;
-  color: var(--muted); font-size: 14px; background: rgba(255,180,94,.055); border-bottom: 1px solid rgba(255,180,94,.12);
-}
-.data-banner strong { color: var(--orange); }
-.data-banner.ready { background: rgba(69,227,181,.055); border-bottom-color: rgba(69,227,181,.12); }
-.data-banner.ready strong { color: var(--accent); }
-.data-banner.ready .status-dot { background: var(--accent); box-shadow: 0 0 0 5px var(--accent-soft); }
-.data-banner.fallback { background: rgba(255,127,140,.055); border-bottom-color: rgba(255,127,140,.12); }
-.data-banner.fallback strong { color: var(--red); }
-.data-banner.fallback .status-dot { background: var(--red); box-shadow: 0 0 0 5px rgba(255,127,140,.08); }
-.status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 5px rgba(255,180,94,.08); margin-right: 3px; }
-.text-btn { border: 0; background: transparent; color: var(--accent); font-size: 14px; font-weight: 700; padding: 0 3px; text-decoration: underline; text-underline-offset: 3px; }
-
 .app-shell { width: min(1540px, calc(100% - 44px)); margin: 0 auto; padding: 42px 0 70px; }
 .app-view { display: none; animation: fadeIn .28s ease; }
 .app-view.active { display: block; }
@@ -466,7 +452,6 @@ html[data-theme="light"] .code-block { background: #142237; color: #d6e3ee; }
 
 @media (max-width: 620px) {
   .brand-copy small, .mvp-badge, #exportButton { display: none; }
-  .data-banner { align-items: flex-start; text-align: left; padding: 9px 14px; }
   .app-shell { width: calc(100% - 20px); padding-top: 24px; }
   .page-heading { align-items: flex-start; flex-direction: column; gap: 14px; }
   .page-heading h1 { font-size: 29px; }
@@ -503,7 +488,7 @@ html[data-theme="light"] .code-block { background: #142237; color: #d6e3ee; }
 .sr-only { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
 
 @media print {
-  .topbar, .data-banner, .control-panel, .heading-actions, .analysis-tabs, .footer { display: none !important; }
+  .topbar, .control-panel, .heading-actions, .analysis-tabs, .footer { display: none !important; }
   body { background: #fff; color: #111; }
   .app-shell { width: 100%; padding: 0; }
   .workspace-grid { display: block; }

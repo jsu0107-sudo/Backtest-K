@@ -1,43 +1,45 @@
-# 원화 금액 입력 Design QA
+# 실데이터 안내 배너 제거 Design QA
 
-- source visual truth path: `C:\Users\jsu01\AppData\Local\Temp\codex-clipboard-3373af40-e4de-48bf-b151-d8343059374f.png`
-- implementation screenshot path: `C:\Users\jsu01\OneDrive\바탕 화면\Codex\backtest-k\.codex-artifacts\currency-input-final-v3.png`
-- viewport: mobile 390x844
-- state: 다크 테마, 균형 성장 포트폴리오, 투자 조건 입력 화면
+- source visual truth path:
+  - `C:\Users\jsu01\AppData\Local\Temp\codex-clipboard-b731fd3b-490e-47d5-a540-5cf4194cb083.png`
+  - `C:\Users\jsu01\AppData\Local\Temp\codex-clipboard-f5685520-824e-4837-afc1-7eac5a445049.png`
+- implementation screenshot path:
+  - `C:\Users\jsu01\OneDrive\바탕 화면\Codex\backtest-k\.codex-artifacts\banner-removed-desktop.png`
+  - `C:\Users\jsu01\OneDrive\바탕 화면\Codex\backtest-k\.codex-artifacts\data-tab-banner-removed.png`
+  - `C:\Users\jsu01\OneDrive\바탕 화면\Codex\backtest-k\.codex-artifacts\data-tab-banner-removed-mobile.png`
+- viewport: desktop 1887x891, mobile 390x844
+- state: 다크 테마, 백테스트 및 데이터 탭
 
 ## Full-view comparison evidence
 
-- 기준 이미지와 구현 화면을 같은 비교 입력에서 검토했다.
-- 기존 투자 조건 카드의 색상, 테두리, 라벨, 입력 높이와 간격을 유지했다.
-- 초기 투자금과 월 적립금에 원화 접두어 `₩`를 추가하고 값을 각각 `50,000,000`, `1,000,000`으로 표시했다.
-- 390px 뷰포트에서 문서 가로 너비와 스크롤 너비가 모두 390px이며 가로 넘침이 없다.
+- 기준 화면과 수정 화면을 같은 비교 입력에서 확인했다.
+- 상단 내비게이션 아래의 `실데이터 150개 · 기준일 · 데이터 안내` 배너가 완전히 제거됐다.
+- 배너가 차지하던 38px 영역과 하단 테두리가 함께 없어져 상단 내비게이션 다음에 본문이 바로 이어진다.
+- 데이터 탭 본문의 카탈로그 상태 카드와 CSV 업로드 기능은 유지된다.
 
 ## Focused region comparison evidence
 
-- 두 금액 입력란의 `₩` 접두어가 숫자 앞에서 일정한 간격으로 정렬된다.
-- 천 단위 쉼표가 자동 적용되고 숫자 폭이 바뀌어도 입력란 내부 정렬이 유지된다.
-- 입력란 포커스 시 기존 강조색을 사용하며, 포커스를 벗어나면 기존 카드 스타일로 복귀한다.
+- 데스크톱 측정값은 상단 바 하단과 본문 시작점이 모두 72px로 일치하며 빈 공간이 없다.
+- 모바일 390px에서 문서 너비와 스크롤 너비가 모두 390px이고 가로 넘침이 없다.
 
 ## Required fidelity surfaces
 
-- Fonts and typography: 기존 폰트, 라벨 크기, 입력 값 굵기와 숫자 정렬을 유지했다.
-- Spacing and layout rhythm: 기존 입력 높이와 카드 간격을 유지하고 접두어 공간만 내부 패딩으로 확보했다.
-- Colors and visual tokens: 기존 `--muted`, `--accent`, `--border` 토큰을 재사용했다.
-- Image quality and asset fidelity: 이미지 자산이 없는 폼 기능으로 별도 이미지 품질 항목은 해당하지 않는다.
-- Copy and content: 기존 한글 라벨을 유지하고 원화 단위를 `₩` 접두어로 명확히 표시했다.
+- Fonts and typography: 기존 내비게이션과 본문 타이포그래피를 변경하지 않았다.
+- Spacing and layout rhythm: 배너 높이만 제거하고 기존 본문 패딩과 카드 간격을 유지했다.
+- Colors and visual tokens: 배너 전용 색상 규칙만 제거하고 기존 토큰은 유지했다.
+- Image quality and asset fidelity: 이미지 자산 변경 없음.
+- Copy and content: 요청된 실데이터 안내 문구만 제거했으며 데이터 탭 내부 정보는 유지했다.
 
 ## Primary interactions tested
 
-- 숫자 직접 입력 시 천 단위 쉼표 자동 적용
-- `₩2500000원` 붙여넣기 시 `2,500,000`으로 정규화
-- 빈 값에서 포커스를 벗어나면 `0`으로 복구
-- 설정 저장 시 쉼표 없는 숫자 값으로 저장
-- 새로고침 후 저장된 숫자를 쉼표 형식으로 복원
-- 백테스트 실행 시 표시용 쉼표를 제거한 숫자로 계산
+- 백테스트 초기 화면 로드
+- 데이터 탭 전환과 `#data` 상태
+- 실데이터 카탈로그 상태 카드 렌더링
+- 데스크톱·모바일 반응형
 - 브라우저 오류 오버레이 없음, 콘솔 오류 0건
 
 ## Findings
 
-- P0/P1/P2 사용성 또는 시각 결함 없음.
+- P0/P1/P2 시각 또는 사용성 결함 없음.
 
 final result: passed

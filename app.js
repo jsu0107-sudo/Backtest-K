@@ -2053,14 +2053,9 @@
   }
 
   function renderMarketDataStatus() {
-    const banner = $("#dataBanner");
-    const bannerText = $("#dataBannerText");
     const status = $("#marketDataStatus");
     if (state.marketDataReady && state.dataCatalog) {
       const catalog = state.dataCatalog;
-      banner.classList.add("ready");
-      banner.classList.remove("fallback");
-      bannerText.innerHTML = `<strong>실데이터 ${catalog.asset_count.toLocaleString()}개</strong> · 기준일 ${escapeHtml(catalog.data_as_of)} · 필요할 때 종목별 JSON을 불러옵니다.`;
       const official = state.officialVerification;
       let officialChip = "<span>공식시세 대사 <strong>대기 (API 키 미등록)</strong></span>";
       if (official && Number(official.checked) > 0) {
@@ -2070,9 +2065,6 @@
       }
       status.innerHTML = `<div class="market-data-status-copy"><strong>정적 실데이터 카탈로그 연결 완료</strong><span>ETF 수정종가는 분배금 조정값을 사용하며, 공공데이터포털 공식 종가와의 대사 결과를 함께 표시합니다. 분배금 원장 독립 검증 전까지는 프로토타입 데이터입니다.</span></div><div class="market-data-stats"><span>ETF <strong>${catalog.etf_count.toLocaleString()}개</strong></span><span>대표지수 <strong>${catalog.index_count.toLocaleString()}개</strong></span><span>기준일 <strong>${escapeHtml(catalog.data_as_of)}</strong></span><span>상태 <strong>${escapeHtml(catalog.provider_status)}</strong></span>${officialChip}</div>`;
     } else {
-      banner.classList.add("fallback");
-      banner.classList.remove("ready");
-      bannerText.innerHTML = `<strong>실데이터 로드 실패</strong> · 합성 데모 데이터로 전환했습니다.`;
       status.innerHTML = `<div class="market-data-status-copy"><strong>데모 폴백 사용 중</strong><span>${escapeHtml(state.marketDataError?.message || "정적 JSON을 불러오지 못했습니다.")}</span></div>`;
     }
   }
