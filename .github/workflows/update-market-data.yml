@@ -33,6 +33,12 @@ jobs:
           python -m unittest discover -s tests -v
           python scripts/validate_market_data.py data --min-etfs 100 --max-etfs 200
 
+      - name: Reconcile against official public data API
+        # DATA_GO_KR_API_KEY secret이 없으면 스크립트가 스스로 건너뛴다(exit 0).
+        env:
+          DATA_GO_KR_API_KEY: ${{ secrets.DATA_GO_KR_API_KEY }}
+        run: python scripts/verify_official_prices.py data
+
       - name: Commit refreshed JSON
         shell: bash
         run: |

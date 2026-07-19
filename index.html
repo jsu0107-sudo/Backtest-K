@@ -128,6 +128,15 @@
               <div class="chart-legend" id="growthLegend"></div>
             </div>
             <div class="chart-wrap large"><canvas id="growthChart"></canvas><div id="growthTooltip" class="chart-tooltip"></div></div>
+            <div class="chart-controls">
+              <label class="chart-toggle"><input type="checkbox" id="growthLogScale" />로그 스케일</label>
+              <label class="chart-toggle"><input type="checkbox" id="growthRealValues" />물가 조정 (실질 가치)</label>
+            </div>
+          </div>
+
+          <div class="card table-card summary-card">
+            <div class="card-header"><div><p class="eyebrow">PERFORMANCE SUMMARY</p><h3>성과 요약</h3></div><span class="small-note">벤치마크에도 동일한 초기 투자금·월 적립을 적용</span></div>
+            <div class="table-scroll"><table class="summary-table"><thead><tr><th>지표</th><th>포트폴리오</th><th id="summaryBenchmarkHead">벤치마크</th></tr></thead><tbody id="performanceSummaryBody"></tbody></table></div>
           </div>
 
           <div class="analysis-tabs card" role="tablist" aria-label="분석 결과 탭">
@@ -151,6 +160,10 @@
           </div>
 
           <div id="result-returns" class="result-tab-panel">
+            <div class="card chart-card annual-chart-card">
+              <div class="card-header"><div><p class="eyebrow">ANNUAL RETURNS</p><h3>연도별 수익률 비교</h3></div><div class="chart-legend" id="annualLegend"></div></div>
+              <div class="chart-wrap medium"><canvas id="annualChart"></canvas><div id="annualTooltip" class="chart-tooltip"></div></div>
+            </div>
             <div class="card table-card">
               <div class="card-header"><div><p class="eyebrow">CALENDAR RETURNS</p><h3>연도별 수익률</h3></div><span class="small-note">TWRR 기준</span></div>
               <div class="table-scroll"><table><thead><tr><th>연도</th><th>포트폴리오</th><th>벤치마크</th><th>초과수익</th><th>평가</th></tr></thead><tbody id="annualReturnsBody"></tbody></table></div>

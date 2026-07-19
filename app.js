@@ -15,6 +15,7 @@
     compareSelected: new Set(["360750", "069500", "114260", "411060"]),
     compareFilter: "",
     dataCatalog: null,
+    officialVerification: null,
     marketDataReady: false,
     marketDataError: null,
     assetLoads: new Map(),
@@ -225,6 +226,18 @@
     const response = await fetch(DATA_CATALOG_URL, { cache: "no-cache" });
     if (!response.ok) throw new Error(`실데이터 카탈로그를 불러오지 못했습니다. (${response.status})`);
     registerMarketCatalog(await response.json());
+    loadOfficialVerification();
+  }
+
+  async function loadOfficialVerification() {
+    try {
+      const response = await fetch("data/official_verification.json", { cache: "no-cache" });
+      if (!response.ok) return;
+      state.officialVerification = await response.json();
+      renderMarketDataStatus();
+    } catch (_) {
+      // 대사 결과 파일이 없으면(키 미등록 등) 표시만 생략한다.
+    }
   }
 
   function validateMonthlyReturns(payload) {
@@ -716,13 +729,15 @@
 
       const balance = sum(holdings);
       const years = (index + 1) / 12;
-      const realBalance = balance / Math.pow(1 + settings.inflationRate, years);
+      const deflator = Math.pow(1 + settings.inflationRate, years);
       series.push({
         date,
         balance,
         principal,
         benchmarkBalance,
-        realBalance,
+        realBalance: balance / deflator,
+        realBenchmarkBalance: benchmarkBalance / deflator,
+        realPrincipal: principal / deflator,
         unitIndex,
         benchmarkIndex,
       });
@@ -735,11 +750,23 @@
     metrics.principal = series.at(-1).principal;
     metrics.realFinalBalance = series.at(-1).realBalance;
     metrics.benchmarkFinal = series.at(-1).benchmarkBalance;
+    metrics.realBenchmarkFinal = series.at(-1).realBenchmarkBalance;
+    metrics.initialAmount = settings.initialAmount;
     metrics.totalTradingCost = totalTradingCost + totalContributionCost;
     metrics.rebalanceCost = totalTradingCost;
     metrics.contributionCost = totalContributionCost;
+    const benchmarkCashflows = cashflows.slice(0, -1).concat({ t: dates.length, amount: metrics.benchmarkFinal });
+    metrics.benchmarkMwrr = monthlyIrr(benchmarkCashflows);
 
     const annualReturns = annualReturnRows(dates, monthlyReturns, benchmarkReturns);
+    if (annualReturns.length) {
+      const byPortfolio = [...annualReturns].sort((a, b) => a.portfolio - b.portfolio);
+      const byBenchmark = [...annualReturns].sort((a, b) => a.benchmark - b.benchmark);
+      metrics.worstYear = byPortfolio[0];
+      metrics.bestYear = byPortfolio.at(-1);
+      metrics.benchmarkWorstYear = byBenchmark[0];
+      metrics.benchmarkBestYear = byBenchmark.at(-1);
+    }
     const drawdowns = drawdownSeries(series.map((point) => point.unitIndex));
     const riskContributions = calculateRiskContributions(settings.allocations, dates);
     const correlations = correlationMatrix(settings.allocations.map((item) => item.assetId), dates);
@@ -777,6 +804,17 @@
     const sortino = downsideDeviation > 0 ? (annualizedReturn - riskFreeAnnual) / downsideDeviation : NaN;
     const benchmarkTotal = benchmarkReturns.reduce((acc, value) => acc * (1 + value), 1) - 1;
     const benchmarkAnnualized = Math.pow(1 + benchmarkTotal, 12 / count) - 1;
+    const benchmarkStd = standardDeviation(benchmarkReturns);
+    const benchmarkVolatility = benchmarkStd * Math.sqrt(12);
+    const benchmarkExcess = benchmarkReturns.map((value) => value - monthlyRf);
+    const benchmarkSharpe = benchmarkStd > 0 ? mean(benchmarkExcess) / benchmarkStd * Math.sqrt(12) : NaN;
+    const benchmarkDownside = Math.sqrt(mean(benchmarkReturns.map((value) => Math.min(0, value - monthlyRf) ** 2))) * Math.sqrt(12);
+    const benchmarkSortino = benchmarkDownside > 0 ? (benchmarkAnnualized - riskFreeAnnual) / benchmarkDownside : NaN;
+    const benchmarkDrawdownInfo = maxDrawdownDetails(series.map((point) => point.benchmarkIndex));
+    const activeMonthly = returns.map((value, index) => value - benchmarkReturns[index]);
+    const activeReturn = annualizedReturn - benchmarkAnnualized;
+    const trackingError = standardDeviation(activeMonthly) * Math.sqrt(12);
+    const informationRatio = trackingError > 0 ? activeReturn / trackingError : NaN;
     const maxDrawdownInfo = maxDrawdownDetails(series.map((point) => point.unitIndex));
     const mwrr = monthlyIrr(cashflows);
     const corrBenchmark = correlation(returns, benchmarkReturns);
@@ -789,6 +827,13 @@
       sharpe,
       sortino,
       benchmarkAnnualized,
+      benchmarkVolatility,
+      benchmarkSharpe,
+      benchmarkSortino,
+      benchmarkMaxDrawdown: benchmarkDrawdownInfo.maxDrawdown,
+      activeReturn,
+      trackingError,
+      informationRatio,
       maxDrawdown: maxDrawdownInfo.maxDrawdown,
       drawdownPeakIndex: maxDrawdownInfo.peakIndex,
       drawdownTroughIndex: maxDrawdownInfo.troughIndex,
@@ -950,14 +995,10 @@
     const gain = metrics.finalBalance - metrics.principal;
     const benchmarkGap = metrics.annualizedReturn - metrics.benchmarkAnnualized;
     const cards = [
-      { label: "최종 자산", value: fmtCompactKRW(metrics.finalBalance), sub: `순수익 ${fmtCompactKRW(gain)}`, tone: "", help: "납입 원금과 투자 손익을 합친 명목 자산" },
-      { label: "납입 원금", value: fmtCompactKRW(metrics.principal), sub: `거래비용 ${fmtCompactKRW(metrics.totalTradingCost)}`, tone: "blue", help: "초기 투자금과 월 적립금의 합계" },
-      { label: "연환산 수익률 · TWRR", value: fmtPct(metrics.annualizedReturn, 2), sub: `벤치마크 대비 ${fmtPp(benchmarkGap, 2)}`, tone: "", help: "입출금 영향을 제거한 시간가중수익률" },
-      { label: "투자자 수익률 · MWRR", value: fmtPct(metrics.mwrr, 2), sub: "실제 납입 시점을 반영", tone: "blue", help: "현금흐름을 반영한 내부수익률" },
+      { label: "최종 자산", value: fmtCompactKRW(metrics.finalBalance), sub: `납입 원금 ${fmtCompactKRW(metrics.principal)} · 순수익 ${fmtCompactKRW(gain)}`, tone: "", help: "납입 원금과 투자 손익을 합친 명목 자산" },
+      { label: "연환산 수익률 · TWRR", value: fmtPct(metrics.annualizedReturn, 2), sub: `벤치마크 대비 ${fmtPp(benchmarkGap, 2)}`, tone: "blue", help: "입출금 영향을 제거한 시간가중수익률" },
       { label: "최대 낙폭 · MDD", value: fmtPct(metrics.maxDrawdown, 1), sub: `저점까지 ${metrics.drawdownMonths}개월`, tone: "red", help: "과거 고점에서 가장 크게 하락한 비율" },
-      { label: "연환산 변동성", value: fmtPct(metrics.volatility, 1), sub: `베타 ${fmtNumber(metrics.beta, 2)}`, tone: "orange", help: "월 수익률 표준편차를 연율화" },
-      { label: "샤프지수", value: fmtNumber(metrics.sharpe, 2), sub: `소르티노 ${fmtNumber(metrics.sortino, 2)}`, tone: "", help: "무위험수익률 대비 위험 보상" },
-      { label: "실질 최종자산", value: fmtCompactKRW(metrics.realFinalBalance), sub: `물가 ${fmtPct(settings.inflationRate, 1)} 가정`, tone: "orange", help: "입력한 물가상승률로 할인한 현재가치" },
+      { label: "샤프지수", value: fmtNumber(metrics.sharpe, 2), sub: `변동성 ${fmtPct(metrics.volatility, 1)} · 소르티노 ${fmtNumber(metrics.sortino, 2)}`, tone: "orange", help: "무위험수익률 대비 위험 보상" },
     ];
     $("#metricCards").innerHTML = cards.map((card) => `<article class="metric-card card ${card.tone}">
       <div class="metric-label">${escapeHtml(card.label)} <span class="metric-info" title="${escapeHtml(card.help)}">i</span></div>
@@ -965,26 +1006,9 @@
       <div class="metric-sub">${escapeHtml(card.sub)}</div>
     </article>`).join("");
 
-    const benchmarkAsset = state.assets[settings.benchmarkId];
-    $("#growthLegend").innerHTML = [
-      ["포트폴리오", cssVar("--accent"), "line"],
-      [benchmarkAsset.name, cssVar("--blue"), "line"],
-      ["납입 원금", cssVar("--muted-2"), "dash"],
-    ].map(([label, color, type]) => `<span class="legend-item"><i class="${type === "dash" ? "legend-dash" : "legend-line"}" style="${type === "dash" ? `color:${color}` : `background:${color}`}"></i>${escapeHtml(label)}</span>`).join("");
-
-    setLineChart("growthChart", {
-      labels: dates,
-      data: result.series,
-      series: [
-        { key: "balance", label: "포트폴리오", color: cssVar("--accent"), width: 2.3, fill: true },
-        { key: "benchmarkBalance", label: benchmarkAsset.name, color: cssVar("--blue"), width: 1.6 },
-        { key: "principal", label: "납입 원금", color: cssVar("--muted-2"), width: 1.2, dash: [5, 5] },
-      ],
-      yFormatter: fmtCompactKRW,
-      tooltipFormatter: fmtKRW,
-      tooltipId: "growthTooltip",
-      yMin: 0,
-    });
+    renderPerformanceSummary();
+    renderGrowthChart();
+    renderAnnualChart();
 
     const peakDate = dates[metrics.drawdownPeakIndex];
     const troughDate = dates[metrics.drawdownTroughIndex];
@@ -1011,6 +1035,92 @@
     renderInsights();
     renderComparison();
     renderDataTable();
+  }
+
+  function renderPerformanceSummary() {
+    const result = state.lastBacktest;
+    if (!result) return;
+    const { metrics, settings } = result;
+    const benchmarkAsset = state.assets[settings.benchmarkId];
+    $("#summaryBenchmarkHead").textContent = benchmarkAsset.name;
+    const yearCell = (row, key) => row ? `${fmtPct(row[key], 1)} (${row.year})` : "—";
+    const rows = [
+      ["시작 자산", fmtKRW(metrics.initialAmount), fmtKRW(metrics.initialAmount), "백테스트 시작 시점의 초기 투자금"],
+      ["납입 원금", fmtKRW(metrics.principal), fmtKRW(metrics.principal), "초기 투자금과 월 적립금의 합계. 벤치마크에도 동일한 현금흐름을 적용"],
+      ["최종 자산", fmtKRW(metrics.finalBalance), fmtKRW(metrics.benchmarkFinal), "기간 말 명목 평가금액"],
+      ["실질 최종자산", fmtKRW(metrics.realFinalBalance), fmtKRW(metrics.realBenchmarkFinal), `물가상승률 ${fmtPct(settings.inflationRate, 1)} 가정으로 할인한 현재가치`],
+      ["연환산 수익률 (TWRR)", fmtPct(metrics.annualizedReturn, 2), fmtPct(metrics.benchmarkAnnualized, 2), "입출금 영향을 제거한 시간가중수익률"],
+      ["투자자 수익률 (MWRR)", fmtPct(metrics.mwrr, 2), fmtPct(metrics.benchmarkMwrr, 2), "납입 시점을 반영한 내부수익률"],
+      ["연환산 변동성", fmtPct(metrics.volatility, 2), fmtPct(metrics.benchmarkVolatility, 2), "월 수익률 표준편차 × √12"],
+      ["최고 연도 수익률", yearCell(metrics.bestYear, "portfolio"), yearCell(metrics.benchmarkBestYear, "benchmark"), "달력 연도 기준 (부분 연도 포함)"],
+      ["최악 연도 수익률", yearCell(metrics.worstYear, "portfolio"), yearCell(metrics.benchmarkWorstYear, "benchmark"), "달력 연도 기준 (부분 연도 포함)"],
+      ["최대 낙폭 (MDD)", fmtPct(metrics.maxDrawdown, 2), fmtPct(metrics.benchmarkMaxDrawdown, 2), "TWRR 단위지수 기준 고점 대비 최대 하락"],
+      ["샤프지수", fmtNumber(metrics.sharpe, 2), fmtNumber(metrics.benchmarkSharpe, 2), "무위험수익률 대비 위험 보상"],
+      ["소르티노지수", fmtNumber(metrics.sortino, 2), fmtNumber(metrics.benchmarkSortino, 2), "하방 변동성 대비 위험 보상"],
+      ["베타", fmtNumber(metrics.beta, 2), "1.00", "벤치마크 대비 민감도"],
+      ["초과수익률 (연환산)", fmtPp(metrics.activeReturn, 2), "—", "포트폴리오 TWRR − 벤치마크 TWRR"],
+      ["추적오차", fmtPct(metrics.trackingError, 2), "—", "월 초과수익률 표준편차 × √12"],
+      ["정보비율", fmtNumber(metrics.informationRatio, 2), "—", "연환산 초과수익률 ÷ 추적오차"],
+      ["벤치마크 상관계수", fmtNumber(metrics.correlationBenchmark, 2), "—", "월 수익률 상관계수"],
+    ];
+    $("#performanceSummaryBody").innerHTML = rows.map(([label, portfolio, benchmark, help]) => `<tr>
+      <td>${escapeHtml(label)}<span class="metric-info" title="${escapeHtml(help)}">i</span></td>
+      <td>${escapeHtml(portfolio)}</td>
+      <td>${escapeHtml(benchmark)}</td>
+    </tr>`).join("");
+  }
+
+  function renderGrowthChart() {
+    const result = state.lastBacktest;
+    if (!result) return;
+    const { settings, dates } = result;
+    const benchmarkAsset = state.assets[settings.benchmarkId];
+    const useLog = Boolean($("#growthLogScale")?.checked);
+    const useReal = Boolean($("#growthRealValues")?.checked);
+    const keys = useReal
+      ? { balance: "realBalance", benchmark: "realBenchmarkBalance", principal: "realPrincipal" }
+      : { balance: "balance", benchmark: "benchmarkBalance", principal: "principal" };
+    const suffix = useReal ? " (실질)" : "";
+    $("#growthLegend").innerHTML = [
+      [`포트폴리오${suffix}`, cssVar("--accent"), "line"],
+      [`${benchmarkAsset.name}${suffix}`, cssVar("--blue"), "line"],
+      [`납입 원금${suffix}`, cssVar("--muted-2"), "dash"],
+    ].map(([label, color, type]) => `<span class="legend-item"><i class="${type === "dash" ? "legend-dash" : "legend-line"}" style="${type === "dash" ? `color:${color}` : `background:${color}`}"></i>${escapeHtml(label)}</span>`).join("");
+
+    setLineChart("growthChart", {
+      labels: dates,
+      data: result.series,
+      series: [
+        { key: keys.balance, label: `포트폴리오${suffix}`, color: cssVar("--accent"), width: 2.3, fill: !useLog },
+        { key: keys.benchmark, label: `${benchmarkAsset.name}${suffix}`, color: cssVar("--blue"), width: 1.6 },
+        { key: keys.principal, label: `납입 원금${suffix}`, color: cssVar("--muted-2"), width: 1.2, dash: [5, 5] },
+      ],
+      yFormatter: fmtCompactKRW,
+      tooltipFormatter: fmtKRW,
+      tooltipId: "growthTooltip",
+      ...(useLog ? { scale: "log" } : { yMin: 0 }),
+    });
+  }
+
+  function renderAnnualChart() {
+    const result = state.lastBacktest;
+    if (!result) return;
+    const { settings, annualReturns } = result;
+    const benchmarkAsset = state.assets[settings.benchmarkId];
+    $("#annualLegend").innerHTML = [
+      ["포트폴리오", cssVar("--accent")],
+      [benchmarkAsset.name, cssVar("--blue")],
+    ].map(([label, color]) => `<span class="legend-item"><i class="legend-line" style="background:${color}"></i>${escapeHtml(label)}</span>`).join("");
+    setBarChart("annualChart", {
+      categories: annualReturns.map((row) => row.year),
+      series: [
+        { label: "포트폴리오", color: cssVar("--accent"), values: annualReturns.map((row) => row.portfolio) },
+        { label: benchmarkAsset.name, color: cssVar("--blue"), values: annualReturns.map((row) => row.benchmark) },
+      ],
+      yFormatter: (value) => fmtPct(value, 0),
+      tooltipFormatter: (value) => fmtPct(value, 2),
+      tooltipId: "annualTooltip",
+    });
   }
 
   function iconSvg(type) {
@@ -1115,7 +1225,7 @@
       const config = canvas.__chartConfig;
       if (!config || !config.data?.length) return;
       const rect = canvas.getBoundingClientRect();
-      const margin = { left: 58, right: 15 };
+      const margin = { left: 70, right: 15 };
       const plotWidth = rect.width - margin.left - margin.right;
       const x = clamp(event.clientX - rect.left - margin.left, 0, plotWidth);
       config.hoverIndex = Math.round(x / Math.max(1, plotWidth) * (config.data.length - 1));
@@ -1150,7 +1260,7 @@
     const { ctx, width, height } = resizeCanvas(canvas);
     ctx.clearRect(0, 0, width, height);
     if (!config.data?.length) return;
-    const margin = { left: 58, right: 15, top: 14, bottom: 30 };
+    const margin = { left: 70, right: 15, top: 14, bottom: 32 };
     const plotWidth = width - margin.left - margin.right;
     const plotHeight = height - margin.top - margin.bottom;
     const values = config.series.flatMap((series) => config.data.map((row) => Number(row[series.key])).filter(Number.isFinite));
@@ -1159,19 +1269,27 @@
     if (config.yMin === undefined && min > 0) min = min * 0.92;
     if (config.yMax === undefined && max < 0) max = max * 0.92;
     if (Math.abs(max - min) < 1e-9) { max += 1; min -= 1; }
-    const padding = (max - min) * 0.06;
-    if (config.yMin === undefined) min -= padding;
-    if (config.yMax === undefined) max += padding;
+    const useLog = config.scale === "log" && min > 0;
+    if (!useLog) {
+      const padding = (max - min) * 0.06;
+      if (config.yMin === undefined) min -= padding;
+      if (config.yMax === undefined) max += padding;
+    }
+    const logMin = useLog ? Math.log10(min) : 0;
+    const logMax = useLog ? Math.log10(max) : 1;
+    const logSpan = Math.max(1e-9, logMax - logMin);
     const xFor = (index) => margin.left + (index / Math.max(1, config.data.length - 1)) * plotWidth;
-    const yFor = (value) => margin.top + (max - value) / (max - min) * plotHeight;
+    const yFor = useLog
+      ? (value) => margin.top + (logMax - Math.log10(Math.max(value, min * 1e-6))) / logSpan * plotHeight
+      : (value) => margin.top + (max - value) / (max - min) * plotHeight;
 
-    ctx.font = '9px system-ui, -apple-system, "Segoe UI", sans-serif';
+    ctx.font = '11px system-ui, -apple-system, "Segoe UI", sans-serif';
     ctx.textBaseline = "middle";
     const grid = cssVar("--grid-line");
     const muted = cssVar("--muted-2");
     for (let i = 0; i <= 4; i += 1) {
       const y = margin.top + plotHeight * i / 4;
-      const value = max - (max - min) * i / 4;
+      const value = useLog ? Math.pow(10, logMax - logSpan * i / 4) : max - (max - min) * i / 4;
       ctx.strokeStyle = grid;
       ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(margin.left, y); ctx.lineTo(width - margin.right, y); ctx.stroke();
@@ -1254,6 +1372,122 @@
     const g = (value >> 8) & 255;
     const b = value & 255;
     return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  function setBarChart(canvasId, config) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    config.hoverIndex = null;
+    canvas.__barConfig = config;
+    state.chartConfigs.set(canvasId, { type: "bar", config });
+    if (!canvas.__barBound) {
+      canvas.__barBound = true;
+      canvas.addEventListener("mousemove", (event) => {
+        const cfg = canvas.__barConfig;
+        if (!cfg || !cfg.categories?.length) return;
+        const rect = canvas.getBoundingClientRect();
+        const margin = { left: 70, right: 15 };
+        const plotWidth = rect.width - margin.left - margin.right;
+        const x = event.clientX - rect.left - margin.left;
+        cfg.hoverIndex = clamp(Math.floor(x / Math.max(1, plotWidth) * cfg.categories.length), 0, cfg.categories.length - 1);
+        drawBarChart(canvas, cfg);
+        showBarTooltip(canvas, cfg, event);
+      });
+      canvas.addEventListener("mouseleave", () => {
+        const cfg = canvas.__barConfig;
+        if (!cfg) return;
+        cfg.hoverIndex = null;
+        drawBarChart(canvas, cfg);
+        const tooltip = document.getElementById(cfg.tooltipId);
+        if (tooltip) tooltip.style.display = "none";
+      });
+    }
+    drawBarChart(canvas, config);
+  }
+
+  function drawBarChart(canvas, config) {
+    const { ctx, width, height } = resizeCanvas(canvas);
+    ctx.clearRect(0, 0, width, height);
+    const categories = config.categories || [];
+    if (!categories.length) return;
+    const margin = { left: 70, right: 15, top: 14, bottom: 32 };
+    const plotWidth = width - margin.left - margin.right;
+    const plotHeight = height - margin.top - margin.bottom;
+    const values = config.series.flatMap((series) => series.values).filter(Number.isFinite);
+    let min = Math.min(0, ...values);
+    let max = Math.max(0, ...values);
+    if (Math.abs(max - min) < 1e-9) max += 0.01;
+    const padding = (max - min) * 0.1;
+    if (min < 0) min -= padding;
+    if (max > 0) max += padding;
+    const yFor = (value) => margin.top + (max - value) / (max - min) * plotHeight;
+
+    ctx.font = '11px system-ui, -apple-system, "Segoe UI", sans-serif';
+    ctx.textBaseline = "middle";
+    const grid = cssVar("--grid-line");
+    const muted = cssVar("--muted-2");
+    for (let i = 0; i <= 4; i += 1) {
+      const y = margin.top + plotHeight * i / 4;
+      const value = max - (max - min) * i / 4;
+      ctx.strokeStyle = grid;
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(margin.left, y); ctx.lineTo(width - margin.right, y); ctx.stroke();
+      ctx.fillStyle = muted;
+      ctx.textAlign = "right";
+      ctx.fillText(config.yFormatter ? config.yFormatter(value) : value.toFixed(1), margin.left - 8, y);
+    }
+
+    const groupWidth = plotWidth / categories.length;
+    if (config.hoverIndex !== null && config.hoverIndex >= 0) {
+      ctx.fillStyle = hexToRgba(cssVar("--blue"), 0.07);
+      ctx.fillRect(margin.left + config.hoverIndex * groupWidth, margin.top, groupWidth, plotHeight);
+    }
+
+    const groupPadding = Math.min(9, groupWidth * 0.18);
+    const barGap = 2;
+    const barWidth = Math.max(2, (groupWidth - groupPadding * 2 - barGap * (config.series.length - 1)) / config.series.length);
+    const zeroY = yFor(0);
+    categories.forEach((_, index) => {
+      config.series.forEach((series, seriesIndex) => {
+        const value = series.values[index];
+        if (!Number.isFinite(value)) return;
+        const x = margin.left + index * groupWidth + groupPadding + seriesIndex * (barWidth + barGap);
+        const y = yFor(value);
+        ctx.fillStyle = series.color;
+        ctx.fillRect(x, Math.min(y, zeroY), barWidth, Math.max(1, Math.abs(zeroY - y)));
+      });
+    });
+
+    ctx.strokeStyle = cssVar("--border-strong");
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(margin.left, zeroY); ctx.lineTo(width - margin.right, zeroY); ctx.stroke();
+
+    const labelEvery = Math.ceil(categories.length / Math.max(2, Math.floor(plotWidth / 62)));
+    ctx.fillStyle = muted;
+    categories.forEach((label, index) => {
+      if (index % labelEvery !== 0 && index !== categories.length - 1) return;
+      if (index === categories.length - 1 && categories.length > 1 && (categories.length - 1) % labelEvery !== 0 && groupWidth < 34) return;
+      ctx.textAlign = "center";
+      ctx.fillText(String(label), margin.left + index * groupWidth + groupWidth / 2, height - 11);
+    });
+  }
+
+  function showBarTooltip(canvas, config, event) {
+    const tooltip = document.getElementById(config.tooltipId);
+    if (!tooltip) return;
+    const index = clamp(config.hoverIndex, 0, config.categories.length - 1);
+    tooltip.innerHTML = `<strong>${escapeHtml(String(config.categories[index]))}년</strong>${config.series.map((series) => {
+      const value = series.values[index];
+      const text = config.tooltipFormatter ? config.tooltipFormatter(value) : String(value);
+      return `<div class="tip-row"><span><i style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${series.color};margin-right:5px"></i>${escapeHtml(series.label)}</span><b>${escapeHtml(text)}</b></div>`;
+    }).join("")}`;
+    tooltip.style.display = "block";
+    const wrapRect = canvas.parentElement.getBoundingClientRect();
+    const x = event.clientX - wrapRect.left;
+    const y = event.clientY - wrapRect.top;
+    const tooltipWidth = tooltip.offsetWidth || 160;
+    tooltip.style.left = `${clamp(x + 12, 6, wrapRect.width - tooltipWidth - 6)}px`;
+    tooltip.style.top = `${clamp(y - 20, 6, wrapRect.height - 100)}px`;
   }
 
   function runMonteCarlo() {
@@ -1370,7 +1604,7 @@
         const cfg = canvas.__fanConfig;
         if (!cfg) return;
         const rect = canvas.getBoundingClientRect();
-        const margin = { left: 60, right: 15 };
+        const margin = { left: 72, right: 15 };
         const plotWidth = rect.width - margin.left - margin.right;
         const x = clamp(event.clientX - rect.left - margin.left, 0, plotWidth);
         cfg.hoverIndex = Math.round(x / Math.max(1, plotWidth) * (cfg.mc.percentileSeries.length - 1));
@@ -1393,7 +1627,7 @@
     ctx.clearRect(0, 0, width, height);
     const data = config.mc.percentileSeries;
     if (!data.length) return;
-    const margin = { left: 60, right: 15, top: 16, bottom: 31 };
+    const margin = { left: 72, right: 15, top: 16, bottom: 32 };
     const plotWidth = width - margin.left - margin.right;
     const plotHeight = height - margin.top - margin.bottom;
     const min = 0;
@@ -1402,7 +1636,7 @@
     const yFor = (value) => margin.top + (max - value) / Math.max(1, max - min) * plotHeight;
     const grid = cssVar("--grid-line");
     const muted = cssVar("--muted-2");
-    ctx.font = '9px system-ui, -apple-system, "Segoe UI", sans-serif';
+    ctx.font = '11px system-ui, -apple-system, "Segoe UI", sans-serif';
     ctx.textBaseline = "middle";
     for (let i = 0; i <= 4; i += 1) {
       const y = margin.top + plotHeight * i / 4;
@@ -1703,7 +1937,14 @@
       banner.classList.add("ready");
       banner.classList.remove("fallback");
       bannerText.innerHTML = `<strong>실데이터 ${catalog.asset_count.toLocaleString()}개</strong> · 기준일 ${escapeHtml(catalog.data_as_of)} · 필요할 때 종목별 JSON을 불러옵니다.`;
-      status.innerHTML = `<div class="market-data-status-copy"><strong>정적 실데이터 카탈로그 연결 완료</strong><span>ETF 수정종가는 분배금 조정값을 사용하지만 공급자 계수와 별도 원장을 아직 독립 대사하지 않은 프로토타입입니다.</span></div><div class="market-data-stats"><span>ETF <strong>${catalog.etf_count.toLocaleString()}개</strong></span><span>대표지수 <strong>${catalog.index_count.toLocaleString()}개</strong></span><span>기준일 <strong>${escapeHtml(catalog.data_as_of)}</strong></span><span>상태 <strong>${escapeHtml(catalog.provider_status)}</strong></span></div>`;
+      const official = state.officialVerification;
+      let officialChip = "<span>공식시세 대사 <strong>대기 (API 키 미등록)</strong></span>";
+      if (official && Number(official.checked) > 0) {
+        officialChip = Number(official.mismatched) === 0
+          ? `<span>공식시세 대사 <strong>${Number(official.matched).toLocaleString()}/${Number(official.checked).toLocaleString()} 일치</strong></span>`
+          : `<span>공식시세 대사 <strong>불일치 ${Number(official.mismatched).toLocaleString()}건</strong></span>`;
+      }
+      status.innerHTML = `<div class="market-data-status-copy"><strong>정적 실데이터 카탈로그 연결 완료</strong><span>ETF 수정종가는 분배금 조정값을 사용하며, 공공데이터포털 공식 종가와의 대사 결과를 함께 표시합니다. 분배금 원장 독립 검증 전까지는 프로토타입 데이터입니다.</span></div><div class="market-data-stats"><span>ETF <strong>${catalog.etf_count.toLocaleString()}개</strong></span><span>대표지수 <strong>${catalog.index_count.toLocaleString()}개</strong></span><span>기준일 <strong>${escapeHtml(catalog.data_as_of)}</strong></span><span>상태 <strong>${escapeHtml(catalog.provider_status)}</strong></span>${officialChip}</div>`;
     } else {
       banner.classList.add("fallback");
       banner.classList.remove("ready");
@@ -1828,6 +2069,7 @@
       if (!canvas || canvas.offsetParent === null) return;
       if (type === "line") drawLineChart(canvas, config);
       if (type === "fan") drawFanChart(canvas, config);
+      if (type === "bar") drawBarChart(canvas, config);
     });
   }
 
@@ -1870,6 +2112,10 @@
       renderCompareSelector();
     });
     $("#themeToggle").addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
+    ["growthLogScale", "growthRealValues"].forEach((id) => {
+      const box = document.getElementById(id);
+      if (box) box.addEventListener("change", renderGrowthChart);
+    });
 
     const csvFile = $("#csvFile");
     csvFile.addEventListener("change", async () => {

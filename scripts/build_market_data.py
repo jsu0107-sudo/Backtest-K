@@ -206,7 +206,9 @@ def _unix_seconds(value: dt.datetime) -> int:
     return int(value.replace(tzinfo=dt.timezone.utc).timestamp())
 
 
-def fetch_yahoo_series(symbol: str, start_date: dt.date, end_date: dt.date) -> tuple[list[tuple[dt.date, float]], dict[str, Any], int]:
+def fetch_yahoo_series(
+    symbol: str, start_date: dt.date, end_date: dt.date
+) -> tuple[list[tuple[dt.date, float]], dict[str, Any], int, dict[str, Any] | None]:
     params = urllib.parse.urlencode(
         {
             "period1": _unix_seconds(dt.datetime.combine(start_date, dt.time.min)),
@@ -244,8 +246,21 @@ def fetch_yahoo_series(symbol: str, start_date: dt.date, end_date: dt.date) -> t
     if len(points) < 3:
         raise CollectionError(f"Yahoo chart returned fewer than three usable prices for {symbol}")
 
+    # 공식 공공데이터 대사용 원시(미조정) 종가. 수정종가와 달리 거래소 공표 종가와
+    # 직접 비교할 수 있어 provisional 공급자의 시세 정확성을 검증하는 기준이 된다.
+    latest_raw_close: dict[str, Any] | None = None
+    for timestamp, price in zip(timestamps, closes):
+        if price is None:
+            continue
+        number = float(price)
+        if not math.isfinite(number) or number <= 0:
+            continue
+        date = dt.datetime.fromtimestamp(int(timestamp), tz=dt.timezone.utc).date().isoformat()
+        if latest_raw_close is None or date > latest_raw_close["date"]:
+            latest_raw_close = {"date": date, "close": round(number, 6)}
+
     events = result.get("events", {}).get("dividends", {}) or {}
-    return points, result.get("meta", {}), len(events)
+    return points, result.get("meta", {}), len(events), latest_raw_close
 
 
 def last_complete_month(today: dt.date) -> str:
@@ -319,7 +334,7 @@ def _date_from_first_trade(meta: dict[str, Any], fallback: str) -> str:
 
 
 def build_asset_payload(request: AssetRequest, start_date: dt.date, today: dt.date) -> dict[str, Any]:
-    points, meta, dividend_event_count = fetch_yahoo_series(request.symbol, start_date, today)
+    points, meta, dividend_event_count, latest_raw_close = fetch_yahoo_series(request.symbol, start_date, today)
     monthly_returns, first_observation, data_as_of = monthly_returns_from_prices(
         points, complete_through=last_complete_month(today)
     )
@@ -395,6 +410,7 @@ def build_asset_payload(request: AssetRequest, start_date: dt.date, today: dt.da
         "data_quality": {"status": "provisional", "warnings": warnings},
         "universe_rank": request.rank,
         "market_value_krw_100m": request.market_value_krw_100m,
+        "latest_raw_close": latest_raw_close if request.asset_type == "etf" else None,
         "monthly_returns": monthly_returns,
     }
 
