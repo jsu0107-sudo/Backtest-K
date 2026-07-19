@@ -252,7 +252,8 @@ def fetch_yahoo_series(
 
     # 공식 공공데이터 대사용 원시(미조정) 종가. 수정종가와 달리 거래소 공표 종가와
     # 직접 비교할 수 있어 provisional 공급자의 시세 정확성을 검증하는 기준이 된다.
-    latest_raw_close: dict[str, Any] | None = None
+    # 공식 API의 공표 지연에 대비해 최근 여러 영업일을 함께 보관한다.
+    raw_by_date: dict[str, float] = {}
     for timestamp, price in zip(timestamps, closes):
         if price is None:
             continue
@@ -260,11 +261,13 @@ def fetch_yahoo_series(
         if not math.isfinite(number) or number <= 0:
             continue
         date = dt.datetime.fromtimestamp(int(timestamp), tz=dt.timezone.utc).date().isoformat()
-        if latest_raw_close is None or date > latest_raw_close["date"]:
-            latest_raw_close = {"date": date, "close": round(number, 6)}
+        raw_by_date[date] = number
+    recent_raw_closes = [
+        {"date": date, "close": round(raw_by_date[date], 6)} for date in sorted(raw_by_date)[-10:]
+    ]
 
     events = result.get("events", {}).get("dividends", {}) or {}
-    return points, result.get("meta", {}), len(events), latest_raw_close
+    return points, result.get("meta", {}), len(events), recent_raw_closes
 
 
 def last_complete_month(today: dt.date) -> str:
@@ -386,7 +389,7 @@ def _date_from_first_trade(meta: dict[str, Any], fallback: str) -> str:
 
 def build_asset_payload(request: AssetRequest, start_date: dt.date, today: dt.date) -> dict[str, Any]:
     history_start = request.history_start or start_date
-    points, meta, dividend_event_count, latest_raw_close = fetch_yahoo_series(request.symbol, history_start, today)
+    points, meta, dividend_event_count, recent_raw_closes = fetch_yahoo_series(request.symbol, history_start, today)
     monthly_returns, first_observation, data_as_of, quality_notes = monthly_returns_from_prices(
         points, complete_through=last_complete_month(today)
     )
@@ -472,7 +475,8 @@ def build_asset_payload(request: AssetRequest, start_date: dt.date, today: dt.da
         "data_quality": {"status": "provisional", "warnings": warnings},
         "universe_rank": request.rank,
         "market_value_krw_100m": request.market_value_krw_100m,
-        "latest_raw_close": latest_raw_close if request.asset_type == "etf" else None,
+        "latest_raw_close": recent_raw_closes[-1] if request.asset_type == "etf" and recent_raw_closes else None,
+        "recent_raw_closes": recent_raw_closes if request.asset_type == "etf" else None,
         "monthly_returns": monthly_returns,
     }
 

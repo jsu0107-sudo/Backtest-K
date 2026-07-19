@@ -33,10 +33,10 @@ class OfficialVerificationTests(unittest.TestCase):
 
     def test_reconcile_counts_matches_and_mismatches(self):
         records = [
-            {"ticker": "069500", "name": "KODEX 200", "latest_raw_close": {"date": "2026-07-16", "close": 31500.0}},
-            {"ticker": "360750", "name": "TIGER 미국S&P500", "latest_raw_close": {"date": "2026-07-16", "close": 20000.0}},
-            {"ticker": "114260", "name": "KODEX 국고채3년", "latest_raw_close": {"date": "2026-07-16", "close": 60000.0}},
-            {"ticker": "133690", "name": "TIGER 미국나스닥100", "latest_raw_close": None},
+            {"ticker": "069500", "name": "KODEX 200", "recent_raw_closes": [{"date": "2026-07-16", "close": 31500.0}]},
+            {"ticker": "360750", "name": "TIGER 미국S&P500", "recent_raw_closes": [{"date": "2026-07-16", "close": 20000.0}]},
+            {"ticker": "114260", "name": "KODEX 국고채3년", "recent_raw_closes": [{"date": "2026-07-16", "close": 60000.0}]},
+            {"ticker": "133690", "name": "TIGER 미국나스닥100", "recent_raw_closes": None, "latest_raw_close": None},
         ]
         official = {
             "069500": {"20260716": 31500.0},
@@ -50,7 +50,25 @@ class OfficialVerificationTests(unittest.TestCase):
         self.assertEqual(summary["status"], "mismatch")
         self.assertEqual(summary["mismatches"][0]["ticker"], "360750")
 
-    def test_reconcile_all_matched_is_ok(self):
+    def test_reconcile_uses_latest_common_date_when_official_lags(self):
+        # 공식 API가 최신 영업일을 아직 공표하지 않아도, 양쪽에 존재하는
+        # 가장 최근 날짜(07-14)로 대사해야 한다.
+        records = [{
+            "ticker": "069500",
+            "name": "KODEX 200",
+            "recent_raw_closes": [
+                {"date": "2026-07-14", "close": 31000.0},
+                {"date": "2026-07-15", "close": 31200.0},
+                {"date": "2026-07-16", "close": 31500.0},
+            ],
+        }]
+        official = {"069500": {"20260710": 30900.0, "20260714": 31000.5}}
+        summary = reconcile(records, official, tolerance_bps=20.0)
+        self.assertEqual(summary["matched"], 1)
+        self.assertEqual(summary["missing_official"], 0)
+        self.assertEqual(summary["official_basdt_end"], "20260714")
+
+    def test_reconcile_falls_back_to_latest_raw_close(self):
         records = [{"ticker": "069500", "name": "KODEX 200", "latest_raw_close": {"date": "2026-07-16", "close": 31500.0}}]
         summary = reconcile(records, {"069500": {"20260716": 31500.4}}, tolerance_bps=20.0)
         self.assertEqual(summary["status"], "ok")

@@ -135,16 +135,28 @@ def collect_official_closes(
     return closes
 
 
+def _local_closes(record: dict[str, Any]) -> list[dict[str, Any]]:
+    closes = record.get("recent_raw_closes")
+    if not isinstance(closes, list) or not closes:
+        latest = record.get("latest_raw_close")
+        closes = [latest] if isinstance(latest, dict) else []
+    return [
+        row for row in closes
+        if isinstance(row, dict) and row.get("date") and row.get("close")
+    ]
+
+
 def reconcile(
     etf_records: list[dict[str, Any]],
     official_closes: dict[str, dict[str, float]],
     *,
     tolerance_bps: float = DEFAULT_TOLERANCE_BPS,
 ) -> dict[str, Any]:
-    """Compare each ETF's latest_raw_close with the official close on the same date.
+    """Compare each ETF's recent raw closes with official closes.
 
-    ``etf_records``는 {"ticker", "name", "latest_raw_close": {"date", "close"}}
-    형태의 dict 목록이다.  latest_raw_close가 없으면 missing_local로 집계한다.
+    공식 API의 공표 지연이나 수집 시차로 최신 날짜가 서로 어긋날 수 있으므로,
+    종목별로 **양쪽에 모두 존재하는 가장 최근 날짜**를 찾아 그 날의 종가를
+    비교한다.  비교 가능한 날짜가 하나도 없으면 missing_official로 집계한다.
     """
     matched = 0
     mismatched = 0
@@ -155,17 +167,22 @@ def reconcile(
 
     for record in etf_records:
         ticker = str(record.get("ticker", ""))
-        raw = record.get("latest_raw_close")
-        if not isinstance(raw, dict) or not raw.get("date") or not raw.get("close"):
+        closes = _local_closes(record)
+        if not closes:
             missing_local += 1
             continue
-        local_date = str(raw["date"])
-        local_close = float(raw["close"])
-        bas_dt = local_date.replace("-", "")
-        official = official_closes.get(ticker, {}).get(bas_dt)
-        if official is None:
+        official_by_date = official_closes.get(ticker, {})
+        hit: tuple[str, float, float] | None = None
+        for row in sorted(closes, key=lambda item: str(item["date"]), reverse=True):
+            bas_dt = str(row["date"]).replace("-", "")
+            official = official_by_date.get(bas_dt)
+            if official is not None:
+                hit = (str(row["date"]), float(row["close"]), official)
+                break
+        if hit is None:
             missing_official += 1
             continue
+        local_date, local_close, official = hit
         diff_bps = abs(official / local_close - 1) * 10000 if local_close > 0 else float("inf")
         max_diff_bps = max(max_diff_bps, diff_bps)
         if diff_bps <= tolerance_bps:
@@ -185,6 +202,7 @@ def reconcile(
                 )
 
     checked = matched + mismatched
+    official_dates = sorted({bas_dt for by_date in official_closes.values() for bas_dt in by_date})
     return {
         "checked": checked,
         "matched": matched,
@@ -193,6 +211,8 @@ def reconcile(
         "missing_local": missing_local,
         "max_diff_bps": round(max_diff_bps, 2),
         "tolerance_bps": tolerance_bps,
+        "official_basdt_begin": official_dates[0] if official_dates else None,
+        "official_basdt_end": official_dates[-1] if official_dates else None,
         "mismatches": mismatch_details,
         "status": "ok" if checked > 0 and mismatched == 0 else ("mismatch" if mismatched else "no_overlap"),
     }
@@ -214,6 +234,7 @@ def load_etf_records(data_dir: Path) -> list[dict[str, Any]]:
                 "ticker": payload.get("ticker"),
                 "name": payload.get("name"),
                 "latest_raw_close": payload.get("latest_raw_close"),
+                "recent_raw_closes": payload.get("recent_raw_closes"),
             }
         )
     return records
@@ -260,7 +281,7 @@ def main(argv: list[str] | None = None) -> int:
     }
     output_path = args.output or (args.data_dir / "official_verification.json")
     output_path.write_text(json.dumps(output, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({key: output[key] for key in ("checked", "matched", "mismatched", "missing_official", "missing_local", "max_diff_bps", "status")}, ensure_ascii=False, indent=2))
+    print(json.dumps({key: output[key] for key in ("checked", "matched", "mismatched", "missing_official", "missing_local", "max_diff_bps", "official_basdt_begin", "official_basdt_end", "status")}, ensure_ascii=False, indent=2))
     return 0
 
 
