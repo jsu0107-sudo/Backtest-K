@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="레이 달리오의 올웨더 개념을 국내 상장 ETF 4종(미국 S&P500·국고채·미국 장기국채·금)으로 구현한 포트폴리오의 실데이터 백테스트 결과." />
+  <meta name="theme-color" content="#07111f" />
+  <title>한국형 올웨더 포트폴리오 백테스트 — 구성·수익률·MDD | 백테스트K</title>
+  <link rel="canonical" href="https://backtest-k.vercel.app/portfolio/all-weather" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="백테스트K" />
+  <meta property="og:title" content="한국형 올웨더 포트폴리오 백테스트 — 구성·수익률·MDD" />
+  <meta property="og:description" content="레이 달리오의 올웨더 개념을 국내 상장 ETF 4종(미국 S&P500·국고채·미국 장기국채·금)으로 구현한 포트폴리오의 실데이터 백테스트 결과." />
+  <meta property="og:url" content="https://backtest-k.vercel.app/portfolio/all-weather" />
+  <meta property="og:image" content="https://backtest-k.vercel.app/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "올웨더 포트폴리오란 무엇인가요?", "acceptedAnswer": {"@type": "Answer", "text": "경제 성장과 물가의 상승·하락이 만드는 네 국면에 각각 유리한 자산(주식·장기채·금 등)을 위험 균형에 가깝게 배분해, 특정 국면 예측 없이 장기 보유하도록 설계한 자산배분 전략입니다."}}, {"@type": "Question", "name": "환헤지는 어떻게 처리되나요?", "acceptedAnswer": {"@type": "Answer", "text": "이 구성에서 미국 30년국채는 환헤지(H)형, TIGER 미국S&P500은 환노출형입니다. 환노출 주식은 위기 시 원/달러 상승이 낙폭을 줄여주는 경향이 있습니다."}}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "백테스트K", "item": "https://backtest-k.vercel.app/"}, {"@type": "ListItem", "position": 2, "name": "전략 모음", "item": "https://backtest-k.vercel.app/portfolio/"}, {"@type": "ListItem", "position": 3, "name": "한국형 올웨더 포트폴리오", "item": "https://backtest-k.vercel.app/portfolio/all-weather"}]}</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    .pf-shell { width: min(880px, calc(100% - 32px)); margin: 0 auto; padding: 36px 0 60px; display: grid; gap: 16px; }
+    .pf-breadcrumb { color: var(--muted-2); font-size: 13px; }
+    .pf-breadcrumb a { color: var(--muted); }
+    .pf-breadcrumb a:hover { color: var(--accent); }
+    .pf-heading h1 { margin: 6px 0 10px; font-size: clamp(25px, 4vw, 36px); letter-spacing: -.04em; }
+    .pf-heading p { margin: 0 0 10px; color: var(--muted); font-size: 15px; line-height: 1.8; }
+    .pf-section { padding: 18px 20px; }
+    .pf-section h2 { margin: 0 0 12px; font-size: 17px; letter-spacing: -.02em; }
+    .pf-section p { margin: 0 0 10px; color: var(--muted); font-size: 14px; line-height: 1.8; }
+    .pf-metrics { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+    .pf-period { color: var(--muted-2); font-size: 13px; line-height: 1.7; }
+    .pf-cta { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; padding: 10px 0; }
+    .pf-cta .primary-btn { padding: 13px 26px; font-size: 15px; text-decoration: none; }
+    .pf-cta .secondary-btn { text-decoration: none; }
+    .pf-faq dt { font-weight: 800; font-size: 14.5px; margin-top: 14px; }
+    .pf-faq dd { margin: 6px 0 0; color: var(--muted); font-size: 14px; line-height: 1.8; }
+    .pf-footer { text-align: center; color: var(--muted-2); font-size: 12px; line-height: 1.7; padding-top: 10px; border-top: 1px solid var(--border); }
+    .pf-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+    .pf-card { display: block; padding: 20px; }
+    .pf-card:hover { border-color: var(--border-strong); }
+    .pf-card h2 { margin: 0 0 8px; font-size: 18px; letter-spacing: -.02em; }
+    .pf-card p { margin: 0 0 12px; color: var(--muted); font-size: 13.5px; line-height: 1.7; }
+    .pf-card span { color: var(--accent); font-size: 13px; font-weight: 800; }
+    @media (max-width: 700px) { .pf-metrics { grid-template-columns: repeat(2, minmax(0,1fr)); } .pf-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="topbar" style="justify-content:center">
+    <a class="brand" href="../" aria-label="백테스트K 홈">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" role="img"><path d="M6 23.5 12.2 17l4.4 4.2L26 10.8"/><path d="M20.5 10.8H26v5.5"/></svg>
+      </span>
+      <span class="brand-copy"><strong>백테스트<span>K</span></strong><small>PORTFOLIO ANALYTICS</small></span>
+    </a>
+  </header>
+
+  <main class="pf-shell">
+    <nav class="pf-breadcrumb" aria-label="현재 위치"><a href="../">백테스트K</a> › <a href="./">전략 모음</a> › 한국형 올웨더 포트폴리오</nav>
+
+    <div class="pf-heading">
+      <p class="eyebrow">PORTFOLIO STRATEGY</p>
+      <h1>한국형 올웨더 포트폴리오</h1>
+        <p>올웨더(All Weather)는 레이 달리오가 제안한 '어떤 경제 국면에서도 버티는' 자산배분 개념입니다. 성장과 물가라는 두 축이 만드는 네 가지 국면(성장 상승/하락 × 물가 상승/하락)에 각각 강한 자산을 섞어, 특정 국면에 대한 베팅을 피하는 것이 핵심입니다.</p>
+        <p>이 페이지는 그 개념을 국내 상장 ETF 4종으로 구현합니다 — 성장 국면의 주식(TIGER 미국S&P500 30%), 침체 국면의 장·단기 채권(ACE 미국30년국채액티브 20% + KODEX 국고채3년 35%), 물가 국면의 금(ACE KRX금현물 15%).</p>
+    </div>
+
+    <div class="card pf-section">
+      <h2>포트폴리오 구성</h2>
+      <div class="table-scroll"><table><thead><tr><th>코드</th><th>자산명</th><th>분류</th><th>비중</th></tr></thead><tbody>
+            <tr><td>360750</td><td style="text-align:left">TIGER 미국S&P500</td><td>해외주식</td><td>30%</td></tr>
+            <tr><td>114260</td><td style="text-align:left">KODEX 국고채3년</td><td>채권</td><td>35%</td></tr>
+            <tr><td>453850</td><td style="text-align:left">ACE 미국30년국채액티브(H)</td><td>채권</td><td>20%</td></tr>
+            <tr><td>411060</td><td style="text-align:left">ACE KRX금현물</td><td>원자재</td><td>15%</td></tr>
+      </tbody></table></div>
+    </div>
+
+    <p id="pfPeriod" class="pf-period">실데이터를 불러오는 중입니다…</p>
+    <div id="pfMetrics" class="pf-metrics"></div>
+
+    <div class="card chart-card pf-section">
+      <div class="card-header"><div><p class="eyebrow">GROWTH</p><h3>자산 성장</h3></div><div class="chart-legend" id="pfLegend"></div></div>
+      <div class="chart-wrap large"><canvas id="pfChart"></canvas></div>
+    </div>
+
+    <div class="card pf-section">
+      <h2>전략 해설</h2>
+        <p>정통 올웨더(주식 30 · 장기채 40 · 중기채 15 · 원자재/금 15)와 달리 미국 장기국채 비중 일부를 한국 국고채로 대체했습니다. 미국 30년국채 ETF(453850)가 2023년 상장이라 백테스트 구간이 짧다는 점은 감안해야 합니다.</p>
+        <p>미국 장기국채는 환헤지(H)형이라 금리 국면에 집중하고, S&P500은 환노출형이라 위기 시 원/달러 상승이 완충 역할을 겸합니다. 환헤지 여부를 바꿔 비교하는 것도 의미 있는 실험입니다.</p>
+    </div>
+
+    <div class="card pf-section pf-faq">
+      <h2>자주 묻는 질문</h2>
+      <dl>
+          <dt>올웨더 포트폴리오란 무엇인가요?</dt>
+          <dd>경제 성장과 물가의 상승·하락이 만드는 네 국면에 각각 유리한 자산(주식·장기채·금 등)을 위험 균형에 가깝게 배분해, 특정 국면 예측 없이 장기 보유하도록 설계한 자산배분 전략입니다.</dd>
+          <dt>환헤지는 어떻게 처리되나요?</dt>
+          <dd>이 구성에서 미국 30년국채는 환헤지(H)형, TIGER 미국S&P500은 환노출형입니다. 환노출 주식은 위기 시 원/달러 상승이 낙폭을 줄여주는 경향이 있습니다.</dd>
+      </dl>
+    </div>
+
+    <div class="pf-cta">
+      <a id="pfCta" class="primary-btn" href="../">이 조합으로 백테스트 실행 →</a>
+      <a class="secondary-btn" href="./">다른 전략 보기</a>
+    </div>
+
+      <footer class="pf-footer">
+        <strong>BACKTEST-K</strong> · backtest-k.vercel.app<br />
+        교육·연구용 시뮬레이션이며 투자 권유 또는 개인화된 투자자문이 아닙니다. 과거 성과는 미래 성과를 보장하지 않습니다. 프리셋은 예시 구성입니다.
+      </footer>
+  </main>
+
+  <script>
+    window.PORTFOLIO_PAGE = {
+      name: "한국형 올웨더 포트폴리오",
+      alloc: [["360750", 30], ["114260", 35], ["453850", 20], ["411060", 15]],
+      benchmark: "INDEX_KOSPI",
+      basePath: "../",
+      settings: { i: 10000000, m: 500000, t: "start", r: "annual", c: 1.5 },
+    };
+  </script>
+  <script src="../engine.js"></script>
+  <script src="../portfolio.js"></script>
+</body>
+</html>

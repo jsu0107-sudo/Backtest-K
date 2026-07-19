@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="TIGER 미국S&P500 40% + KODEX 200 20% + KODEX 국고채3년 30% + 금 10%. 국내외 주식과 안전자산을 섞은 균형 성장 포트폴리오의 실데이터 백테스트." />
+  <meta name="theme-color" content="#07111f" />
+  <title>균형 성장 포트폴리오 백테스트 — 미국·한국 주식과 채권·금 분산 | 백테스트K</title>
+  <link rel="canonical" href="https://backtest-k.vercel.app/portfolio/balanced-growth" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="백테스트K" />
+  <meta property="og:title" content="균형 성장 포트폴리오 백테스트 — 미국·한국 주식과 채권·금 분산" />
+  <meta property="og:description" content="TIGER 미국S&P500 40% + KODEX 200 20% + KODEX 국고채3년 30% + 금 10%. 국내외 주식과 안전자산을 섞은 균형 성장 포트폴리오의 실데이터 백테스트." />
+  <meta property="og:url" content="https://backtest-k.vercel.app/portfolio/balanced-growth" />
+  <meta property="og:image" content="https://backtest-k.vercel.app/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "미국 주식 비중이 더 큰 이유는?", "acceptedAnswer": {"@type": "Answer", "text": "글로벌 시가총액에서 미국 비중이 압도적이고, 한국 주식과의 상관관계가 낮았던 기간이 길어 분산 효과가 크기 때문입니다. 비중은 취향에 따라 조정 가능합니다."}}, {"@type": "Question", "name": "환헤지형으로 바꾸면 어떻게 되나요?", "acceptedAnswer": {"@type": "Answer", "text": "환헤지형은 환율 변동을 제거해 변동성이 낮아질 수 있지만, 위기 시 원/달러 상승의 완충 효과도 사라집니다. 백테스트에서 직접 비교해 보세요."}}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "백테스트K", "item": "https://backtest-k.vercel.app/"}, {"@type": "ListItem", "position": 2, "name": "전략 모음", "item": "https://backtest-k.vercel.app/portfolio/"}, {"@type": "ListItem", "position": 3, "name": "균형 성장 포트폴리오", "item": "https://backtest-k.vercel.app/portfolio/balanced-growth"}]}</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    .pf-shell { width: min(880px, calc(100% - 32px)); margin: 0 auto; padding: 36px 0 60px; display: grid; gap: 16px; }
+    .pf-breadcrumb { color: var(--muted-2); font-size: 13px; }
+    .pf-breadcrumb a { color: var(--muted); }
+    .pf-breadcrumb a:hover { color: var(--accent); }
+    .pf-heading h1 { margin: 6px 0 10px; font-size: clamp(25px, 4vw, 36px); letter-spacing: -.04em; }
+    .pf-heading p { margin: 0 0 10px; color: var(--muted); font-size: 15px; line-height: 1.8; }
+    .pf-section { padding: 18px 20px; }
+    .pf-section h2 { margin: 0 0 12px; font-size: 17px; letter-spacing: -.02em; }
+    .pf-section p { margin: 0 0 10px; color: var(--muted); font-size: 14px; line-height: 1.8; }
+    .pf-metrics { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+    .pf-period { color: var(--muted-2); font-size: 13px; line-height: 1.7; }
+    .pf-cta { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; padding: 10px 0; }
+    .pf-cta .primary-btn { padding: 13px 26px; font-size: 15px; text-decoration: none; }
+    .pf-cta .secondary-btn { text-decoration: none; }
+    .pf-faq dt { font-weight: 800; font-size: 14.5px; margin-top: 14px; }
+    .pf-faq dd { margin: 6px 0 0; color: var(--muted); font-size: 14px; line-height: 1.8; }
+    .pf-footer { text-align: center; color: var(--muted-2); font-size: 12px; line-height: 1.7; padding-top: 10px; border-top: 1px solid var(--border); }
+    .pf-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+    .pf-card { display: block; padding: 20px; }
+    .pf-card:hover { border-color: var(--border-strong); }
+    .pf-card h2 { margin: 0 0 8px; font-size: 18px; letter-spacing: -.02em; }
+    .pf-card p { margin: 0 0 12px; color: var(--muted); font-size: 13.5px; line-height: 1.7; }
+    .pf-card span { color: var(--accent); font-size: 13px; font-weight: 800; }
+    @media (max-width: 700px) { .pf-metrics { grid-template-columns: repeat(2, minmax(0,1fr)); } .pf-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="topbar" style="justify-content:center">
+    <a class="brand" href="../" aria-label="백테스트K 홈">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" role="img"><path d="M6 23.5 12.2 17l4.4 4.2L26 10.8"/><path d="M20.5 10.8H26v5.5"/></svg>
+      </span>
+      <span class="brand-copy"><strong>백테스트<span>K</span></strong><small>PORTFOLIO ANALYTICS</small></span>
+    </a>
+  </header>
+
+  <main class="pf-shell">
+    <nav class="pf-breadcrumb" aria-label="현재 위치"><a href="../">백테스트K</a> › <a href="./">전략 모음</a> › 균형 성장 포트폴리오</nav>
+
+    <div class="pf-heading">
+      <p class="eyebrow">PORTFOLIO STRATEGY</p>
+      <h1>균형 성장 포트폴리오</h1>
+        <p>주식 60%(미국 40 + 한국 20)에 채권 30%와 금 10%를 더한, 백테스트K의 기본 프리셋이기도 한 조합입니다. 성장의 중심을 미국 대형주에 두되 한국 주식으로 원화 자산을 유지하고, 채권과 금이 하락 구간을 완충합니다.</p>
+        <p>미국 주식은 환노출형이라 글로벌 위기 때 원/달러 환율 상승이 손실을 일부 상쇄하는 효과가 있습니다. 통화·국가·자산군 세 축의 분산을 한 번에 관찰할 수 있는 구성입니다.</p>
+    </div>
+
+    <div class="card pf-section">
+      <h2>포트폴리오 구성</h2>
+      <div class="table-scroll"><table><thead><tr><th>코드</th><th>자산명</th><th>분류</th><th>비중</th></tr></thead><tbody>
+            <tr><td>360750</td><td style="text-align:left">TIGER 미국S&P500</td><td>해외주식</td><td>40%</td></tr>
+            <tr><td>069500</td><td style="text-align:left">KODEX 200</td><td>국내주식</td><td>20%</td></tr>
+            <tr><td>114260</td><td style="text-align:left">KODEX 국고채3년</td><td>채권</td><td>30%</td></tr>
+            <tr><td>411060</td><td style="text-align:left">ACE KRX금현물</td><td>원자재</td><td>10%</td></tr>
+      </tbody></table></div>
+    </div>
+
+    <p id="pfPeriod" class="pf-period">실데이터를 불러오는 중입니다…</p>
+    <div id="pfMetrics" class="pf-metrics"></div>
+
+    <div class="card chart-card pf-section">
+      <div class="card-header"><div><p class="eyebrow">GROWTH</p><h3>자산 성장</h3></div><div class="chart-legend" id="pfLegend"></div></div>
+      <div class="chart-wrap large"><canvas id="pfChart"></canvas></div>
+    </div>
+
+    <div class="card pf-section">
+      <h2>전략 해설</h2>
+        <p>이 조합의 관전 포인트는 '한 자산의 승리'가 아니라 상관관계입니다. 국내 주식이 부진한 해에 미국 주식·금이 어떻게 메웠는지 연도별 수익률에서 확인해 보세요.</p>
+        <p>금 10%는 수익 기여보다 위기 국면 상관관계 분산이 목적입니다. 금 비중을 0%로 바꿔 비교하면 분산 효과를 정량적으로 볼 수 있습니다.</p>
+    </div>
+
+    <div class="card pf-section pf-faq">
+      <h2>자주 묻는 질문</h2>
+      <dl>
+          <dt>미국 주식 비중이 더 큰 이유는?</dt>
+          <dd>글로벌 시가총액에서 미국 비중이 압도적이고, 한국 주식과의 상관관계가 낮았던 기간이 길어 분산 효과가 크기 때문입니다. 비중은 취향에 따라 조정 가능합니다.</dd>
+          <dt>환헤지형으로 바꾸면 어떻게 되나요?</dt>
+          <dd>환헤지형은 환율 변동을 제거해 변동성이 낮아질 수 있지만, 위기 시 원/달러 상승의 완충 효과도 사라집니다. 백테스트에서 직접 비교해 보세요.</dd>
+      </dl>
+    </div>
+
+    <div class="pf-cta">
+      <a id="pfCta" class="primary-btn" href="../">이 조합으로 백테스트 실행 →</a>
+      <a class="secondary-btn" href="./">다른 전략 보기</a>
+    </div>
+
+      <footer class="pf-footer">
+        <strong>BACKTEST-K</strong> · backtest-k.vercel.app<br />
+        교육·연구용 시뮬레이션이며 투자 권유 또는 개인화된 투자자문이 아닙니다. 과거 성과는 미래 성과를 보장하지 않습니다. 프리셋은 예시 구성입니다.
+      </footer>
+  </main>
+
+  <script>
+    window.PORTFOLIO_PAGE = {
+      name: "균형 성장 포트폴리오",
+      alloc: [["360750", 40], ["069500", 20], ["114260", 30], ["411060", 10]],
+      benchmark: "INDEX_KOSPI",
+      basePath: "../",
+      settings: { i: 10000000, m: 500000, t: "start", r: "annual", c: 1.5 },
+    };
+  </script>
+  <script src="../engine.js"></script>
+  <script src="../portfolio.js"></script>
+</body>
+</html>
