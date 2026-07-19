@@ -151,13 +151,29 @@
           <div id="result-risk" class="result-tab-panel active">
             <div class="two-card-grid">
               <div class="card chart-card">
-                <div class="card-header"><div><p class="eyebrow">DRAWDOWN</p><h3>고점 대비 하락폭</h3></div><span id="drawdownSummary" class="small-stat"></span></div>
+                <div class="card-header drawdown-card-header">
+                  <div><p class="eyebrow">DRAWDOWN</p><h3>고점 대비 하락폭</h3></div>
+                  <div class="drawdown-head-meta"><div class="chart-legend" id="drawdownLegend"></div><span id="drawdownSummary" class="small-stat"></span></div>
+                </div>
                 <div class="chart-wrap medium"><canvas id="drawdownChart"></canvas><div id="drawdownTooltip" class="chart-tooltip"></div></div>
               </div>
               <div class="card risk-summary-card">
                 <div class="card-header"><div><p class="eyebrow">RISK SNAPSHOT</p><h3>위험 요약</h3></div></div>
                 <div id="riskSnapshot" class="risk-list"></div>
               </div>
+            </div>
+            <div class="card table-card drawdown-table-card">
+              <div class="card-header">
+                <div><p class="eyebrow">DRAWDOWN HISTORY</p><h3>포트폴리오 과거 낙폭 순위</h3></div>
+                <span class="small-note">낙폭이 큰 순서 · 최대 10개</span>
+              </div>
+              <div class="table-scroll">
+                <table class="drawdown-rank-table">
+                  <thead><tr><th>순위</th><th>시작</th><th>저점</th><th>하락 기간</th><th>전고점 회복</th><th>회복 기간</th><th title="전고점 아래에 머문 전체 기간">수중 기간</th><th>낙폭</th></tr></thead>
+                  <tbody id="drawdownHistoryBody"></tbody>
+                </table>
+              </div>
+              <p class="drawdown-table-note">수중 기간은 하락 시작부터 전고점을 회복한 월까지 계산합니다. 미회복 구간은 분석 종료월 기준입니다.</p>
             </div>
           </div>
 

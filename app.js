@@ -767,7 +767,11 @@
       metrics.benchmarkWorstYear = byBenchmark[0];
       metrics.benchmarkBestYear = byBenchmark.at(-1);
     }
-    const drawdowns = drawdownSeries(series.map((point) => point.unitIndex));
+    const portfolioIndexValues = series.map((point) => point.unitIndex);
+    const benchmarkIndexValues = series.map((point) => point.benchmarkIndex);
+    const drawdowns = drawdownSeries(portfolioIndexValues);
+    const benchmarkDrawdowns = drawdownSeries(benchmarkIndexValues);
+    const drawdownHistory = drawdownEpisodes(portfolioIndexValues, dates);
     const riskContributions = calculateRiskContributions(settings.allocations, dates);
     const correlations = correlationMatrix(settings.allocations.map((item) => item.assetId), dates);
 
@@ -780,6 +784,8 @@
       metrics,
       annualReturns,
       drawdowns,
+      benchmarkDrawdowns,
+      drawdownHistory,
       riskContributions,
       correlations,
     };
@@ -941,6 +947,71 @@
     });
   }
 
+  function drawdownEpisodes(indexValues, dates) {
+    if (!indexValues.length || indexValues.length !== dates.length) return [];
+    let peakValue = indexValues[0] || 100;
+    let peakIndex = 0;
+    let active = null;
+    const episodes = [];
+
+    const finishEpisode = (episode, recoveryIndex = null) => {
+      const periodEndIndex = recoveryIndex === null ? indexValues.length - 1 : recoveryIndex;
+      episodes.push({
+        ...episode,
+        recoveryIndex,
+        lengthMonths: episode.troughIndex - episode.startIndex + 1,
+        recoveryMonths: recoveryIndex === null ? null : recoveryIndex - episode.troughIndex,
+        underwaterMonths: periodEndIndex - episode.startIndex + 1,
+      });
+    };
+
+    for (let index = 1; index < indexValues.length; index += 1) {
+      const value = indexValues[index];
+      const tolerance = Math.abs(peakValue) * 1e-10;
+      const recovered = value + tolerance >= peakValue;
+
+      if (recovered) {
+        if (active) {
+          finishEpisode(active, index);
+          active = null;
+        }
+        if (value > peakValue) {
+          peakValue = value;
+          peakIndex = index;
+        }
+        continue;
+      }
+
+      const drawdown = peakValue > 0 ? value / peakValue - 1 : 0;
+      if (!active) {
+        active = {
+          peakIndex,
+          startIndex: index,
+          troughIndex: index,
+          drawdown,
+        };
+      } else if (drawdown < active.drawdown) {
+        active.troughIndex = index;
+        active.drawdown = drawdown;
+      }
+    }
+
+    if (active) finishEpisode(active);
+    return episodes
+      .sort((a, b) => a.drawdown - b.drawdown)
+      .map((episode, index) => ({ ...episode, rank: index + 1 }));
+  }
+
+  function formatMonthDuration(months) {
+    if (months === null || months === undefined) return "—";
+    const safeMonths = Math.max(0, Math.round(months));
+    const years = Math.floor(safeMonths / 12);
+    const remainder = safeMonths % 12;
+    if (years && remainder) return `${years}년 ${remainder}개월`;
+    if (years) return `${years}년`;
+    return `${safeMonths}개월`;
+  }
+
   function annualReturnRows(dates, returns, benchmarkReturns) {
     const groups = new Map();
     dates.forEach((date, index) => {
@@ -1025,10 +1096,18 @@
     const peakDate = dates[metrics.drawdownPeakIndex];
     const troughDate = dates[metrics.drawdownTroughIndex];
     $("#drawdownSummary").textContent = `${fmtDate(peakDate)} → ${fmtDate(troughDate)} ${fmtPct(metrics.maxDrawdown, 1)}`;
+    const benchmarkAsset = state.assets[settings.benchmarkId];
+    $("#drawdownLegend").innerHTML = [
+      ["포트폴리오", cssVar("--accent")],
+      [benchmarkAsset.name, cssVar("--blue")],
+    ].map(([label, color]) => `<span class="legend-item"><i class="legend-line" style="background:${color}"></i>${escapeHtml(label)}</span>`).join("");
     setLineChart("drawdownChart", {
       labels: dates,
-      data: result.drawdowns.map((value, index) => ({ value, date: dates[index] })),
-      series: [{ key: "value", label: "낙폭", color: cssVar("--red"), width: 1.7, fill: true }],
+      data: result.drawdowns.map((portfolio, index) => ({ portfolio, benchmark: result.benchmarkDrawdowns[index] })),
+      series: [
+        { key: "portfolio", label: "포트폴리오", color: cssVar("--accent"), width: 2 },
+        { key: "benchmark", label: benchmarkAsset.name, color: cssVar("--blue"), width: 1.7 },
+      ],
       yFormatter: (value) => fmtPct(value, 0),
       tooltipFormatter: (value) => fmtPct(value, 2),
       tooltipId: "drawdownTooltip",
@@ -1036,6 +1115,7 @@
     });
 
     renderRiskSnapshot();
+    renderDrawdownHistory();
     $("#annualReturnsBody").innerHTML = annualReturns.slice().reverse().map((row) => {
       const label = row.spread > 0.02 ? ["우위", "good"] : row.spread < -0.02 ? ["열위", "bad"] : ["유사", "neutral"];
       return `<tr><td>${row.year}</td><td class="${row.portfolio >= 0 ? "return-positive" : "return-negative"}">${fmtPct(row.portfolio, 1)}</td><td class="${row.benchmark >= 0 ? "return-positive" : "return-negative"}">${fmtPct(row.benchmark, 1)}</td><td class="${row.spread >= 0 ? "return-positive" : "return-negative"}">${fmtPp(row.spread, 1)}</td><td><span class="eval-pill ${label[1]}">${label[0]}</span></td></tr>`;
@@ -1158,6 +1238,31 @@
       { icon: "link", tone: "blue", title: "벤치마크 상관계수", desc: "1에 가까울수록 유사하게 움직임", value: fmtNumber(metrics.correlationBenchmark, 2) },
     ];
     $("#riskSnapshot").innerHTML = items.map((item) => `<div class="risk-item"><span class="risk-icon ${item.tone}">${iconSvg(item.icon)}</span><div class="risk-copy"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.desc)}</span></div><strong class="risk-value">${escapeHtml(item.value)}</strong></div>`).join("");
+  }
+
+  function renderDrawdownHistory() {
+    const result = state.lastBacktest;
+    if (!result) return;
+    const episodes = result.drawdownHistory.slice(0, 10);
+    const tbody = $("#drawdownHistoryBody");
+    if (!episodes.length) {
+      tbody.innerHTML = '<tr><td colspan="8" class="drawdown-empty">선택 기간에 낙폭 구간이 없습니다.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = episodes.map((episode) => {
+      const recoveryDate = episode.recoveryIndex === null ? "미회복" : fmtDate(result.dates[episode.recoveryIndex]);
+      const underwater = `${formatMonthDuration(episode.underwaterMonths)}${episode.recoveryIndex === null ? " · 진행 중" : ""}`;
+      return `<tr>
+        <td>${episode.rank}</td>
+        <td>${escapeHtml(fmtDate(result.dates[episode.startIndex]))}</td>
+        <td>${escapeHtml(fmtDate(result.dates[episode.troughIndex]))}</td>
+        <td>${escapeHtml(formatMonthDuration(episode.lengthMonths))}</td>
+        <td class="${episode.recoveryIndex === null ? "unrecovered" : ""}">${escapeHtml(recoveryDate)}</td>
+        <td>${escapeHtml(formatMonthDuration(episode.recoveryMonths))}</td>
+        <td class="${episode.recoveryIndex === null ? "unrecovered" : ""}">${escapeHtml(underwater)}</td>
+        <td class="drawdown-value">${escapeHtml(fmtPct(episode.drawdown, 2))}</td>
+      </tr>`;
+    }).join("");
   }
 
   function renderAllocation() {
@@ -2010,9 +2115,9 @@
       showToast("먼저 백테스트를 실행하세요.");
       return;
     }
-    const rows = ["date,balance,principal,benchmark_balance,twrr_index,benchmark_index,drawdown"];
+    const rows = ["date,balance,principal,benchmark_balance,twrr_index,benchmark_index,drawdown,benchmark_drawdown"];
     state.lastBacktest.series.forEach((point, index) => {
-      rows.push([point.date, point.balance.toFixed(0), point.principal.toFixed(0), point.benchmarkBalance.toFixed(0), point.unitIndex.toFixed(6), point.benchmarkIndex.toFixed(6), state.lastBacktest.drawdowns[index].toFixed(8)].join(","));
+      rows.push([point.date, point.balance.toFixed(0), point.principal.toFixed(0), point.benchmarkBalance.toFixed(0), point.unitIndex.toFixed(6), point.benchmarkIndex.toFixed(6), state.lastBacktest.drawdowns[index].toFixed(8), state.lastBacktest.benchmarkDrawdowns[index].toFixed(8)].join(","));
     });
     downloadBlob(`backtestK_${state.lastBacktest.dates[0]}_${state.lastBacktest.dates.at(-1)}.csv`, rows.join("\n"));
     showToast("백테스트 결과 CSV를 저장했습니다.");

@@ -226,6 +226,7 @@ select option { color: #102033; background: #fff; }
 .danger-text { color: var(--red); }
 
 .results-area { min-width: 0; display: grid; gap: 14px; }
+.results-area > *, .result-tab-panel > *, .two-card-grid > * { min-width: 0; }
 .results-toolbar { padding: 17px 20px; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
 .results-toolbar h2 { margin: 3px 0 3px; font-size: 20px; letter-spacing: -.035em; }
 .results-toolbar p:last-child { margin: 0; color: var(--muted); font-size: 12px; }
@@ -252,6 +253,9 @@ select option { color: #102033; background: #fff; }
 .legend-item { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; }
 .legend-line { width: 15px; height: 2px; border-radius: 99px; }
 .legend-dash { width: 15px; height: 1px; border-top: 1px dashed currentColor; }
+.drawdown-head-meta { display: grid; justify-items: end; gap: 7px; }
+.drawdown-card-header .chart-legend { gap: 10px; }
+.drawdown-card-header .legend-item { font-size: 11px; }
 .chart-wrap { position: relative; width: 100%; }
 .chart-wrap.large { height: 330px; }
 .chart-wrap.medium { height: 260px; }
@@ -287,7 +291,7 @@ select option { color: #102033; background: #fff; }
 .risk-value { font-size: 13px; font-weight: 800; }
 
 .table-card { padding: 17px 18px; }
-.table-scroll { overflow-x: auto; }
+.table-scroll { max-width: 100%; overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; font-weight: 800; text-align: right; padding: 9px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
 th:first-child, td:first-child { text-align: left; }
@@ -300,6 +304,16 @@ tbody tr:hover { background: rgba(118,146,174,.035); }
 .eval-pill.good { color: var(--accent); background: var(--accent-soft); }
 .eval-pill.bad { color: var(--red); background: rgba(255,127,140,.09); }
 .eval-pill.neutral { color: var(--muted); background: var(--surface-3); }
+.drawdown-rank-table { min-width: 820px; font-variant-numeric: tabular-nums; }
+.drawdown-rank-table th:first-child, .drawdown-rank-table td:first-child { width: 52px; text-align: center; }
+.drawdown-rank-table th:nth-child(2), .drawdown-rank-table td:nth-child(2),
+.drawdown-rank-table th:nth-child(3), .drawdown-rank-table td:nth-child(3),
+.drawdown-rank-table th:nth-child(5), .drawdown-rank-table td:nth-child(5) { text-align: left; }
+.drawdown-rank-table tbody tr:first-child { background: rgba(255,127,140,.045); }
+.drawdown-rank-table .drawdown-value { color: var(--red); font-weight: 800; }
+.drawdown-rank-table .unrecovered { color: var(--orange); font-weight: 700; }
+.drawdown-table-note { margin: 10px 0 0; padding-top: 10px; border-top: 1px solid var(--border); color: var(--muted-2); font-size: 11px; line-height: 1.55; }
+.drawdown-empty { padding: 26px 10px; color: var(--muted); text-align: center !important; }
 
 .allocation-card, .correlation-card, .result-tab-panel > .card { padding: 17px 18px; }
 .allocation-visual { display: grid; grid-template-columns: 175px 1fr; gap: 20px; align-items: center; }
@@ -469,6 +483,9 @@ html[data-theme="light"] .code-block { background: #142237; color: #d6e3ee; }
   .chart-wrap.large { height: 260px; }
   .chart-wrap.medium { height: 225px; }
   .chart-wrap.xlarge { height: 320px; }
+  .drawdown-card-header { align-items: flex-start; flex-direction: column; gap: 9px; }
+  .drawdown-head-meta { width: 100%; justify-items: start; }
+  .drawdown-card-header .chart-legend { justify-content: flex-start; }
   .footer { width: calc(100% - 20px); flex-direction: column; }
   .toast { left: 12px; right: 12px; bottom: 12px; max-width: none; }
 }
