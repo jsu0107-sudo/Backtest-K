@@ -53,6 +53,7 @@ REPRESENTATIVE_INDEXES = (
         "symbol": "^KS11",
         "category": "대표지수",
         "description": "한국 유가증권시장 종합주가지수(가격지수)",
+        "history_start": "1990-01-01",
     },
     {
         "id": "INDEX_KOSPI200",
@@ -61,6 +62,7 @@ REPRESENTATIVE_INDEXES = (
         "symbol": "^KS200",
         "category": "대표지수",
         "description": "한국 유가증권시장 대표 200종목 가격지수",
+        "history_start": "1994-01-01",
     },
     {
         "id": "INDEX_SP500",
@@ -69,6 +71,7 @@ REPRESENTATIVE_INDEXES = (
         "symbol": "^GSPC",
         "category": "대표지수",
         "description": "미국 대형주 대표 가격지수(미 달러 기준)",
+        "history_start": "1970-01-01",
     },
 )
 
@@ -84,6 +87,7 @@ class AssetRequest:
     description: str
     rank: int | None = None
     market_value_krw_100m: float | None = None
+    history_start: dt.date | None = None
 
 
 class CollectionError(RuntimeError):
@@ -269,9 +273,26 @@ def last_complete_month(today: dt.date) -> str:
     return previous.strftime("%Y-%m")
 
 
+def _month_ordinal(month: str) -> int:
+    year, mon = month.split("-")
+    return int(year) * 12 + int(mon)
+
+
+def split_contiguous_segments(
+    ordered: list[tuple[str, tuple[dt.date, float]]],
+) -> list[list[tuple[str, tuple[dt.date, float]]]]:
+    segments: list[list[tuple[str, tuple[dt.date, float]]]] = [[ordered[0]]]
+    for row in ordered[1:]:
+        if _month_ordinal(row[0]) - _month_ordinal(segments[-1][-1][0]) == 1:
+            segments[-1].append(row)
+        else:
+            segments.append([row])
+    return segments
+
+
 def monthly_returns_from_prices(
     points: Iterable[tuple[dt.date, float]], *, complete_through: str
-) -> tuple[list[dict[str, Any]], str, str]:
+) -> tuple[list[dict[str, Any]], str, str, list[str]]:
     month_ends: dict[str, tuple[dt.date, float]] = {}
     latest_observation: dt.date | None = None
     for date, price in sorted(points, key=lambda item: item[0]):
@@ -282,6 +303,20 @@ def monthly_returns_from_prices(
     ordered = sorted(month_ends.items())
     if len(ordered) < 3:
         raise CollectionError("Fewer than three complete month-end prices")
+
+    # 원천에 월 갭이 있으면 갭을 건너뛴 누적 수익률이 "한 달"로 압축 기록된다.
+    # 이를 막기 위해 가장 긴(동률이면 최신) 연속 구간만 사용한다.
+    quality_notes: list[str] = []
+    segments = split_contiguous_segments(ordered)
+    if len(segments) > 1:
+        best = max(segments, key=lambda segment: (len(segment), segment[-1][0]))
+        dropped = len(ordered) - len(best)
+        quality_notes.append(
+            f"원천 데이터에 월 갭이 있어 비연속 {dropped}개월을 제외하고 연속 구간 {best[0][0]}~{best[-1][0]}만 사용했습니다."
+        )
+        ordered = best
+    if len(ordered) < 3:
+        raise CollectionError("Fewer than three contiguous month-end prices")
 
     returns: list[dict[str, Any]] = []
     for index in range(1, len(ordered)):
@@ -299,7 +334,23 @@ def monthly_returns_from_prices(
     if len(returns) < 2:
         raise CollectionError("Fewer than two valid monthly returns")
     assert latest_observation is not None
-    return returns, ordered[0][1][0].isoformat(), latest_observation.isoformat()
+    return returns, ordered[0][1][0].isoformat(), latest_observation.isoformat(), quality_notes
+
+
+def trim_stale_trailing_returns(
+    returns: list[dict[str, Any]], *, max_trim: int = 3
+) -> tuple[list[dict[str, Any]], int]:
+    """Drop trailing months whose return is exactly zero.
+
+    지수가 소수점까지 정확히 0% 월 수익률을 내는 일은 사실상 없으므로, 말단의
+    0% 행은 원천이 최신 시세를 채우지 못한 스테일 데이터로 간주하고 제거한다.
+    """
+    trimmed = 0
+    end = len(returns)
+    while end > 0 and trimmed < max_trim and abs(float(returns[end - 1]["return"])) < 1e-9:
+        end -= 1
+        trimmed += 1
+    return returns[:end], trimmed
 
 
 def fetch_seibro_listing_date(ticker: str, name: str) -> tuple[str | None, str]:
@@ -334,10 +385,19 @@ def _date_from_first_trade(meta: dict[str, Any], fallback: str) -> str:
 
 
 def build_asset_payload(request: AssetRequest, start_date: dt.date, today: dt.date) -> dict[str, Any]:
-    points, meta, dividend_event_count, latest_raw_close = fetch_yahoo_series(request.symbol, start_date, today)
-    monthly_returns, first_observation, data_as_of = monthly_returns_from_prices(
+    history_start = request.history_start or start_date
+    points, meta, dividend_event_count, latest_raw_close = fetch_yahoo_series(request.symbol, history_start, today)
+    monthly_returns, first_observation, data_as_of, quality_notes = monthly_returns_from_prices(
         points, complete_through=last_complete_month(today)
     )
+    if request.asset_type == "index":
+        monthly_returns, stale_trimmed = trim_stale_trailing_returns(monthly_returns)
+        if stale_trimmed:
+            quality_notes.append(
+                f"지수 원천의 최근 {stale_trimmed}개월 수익률이 정확히 0%라 스테일 데이터로 판단해 제외했습니다."
+            )
+        if len(monthly_returns) < 2:
+            raise CollectionError("Fewer than two valid monthly returns after stale trim")
 
     sources: list[dict[str, str]] = []
     if request.asset_type == "etf":
@@ -388,6 +448,8 @@ def build_asset_payload(request: AssetRequest, start_date: dt.date, today: dt.da
             }
         )
         warnings = ["가격지수이므로 배당을 포함한 총수익지수와 결과가 다릅니다."]
+
+    warnings = [*quality_notes, *warnings]
 
     return {
         "schema_version": SCHEMA_VERSION,
@@ -533,6 +595,7 @@ def build_requests(limit: int) -> list[AssetRequest]:
             asset_type="index",
             category=row["category"],
             description=row["description"],
+            history_start=dt.date.fromisoformat(row["history_start"]),
         )
         for row in REPRESENTATIVE_INDEXES
     ]

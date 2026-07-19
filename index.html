@@ -81,8 +81,8 @@
           </div>
 
           <div class="form-grid two-col">
-            <label class="field"><span>시작월</span><input id="startDate" type="month" min="2015-01" max="2025-12" value="2016-01" /></label>
-            <label class="field"><span>종료월</span><input id="endDate" type="month" min="2015-01" max="2025-12" value="2025-12" /></label>
+            <label class="field"><span>시작월</span><input id="startDate" type="month" min="1970-01" max="2030-12" value="2016-01" /></label>
+            <label class="field"><span>종료월</span><input id="endDate" type="month" min="1970-01" max="2030-12" value="2025-12" /></label>
           </div>
           <label class="field"><span>초기 투자금</span><div class="input-affix"><input id="initialAmount" type="number" min="0" step="1000000" value="50000000" /><span>원</span></div></label>
           <label class="field"><span>월 적립금</span><div class="input-affix"><input id="monthlyContribution" type="number" min="0" step="100000" value="1000000" /><span>원</span></div></label>
@@ -119,6 +119,8 @@
             </div>
             <div class="result-status"><span></span>계산 완료</div>
           </div>
+
+          <div id="priceIndexNotice" class="notice-banner" role="note" hidden></div>
 
           <div id="metricCards" class="metric-grid"></div>
 
@@ -230,7 +232,7 @@
     <section id="view-compare" class="app-view" aria-labelledby="compare-title">
       <div class="page-heading">
         <div><p class="eyebrow">ASSET COMPARISON</p><h1 id="compare-title">수익만이 아니라 위험 대비 효율로 비교</h1><p>같은 기간의 연환산 수익률·변동성·최대 낙폭·샤프지수를 나란히 봅니다.</p></div>
-        <div class="heading-actions"><label class="inline-field">비교 시작월 <input id="compareStart" type="month" min="2015-01" max="2025-12" value="2016-01" /></label></div>
+        <div class="heading-actions"><label class="inline-field">비교 시작월 <input id="compareStart" type="month" min="1970-01" max="2030-12" value="2016-01" /></label></div>
       </div>
       <div class="card selection-card">
         <div class="card-header"><div><p class="eyebrow">SELECT ASSETS</p><h3>비교 자산 선택</h3></div><span id="compareCount" class="small-stat">4개 선택</span></div>

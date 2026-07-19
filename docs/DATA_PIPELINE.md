@@ -27,6 +27,12 @@
 
 ETF는 수정종가 비율을 사용해 `distribution.included=true`로 기록하지만 `verification_status=provider_adjusted_not_independently_reconciled`다. 이는 분배금 반영을 공급자 조정계수에 의존한다는 뜻이며 총수익 원장을 독립 검증했다는 뜻이 아니다. 대표지수는 가격지수이므로 `distribution.included=false`다.
 
+## 품질 방어 로직
+
+- **월 갭 분리**: 원천 시계열에 월 갭이 있으면 갭을 건너뛴 누적 수익률이 한 달로 압축 기록되는 문제가 생긴다. 수집기는 월말 관측치를 연속 구간으로 나눠 가장 긴(동률이면 최신) 구간만 사용하고, 제외 사실을 `data_quality.warnings`에 기록한다.
+- **지수 스테일 감지**: 지수의 말단 월 수익률이 정확히 0%면 원천이 최신 시세를 채우지 못한 것으로 간주해 해당 월을 제거한다(최대 3개월).
+- **지수 히스토리 연장**: 지수는 종목별 시작일(S&P 500 1970-01, KOSPI 1990-01, KOSPI 200 1994-01)부터 수집한다. ETF는 2000-01부터 요청하므로 사실상 상장일 전체를 커버한다.
+
 ## 갱신
 
 `.github/workflows/update-market-data.yml`은 한국 장 마감 뒤인 평일 20:15 KST(11:15 UTC)에 실행된다.

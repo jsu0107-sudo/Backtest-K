@@ -992,6 +992,18 @@
     $("#resultTitle").textContent = settings.name;
     $("#resultPeriod").textContent = `${fmtDate(dates[0])} – ${fmtDate(dates.at(-1))} · ${rebalanceLabel(settings.rebalance)}`;
 
+    const priceIndexNames = [...new Set([...settings.allocations.map((item) => item.assetId), settings.benchmarkId])]
+      .map((id) => state.assets[id])
+      .filter((asset) => asset && asset.source === "market" && asset.distributionIncluded === false)
+      .map((asset) => asset.name);
+    const indexNotice = $("#priceIndexNotice");
+    if (indexNotice) {
+      indexNotice.hidden = !priceIndexNames.length;
+      indexNotice.textContent = priceIndexNames.length
+        ? `가격지수 포함: ${priceIndexNames.join(", ")} — 배당(분배금)이 제외된 지수라 ETF 총수익과 직접 비교하면 지수 쪽이 과소평가됩니다. 장기 자산배분 시뮬레이션 참고용으로 해석하세요.`
+        : "";
+    }
+
     const gain = metrics.finalBalance - metrics.principal;
     const benchmarkGap = metrics.annualizedReturn - metrics.benchmarkAnnualized;
     const cards = [
@@ -1042,7 +1054,8 @@
     if (!result) return;
     const { metrics, settings } = result;
     const benchmarkAsset = state.assets[settings.benchmarkId];
-    $("#summaryBenchmarkHead").textContent = benchmarkAsset.name;
+    const benchmarkIsPriceIndex = benchmarkAsset.source === "market" && benchmarkAsset.distributionIncluded === false;
+    $("#summaryBenchmarkHead").textContent = benchmarkIsPriceIndex ? `${benchmarkAsset.name} (가격지수)` : benchmarkAsset.name;
     const yearCell = (row, key) => row ? `${fmtPct(row[key], 1)} (${row.year})` : "—";
     const rows = [
       ["시작 자산", fmtKRW(metrics.initialAmount), fmtKRW(metrics.initialAmount), "백테스트 시작 시점의 초기 투자금"],
