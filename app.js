@@ -439,7 +439,7 @@
       const index = Number(rowElement.dataset.index);
       bindAssetSearch($(".asset-combobox", rowElement), state.portfolio[index].assetId, async (id) => {
         state.portfolio[index].assetId = id;
-        state.activePreset = null;
+        markPortfolioCustomized();
         renderAssetRows();
         renderPresetState();
         renderBenchmarkOptions();
@@ -448,7 +448,7 @@
       });
       $(".weight-input", rowElement).addEventListener("input", (event) => {
         state.portfolio[index].weight = Number(event.target.value) || 0;
-        state.activePreset = null;
+        markPortfolioCustomized();
         renderPresetState();
         updateAllocationState();
       });
@@ -458,7 +458,7 @@
           return;
         }
         state.portfolio.splice(index, 1);
-        state.activePreset = null;
+        markPortfolioCustomized();
         renderAssetRows();
         renderPresetState();
         updateAllocationState();
@@ -561,6 +561,16 @@
 
   function getPreset(key) {
     return (state.marketDataReady ? MARKET_PRESETS : DEMO_PRESETS)[key];
+  }
+
+  function markPortfolioCustomized() {
+    state.activePreset = null;
+    // 프리셋 이름을 그대로 쓰고 있었다면, 구성이 바뀐 순간부터는 프리셋 결과로
+    // 오해되지 않도록 일반 이름으로 전환한다 (사용자가 지은 이름은 유지).
+    const presetNames = new Set(
+      [...Object.values(MARKET_PRESETS), ...Object.values(DEMO_PRESETS)].map((preset) => preset.name)
+    );
+    if (presetNames.has(state.portfolioName)) state.portfolioName = "나의 포트폴리오";
   }
 
   async function applyPreset(key, run = true) {
@@ -2318,7 +2328,7 @@
       if (state.portfolio.length >= 8) { showToast("자산은 최대 8개까지 추가할 수 있습니다."); return; }
       const unused = state.assetOrder.find((id) => !state.portfolio.some((row) => row.assetId === id)) || state.assetOrder[0];
       state.portfolio.push({ assetId: unused, weight: 0 });
-      state.activePreset = null;
+      markPortfolioCustomized();
       renderAssetRows(); renderPresetState(); updateAllocationState();
     });
     $("#runBacktest").addEventListener("click", runBacktest);
@@ -2326,6 +2336,32 @@
     $("#saveSettings").addEventListener("click", saveSettings);
     $("#exportButton").addEventListener("click", exportBacktestCsv);
     $("#shareButton")?.addEventListener("click", shareBacktest);
+    $("#renamePortfolio")?.addEventListener("click", () => {
+      const titleEl = $("#resultTitle");
+      if (!titleEl || $("#renameInput")) return;
+      const current = state.portfolioName || "나의 포트폴리오";
+      const input = document.createElement("input");
+      input.id = "renameInput";
+      input.className = "rename-input";
+      input.maxLength = 40;
+      input.value = current;
+      input.setAttribute("aria-label", "포트폴리오 이름");
+      titleEl.replaceChildren(input);
+      input.focus();
+      input.select();
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") input.blur();
+        if (event.key === "Escape") { input.value = current; input.blur(); }
+      });
+      input.addEventListener("blur", () => {
+        const name = input.value.trim().slice(0, 40) || current;
+        titleEl.textContent = name;
+        if (name === current) return;
+        state.portfolioName = name;
+        if (state.lastBacktest) state.lastBacktest.settings.name = name;
+        showToast("포트폴리오 이름을 저장했습니다. 공유 페이지 제목에 반영됩니다.");
+      }, { once: true });
+    });
     $$(".analysis-tab").forEach((button) => button.addEventListener("click", () => switchResultTab(button.dataset.resultTab)));
     $("#runMonteCarlo").addEventListener("click", runMonteCarlo);
     $("#compareStart").addEventListener("change", renderComparison);
