@@ -391,7 +391,7 @@
     ctx.fillStyle = "#63788c";
     ctx.font = font(600, 20);
     ctx.textAlign = "left";
-    ctx.fillText(`100 지수 기준 · 데이터 기준일 ${vm.dataAsOf || "—"} · 교육·연구용, 투자 권유 아님`, PAD, height - 44 * S);
+    ctx.fillText(`100 지수 기준 · 데이터 기준일 ${vm.dataAsOf || "—"} · 투자 권유 아님`, PAD, height - 44 * S);
     ctx.fillStyle = "#45e3b5";
     ctx.font = font(800, 22);
     ctx.textAlign = "right";
@@ -401,7 +401,7 @@
   function bindPassport(vm) {
     const canvas = $("#passportCanvas");
     if (!canvas) return;
-    const formats = $("#ppFormats");
+    const menu = $("#ppMenu");
     const toggle = $("#ppToggle");
     const preview = canvas.closest(".passport-preview");
 
@@ -420,18 +420,32 @@
       }, "image/png");
     };
 
-    // 미리보기와 규격 선택은 "이미지 저장하기"를 누르기 전까지 숨긴다.
+    const closeMenu = () => {
+      menu.hidden = true;
+      toggle.setAttribute("aria-expanded", "false");
+    };
+    const openMenu = () => {
+      menu.hidden = false;
+      toggle.setAttribute("aria-expanded", "true");
+      if (preview) { preview.hidden = false; renderPassport(canvas, vm, "wide"); }
+    };
+
+    // 미리보기·드롭다운은 "이미지 저장하기"를 누르기 전까지 숨긴다.
     if (preview) preview.hidden = true;
-    toggle?.addEventListener("click", () => {
-      const open = formats.hidden;
-      formats.hidden = !open;
-      if (preview) preview.hidden = !open;
-      toggle.setAttribute("aria-expanded", String(open));
-      if (open) renderPassport(canvas, vm, "wide");
+    toggle?.addEventListener("click", (event) => {
+      event.stopPropagation();
+      menu.hidden ? openMenu() : closeMenu();
     });
-    $("#ppWide")?.addEventListener("click", () => download("wide"));
-    $("#ppInsta")?.addEventListener("click", () => download("insta"));
-    $("#ppSquare")?.addEventListener("click", () => download("square"));
+    // 드롭다운 바깥 클릭·Esc로 닫기.
+    document.addEventListener("click", (event) => {
+      if (!menu.hidden && !menu.contains(event.target) && event.target !== toggle) closeMenu();
+    });
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeMenu(); });
+
+    const pick = (formatKey) => { download(formatKey); closeMenu(); };
+    $("#ppWide")?.addEventListener("click", () => pick("wide"));
+    $("#ppInsta")?.addEventListener("click", () => pick("insta"));
+    $("#ppSquare")?.addEventListener("click", () => pick("square"));
   }
 
   // ---------- 초기화 ----------

@@ -37,8 +37,17 @@
     .clone-cta .primary-btn { padding: 16px 34px; font-size: 17px; text-decoration: none; }
     .clone-cta p { margin: 0; color: var(--muted); font-size: 13px; }
     .clone-sub { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-    .passport-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-    .passport-actions button { flex: 1 1 150px; }
+    .pp-dropdown { position: relative; }
+    .pp-toggle { width: 100%; }
+    .pp-toggle svg { width: 18px; height: 18px; }
+    .pp-toggle .pp-caret { width: 15px; height: 15px; margin-left: auto; transition: transform .18s ease; }
+    .pp-toggle[aria-expanded="true"] .pp-caret { transform: rotate(180deg); }
+    .pp-menu { position: absolute; z-index: 30; top: calc(100% + 6px); left: 0; right: 0; margin: 0; padding: 6px; list-style: none; display: grid; gap: 4px; border: 1px solid var(--border-strong); border-radius: 12px; background: var(--bg-elevated); box-shadow: 0 18px 45px rgba(0,0,0,.32); }
+    .pp-menu[hidden] { display: none; }
+    .pp-menu button { width: 100%; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 11px 14px; border: 0; border-radius: 8px; background: transparent; color: var(--text); text-align: left; cursor: pointer; }
+    .pp-menu button:hover { background: var(--surface-3); }
+    .pp-menu button strong { font-size: 14px; font-weight: 700; }
+    .pp-menu button span { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
     .passport-preview { margin-top: 14px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
     .passport-preview canvas { width: 100%; height: auto; display: block; }
     .share-footer { text-align: center; color: var(--muted-2); font-size: 12px; line-height: 1.7; padding-top: 8px; border-top: 1px solid var(--border); }
@@ -89,11 +98,17 @@
 
       <div class="card share-section" style="margin-top:16px">
         <h2>이미지 저장하기</h2>
-        <button id="ppToggle" class="primary-btn" style="width:100%" aria-expanded="false">이미지 저장하기</button>
-        <div id="ppFormats" class="passport-actions" style="margin-top:12px" hidden>
-          <button id="ppWide" class="secondary-btn">블로그 (1200×630)</button>
-          <button id="ppInsta" class="secondary-btn">인스타그램 (1080×1350)</button>
-          <button id="ppSquare" class="secondary-btn">카카오톡 (1080×1080)</button>
+        <div class="pp-dropdown">
+          <button id="ppToggle" class="primary-btn pp-toggle" aria-haspopup="true" aria-expanded="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
+            <span>이미지 저장하기</span>
+            <svg class="pp-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <ul id="ppMenu" class="pp-menu" role="menu" hidden>
+            <li role="none"><button id="ppWide" role="menuitem" type="button"><strong>블로그</strong><span>1200 × 630</span></button></li>
+            <li role="none"><button id="ppInsta" role="menuitem" type="button"><strong>인스타그램</strong><span>1080 × 1350</span></button></li>
+            <li role="none"><button id="ppSquare" role="menuitem" type="button"><strong>카카오톡</strong><span>1080 × 1080</span></button></li>
+          </ul>
         </div>
         <div class="passport-preview"><canvas id="passportCanvas" width="1200" height="630"></canvas></div>
       </div>
@@ -122,7 +137,7 @@
 
       <footer class="share-footer">
         <strong>BACKTEST-K</strong> · backtest-k.vercel.app<br />
-        교육·연구용 시뮬레이션입니다. 과거 성과는 미래 성과를 보장하지 않으며, 투자 권유 또는 개인화된 투자자문이 아닙니다.
+        과거 성과는 미래 성과를 보장하지 않으며, 투자 권유 또는 개인화된 투자자문이 아닙니다.
       </footer>
     </div>
   </main>
