@@ -412,11 +412,18 @@ html[data-theme="light"] .code-block { background: #142237; color: #d6e3ee; }
 
 .toolbar-actions { display: flex; align-items: center; gap: 14px; }
 .toolbar-actions .secondary-btn svg { width: 15px; height: 15px; }
-.result-title-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.result-title-row { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .result-title-row h2 { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.icon-btn.tiny { width: 30px; height: 30px; border-radius: 9px; flex: 0 0 auto; }
-.icon-btn.tiny svg { width: 14px; height: 14px; }
+.rename-btn {
+  flex: 0 0 auto; display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
+  color: var(--accent); background: var(--accent-soft);
+  border: 1px solid rgba(69,227,181,.28); cursor: pointer; transition: .16s ease;
+}
+.rename-btn:hover { background: var(--accent); color: #052017; border-color: var(--accent); }
+.rename-btn svg { width: 13px; height: 13px; stroke-width: 2.2; }
 .rename-input { font: inherit; letter-spacing: inherit; width: min(340px, 55vw); min-height: 0; padding: 3px 10px; border-radius: 8px; }
+@media (max-width: 620px) { .rename-btn span { display: none; } .rename-btn { padding: 6px; } }
 
 .notice-banner {
   padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,180,94,.25);
