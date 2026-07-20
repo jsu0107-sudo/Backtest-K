@@ -2,7 +2,7 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/p/:slug", "destination": "/share.html" }
+    { "source": "/p/:slug*", "destination": "/share" }
   ],
   "headers": [
     {
