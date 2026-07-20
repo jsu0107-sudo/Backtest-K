@@ -6,10 +6,10 @@
   "asset_type": "etf",
   "category": "국내주식",
   "currency": "KRW",
-  "description": "순자산 상위 ETF #139 (수집 시점 시가총액 기준)",
+  "description": "순자산 상위 ETF #141 (수집 시점 시가총액 기준)",
   "listing_date": "2022-10-17",
   "listing_date_source": "한국예탁결제원 SEIBro",
-  "data_as_of": "2026-07-16",
+  "data_as_of": "2026-07-20",
   "first_month": "2022-11",
   "last_month": "2026-06",
   "monthly_return_count": 44,
@@ -45,17 +45,13 @@
       "상업적 서비스 전 데이터 제공자 이용조건과 재배포 권한을 다시 확인해야 합니다."
     ]
   },
-  "universe_rank": 139,
-  "market_value_krw_100m": 5309.0,
+  "universe_rank": 141,
+  "market_value_krw_100m": 4995.0,
   "latest_raw_close": {
-    "date": "2026-07-16",
-    "close": 45380.0
+    "date": "2026-07-20",
+    "close": 43250.0
   },
   "recent_raw_closes": [
-    {
-      "date": "2026-07-03",
-      "close": 54805.0
-    },
     {
       "date": "2026-07-06",
       "close": 54425.0
@@ -91,47 +87,51 @@
     {
       "date": "2026-07-16",
       "close": 45380.0
+    },
+    {
+      "date": "2026-07-20",
+      "close": 43250.0
     }
   ],
   "monthly_returns": [
     {
       "month": "2022-11",
-      "return": 0.0754993158,
+      "return": 0.075499107,
       "observation_date": "2022-11-30"
     },
     {
       "month": "2022-12",
-      "return": -0.0765398924,
+      "return": -0.0765398022,
       "observation_date": "2022-12-29"
     },
     {
       "month": "2023-01",
-      "return": 0.1162336179,
+      "return": 0.1162334111,
       "observation_date": "2023-01-31"
     },
     {
       "month": "2023-02",
-      "return": 0.0268012974,
+      "return": 0.0268013873,
       "observation_date": "2023-02-28"
     },
     {
       "month": "2023-03",
-      "return": 0.0603337161,
+      "return": 0.0603338014,
       "observation_date": "2023-03-31"
     },
     {
       "month": "2023-04",
-      "return": -0.0134929723,
+      "return": -0.0134929712,
       "observation_date": "2023-04-28"
     },
     {
       "month": "2023-05",
-      "return": 0.0473057228,
+      "return": 0.0473055559,
       "observation_date": "2023-05-31"
     },
     {
       "month": "2023-06",
-      "return": -0.0023566143,
+      "return": -0.0023565366,
       "observation_date": "2023-06-30"
     },
     {
@@ -146,22 +146,22 @@
     },
     {
       "month": "2023-09",
-      "return": -0.0665354543,
+      "return": -0.0665355323,
       "observation_date": "2023-09-27"
     },
     {
       "month": "2023-10",
-      "return": -0.1180936466,
+      "return": -0.1180936564,
       "observation_date": "2023-10-31"
     },
     {
       "month": "2023-11",
-      "return": 0.1630798625,
+      "return": 0.1630798779,
       "observation_date": "2023-11-30"
     },
     {
       "month": "2023-12",
-      "return": 0.0493421825,
+      "return": 0.049342268,
       "observation_date": "2023-12-28"
     },
     {

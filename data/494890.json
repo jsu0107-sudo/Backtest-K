@@ -6,10 +6,10 @@
   "asset_type": "etf",
   "category": "국내주식",
   "currency": "KRW",
-  "description": "순자산 상위 ETF #76 (수집 시점 시가총액 기준)",
+  "description": "순자산 상위 ETF #75 (수집 시점 시가총액 기준)",
   "listing_date": "2024-10-28",
   "listing_date_source": "한국예탁결제원 SEIBro",
-  "data_as_of": "2026-07-16",
+  "data_as_of": "2026-07-20",
   "first_month": "2024-11",
   "last_month": "2026-06",
   "monthly_return_count": 20,
@@ -45,17 +45,13 @@
       "상업적 서비스 전 데이터 제공자 이용조건과 재배포 권한을 다시 확인해야 합니다."
     ]
   },
-  "universe_rank": 76,
-  "market_value_krw_100m": 10756.0,
+  "universe_rank": 75,
+  "market_value_krw_100m": 10396.0,
   "latest_raw_close": {
-    "date": "2026-07-16",
-    "close": 31360.0
+    "date": "2026-07-20",
+    "close": 29960.0
   },
   "recent_raw_closes": [
-    {
-      "date": "2026-07-03",
-      "close": 37835.0
-    },
     {
       "date": "2026-07-06",
       "close": 37695.0
@@ -91,32 +87,36 @@
     {
       "date": "2026-07-16",
       "close": 31360.0
+    },
+    {
+      "date": "2026-07-20",
+      "close": 29960.0
     }
   ],
   "monthly_returns": [
     {
       "month": "2024-11",
-      "return": -0.0408790066,
+      "return": -0.0408790108,
       "observation_date": "2024-11-29"
     },
     {
       "month": "2024-12",
-      "return": -0.018114084,
+      "return": -0.0181137661,
       "observation_date": "2024-12-30"
     },
     {
       "month": "2025-01",
-      "return": 0.0493761383,
+      "return": 0.0493759104,
       "observation_date": "2025-01-31"
     },
     {
       "month": "2025-02",
-      "return": 0.0093070992,
+      "return": 0.0093072027,
       "observation_date": "2025-02-28"
     },
     {
       "month": "2025-03",
-      "return": -0.0020492066,
+      "return": -0.0020493089,
       "observation_date": "2025-03-31"
     },
     {
@@ -131,12 +131,12 @@
     },
     {
       "month": "2025-06",
-      "return": 0.1545453986,
+      "return": 0.1545454932,
       "observation_date": "2025-06-30"
     },
     {
       "month": "2025-07",
-      "return": 0.0570506305,
+      "return": 0.0570505439,
       "observation_date": "2025-07-31"
     },
     {
@@ -146,12 +146,12 @@
     },
     {
       "month": "2025-09",
-      "return": 0.1021226548,
+      "return": 0.1021225759,
       "observation_date": "2025-09-30"
     },
     {
       "month": "2025-10",
-      "return": 0.2219155516,
+      "return": 0.2219156391,
       "observation_date": "2025-10-31"
     },
     {
