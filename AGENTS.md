@@ -16,9 +16,12 @@
 1. **산식 동기화**: `engine.js`의 `runStaticBacktest`는 `app.js`의 `runBacktest`와
    동일한 산식이어야 한다. 본편 산식을 바꾸면 engine.js도 같이 바꾸고, 공유
    페이지(share.html) 수치가 본편 결과와 일치하는지 확인한다.
-2. **공유 코덱 v1**: `?c=` 파라미터(base64url JSON, `{v:1,n,a,b,s,e,i,m,t,r,c,f,rf}`)는
-   이미 배포된 공유 링크가 있으므로 하위 호환을 깨지 않는다. 필드 추가는 가능,
-   의미 변경·삭제는 금지.
+2. **공유 코덱 v1/v2**: 레거시 `?c=`(v1, base64url JSON `{v:1,n,a,b,s,e,i,m,t,r,c,f,rf}`)와
+   스냅숏 프래그먼트(v2, `/p/<slug>#<payload>`, deflate 압축, `engine.js
+   encodeSnapshot/decodeSnapshot`) 모두 이미 배포된 링크가 있으므로 하위 호환을
+   깨지 않는다. 필드 추가는 가능, 의미 변경·삭제는 금지. v2 스냅숏은 "데이터가
+   갱신돼도 수치 불변"이 제품 약속이다 — 공유 페이지에서 스냅숏을 재계산으로
+   대체하지 말 것.
 3. **데이터 계약**: `data/*.json` 스키마는 `scripts/validate_market_data.py`가 검증하는
    계약이다. 필드 삭제 금지, 추가는 허용. 프런트 수정 없이 공급자를 교체할 수 있어야
    한다 (docs/DATA_PIPELINE.md).

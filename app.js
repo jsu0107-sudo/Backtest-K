@@ -1639,7 +1639,8 @@
     const simulations = Number($("#mcSimulations").value);
     const method = $("#mcMethod").value;
     const months = years * 12;
-    const random = mulberry32((Date.now() >>> 0) ^ 0xA53C9E1B);
+    const mcSeed = (Date.now() >>> 0) ^ 0xA53C9E1B;
+    const random = mulberry32(mcSeed);
     const avg = mean(sourceReturns);
     const std = standardDeviation(sourceReturns);
     const paths = [];
@@ -1682,6 +1683,7 @@
     const goalProbability = finals.filter((value) => value >= goal).length / simulations;
     state.monteCarlo = {
       initial, contribution, withdrawal, goal, years, simulations, method,
+      seed: mcSeed,
       percentileSeries,
       goalProbability,
       ruinProbability: ruinCount / simulations,
@@ -2208,22 +2210,88 @@
     }
   }
 
+  function downsampleSeries(values, maxPoints = 121) {
+    const step = Math.max(1, Math.ceil((values.length - 1) / (maxPoints - 1)));
+    const points = [];
+    for (let i = 0; i < values.length; i += step) points.push(Math.round(values[i] * 100) / 100);
+    if ((values.length - 1) % step !== 0) points.push(Math.round(values.at(-1) * 100) / 100);
+    return { step, points };
+  }
+
+  // 스냅숏(v2): 공유 시점의 설정·데이터 기준·엔진 버전·핵심지표·정규화(100지수)
+  // 시계열을 전부 링크에 내장한다. 데이터가 갱신돼도 공유 페이지 수치는 불변이다.
+  function buildShareSnapshot() {
+    const result = state.lastBacktest;
+    const { settings, metrics, dates, series } = result;
+    const benchmarkAsset = state.assets[settings.benchmarkId];
+    const portfolio = downsampleSeries(series.map((point) => point.unitIndex));
+    const benchmark = downsampleSeries(series.map((point) => point.benchmarkIndex));
+    const round = (value, digits = 4) => Number.isFinite(value) ? Number(value.toFixed(digits)) : null;
+    return {
+      v: 2,
+      n: settings.name,
+      a: settings.allocations.map((item) => [
+        item.assetId,
+        Math.round(item.weight * 1000) / 10,
+        state.assets[item.assetId]?.name || item.assetId,
+      ]),
+      b: settings.benchmarkId,
+      bn: benchmarkAsset?.name || settings.benchmarkId,
+      s: dates[0],
+      e: dates.at(-1),
+      i: settings.initialAmount,
+      m: settings.monthlyContribution,
+      t: settings.contributionTiming,
+      r: settings.rebalance,
+      c: settings.tradingCostBps,
+      f: Math.round(settings.inflationRate * 1000) / 10,
+      rf: Math.round(settings.riskFreeRate * 1000) / 10,
+      d: state.dataCatalog?.data_as_of || null,
+      rel: state.dataCatalog?.generated_at || null,
+      eng: window.BacktestK?.ENGINE_VERSION || "1.0",
+      seed: state.monteCarlo?.seed ?? null,
+      ver: state.officialVerification?.status === "ok"
+        ? `공식시세 대사 ${state.officialVerification.matched}/${state.officialVerification.checked} 일치`
+        : "프로토타입 데이터 (독립 대사 진행 중)",
+      mx: {
+        cagr: round(metrics.annualizedReturn),
+        mwrr: round(metrics.mwrr),
+        vol: round(metrics.volatility),
+        mdd: round(metrics.maxDrawdown),
+        sharpe: round(metrics.sharpe, 2),
+        rec: metrics.recoveryMonths,
+        ddm: metrics.drawdownMonths,
+        bCagr: round(metrics.benchmarkAnnualized),
+        bMdd: round(metrics.benchmarkMaxDrawdown),
+        alpha: round(metrics.activeReturn),
+        best: metrics.bestYear ? [metrics.bestYear.year, round(metrics.bestYear.portfolio)] : null,
+        worst: metrics.worstYear ? [metrics.worstYear.year, round(metrics.worstYear.portfolio)] : null,
+      },
+      sr: { step: portfolio.step, p: portfolio.points, b: benchmark.points },
+    };
+  }
+
   async function shareBacktest() {
     if (!state.lastBacktest) {
       showToast("먼저 백테스트를 실행하세요.");
       return;
     }
-    const url = new URL("share.html", window.location.href);
-    url.searchParams.set("c", encodeShareConfig(state.lastBacktest.settings));
+    const snapshot = buildShareSnapshot();
+    const encoded = await window.BacktestK.encodeSnapshot(snapshot);
+    const slug = `bk-${state.lastBacktest.settings.allocations.length}asset-${window.BacktestK.shortHash(encoded)}`;
+    const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+    const url = isLocal
+      ? new URL(`share.html#${encoded}`, window.location.href).toString()
+      : `${window.location.origin}/p/${slug}#${encoded}`;
     let copied = false;
     try {
-      await navigator.clipboard.writeText(url.toString());
+      await navigator.clipboard.writeText(url);
       copied = true;
     } catch (_) {
       copied = false;
     }
-    window.open(url.toString(), "_blank", "noopener");
-    showToast(copied ? "공유 링크를 복사하고 미리보기를 열었습니다." : "공유 페이지를 열었습니다. 주소를 복사해 공유하세요.");
+    window.open(url, "_blank", "noopener");
+    showToast(copied ? "불변 공유 링크를 복사하고 미리보기를 열었습니다." : "공유 페이지를 열었습니다. 주소를 복사해 공유하세요.");
   }
 
   function applySharedConfig() {
@@ -2249,6 +2317,15 @@
     if (config.f !== undefined) $("#inflationRate").value = config.f;
     if (config.rf !== undefined) $("#riskFreeRate").value = config.rf;
     return true;
+  }
+
+  function setUiMode(mode, save = true) {
+    const quick = mode === "quick";
+    document.documentElement.classList.toggle("quick-mode", quick);
+    $("#modeQuick")?.classList.toggle("active", quick);
+    $("#modeLab")?.classList.toggle("active", !quick);
+    if (save) storage.setItem("backtestK.uiMode", quick ? "quick" : "lab");
+    if (quick && save) syncDateInputs(true);
   }
 
   function switchView(viewName) {
@@ -2332,6 +2409,8 @@
       renderAssetRows(); renderPresetState(); updateAllocationState();
     });
     $("#runBacktest").addEventListener("click", runBacktest);
+    $("#modeQuick")?.addEventListener("click", () => setUiMode("quick"));
+    $("#modeLab")?.addEventListener("click", () => setUiMode("lab"));
     $("#loadSample").addEventListener("click", () => applyPreset("balanced"));
     $("#saveSettings").addEventListener("click", saveSettings);
     $("#exportButton").addEventListener("click", exportBacktestCsv);
@@ -2427,6 +2506,9 @@
     renderPresetState();
     updateAllocationState();
     bindEvents();
+    // 첫 방문자는 빠른 체크, 저장된 설정이 있는 사용자는 전문가 랩이 기본.
+    const savedUiMode = storage.getItem("backtestK.uiMode");
+    setUiMode(savedUiMode || (restored ? "lab" : "quick"), false);
     try {
       await ensureAssetsLoaded([
         ...state.portfolio.map((row) => row.assetId),

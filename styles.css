@@ -412,6 +412,15 @@ html[data-theme="light"] .code-block { background: #142237; color: #d6e3ee; }
 
 .toolbar-actions { display: flex; align-items: center; gap: 14px; }
 .toolbar-actions .secondary-btn svg { width: 15px; height: 15px; }
+.mode-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 5px; border-radius: 12px; background: rgba(118,146,174,.06); border: 1px solid var(--border); margin-bottom: 16px; }
+.mode-btn { border: 0; background: transparent; color: var(--muted); padding: 10px; border-radius: 8px; font-size: 13.5px; font-weight: 800; transition: .16s ease; }
+.mode-btn:hover { color: var(--text); }
+.mode-btn.active { color: var(--accent); background: var(--accent-soft); }
+.quick-hint { display: none; margin: 0 0 12px; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); color: var(--muted); font-size: 12.5px; line-height: 1.65; }
+.quick-hint strong { color: var(--accent); }
+html.quick-mode .adv-only { display: none !important; }
+html.quick-mode .quick-hint { display: block; }
+
 .result-title-row { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .result-title-row h2 { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rename-btn {

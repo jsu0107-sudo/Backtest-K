@@ -60,6 +60,11 @@
 
       <div class="workspace-grid">
         <aside class="control-panel card" aria-label="백테스트 설정">
+          <div class="mode-switch" role="group" aria-label="입력 모드">
+            <button id="modeQuick" class="mode-btn" type="button">⚡ 빠른 체크</button>
+            <button id="modeLab" class="mode-btn" type="button">전문가 랩</button>
+          </div>
+
           <div class="panel-heading">
             <div><span class="step-index">01</span><h2>포트폴리오 구성</h2></div>
             <span id="allocationState" class="allocation-state valid">100%</span>
@@ -84,24 +89,26 @@
             <div><span class="step-index">02</span><h2>투자 조건</h2></div>
           </div>
 
-          <div class="form-grid two-col">
+          <p class="quick-hint">분석 기간·리밸런싱·거래비용·벤치마크는 표준값으로 자동 설정됩니다. 세밀한 조정이 필요하면 <strong>전문가 랩</strong>으로 전환하세요.</p>
+
+          <div class="form-grid two-col adv-only">
             <label class="field"><span>시작월</span><input id="startDate" type="month" min="1970-01" max="2030-12" value="2016-01" /></label>
             <label class="field"><span>종료월</span><input id="endDate" type="month" min="1970-01" max="2030-12" value="2025-12" /></label>
           </div>
           <label class="field"><span>초기 투자금</span><div class="input-affix currency-affix"><span class="currency-prefix" aria-hidden="true">₩</span><input id="initialAmount" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="50,000,000" aria-label="초기 투자금(원)" /></div></label>
           <label class="field"><span>월 적립금</span><div class="input-affix currency-affix"><span class="currency-prefix" aria-hidden="true">₩</span><input id="monthlyContribution" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="1,000,000" aria-label="월 적립금(원)" /></div></label>
 
-          <div class="form-grid two-col">
+          <div class="form-grid two-col adv-only">
             <label class="field"><span>적립 시점</span><select id="contributionTiming"><option value="start">월초</option><option value="end">월말</option></select></label>
             <label class="field"><span>리밸런싱</span><select id="rebalance"><option value="none">안 함</option><option value="monthly">매월</option><option value="quarterly">분기</option><option value="semiannual">반기</option><option value="annual" selected>연 1회</option></select></label>
           </div>
 
-          <div class="form-grid two-col">
+          <div class="form-grid two-col adv-only">
             <label class="field"><span>거래비용</span><div class="input-affix"><input id="tradingCost" type="number" min="0" max="100" step="0.1" value="1.5" /><span>bp</span></div></label>
             <label class="field"><span>물가상승률</span><div class="input-affix"><input id="inflationRate" type="number" min="-5" max="20" step="0.1" value="2.0" /><span>%</span></div></label>
           </div>
 
-          <div class="form-grid two-col">
+          <div class="form-grid two-col adv-only">
             <label class="field"><span>무위험수익률</span><div class="input-affix"><input id="riskFreeRate" type="number" min="0" max="20" step="0.1" value="3.0" /><span>%</span></div></label>
             <label class="field"><span>벤치마크</span><input id="benchmark" type="hidden" /><div id="benchmarkSearch" class="benchmark-search"></div></label>
           </div>
@@ -334,6 +341,7 @@
   </footer>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="./engine.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>

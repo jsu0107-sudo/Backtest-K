@@ -4,6 +4,10 @@
 (() => {
   "use strict";
 
+  // 계산 산식이 바뀌면 반드시 올린다. 스냅숏 공유 링크에 기록되어
+  // "어떤 엔진으로 계산된 결과인지"를 식별한다.
+  const ENGINE_VERSION = "1.0";
+
   const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   const sum = (values) => values.reduce((a, b) => a + b, 0);
   const fmtPct = (value, digits = 2) => Number.isFinite(value) ? `${(value * 100).toFixed(digits)}%` : "—";
@@ -28,11 +32,55 @@
     if (saved === "light" || saved === "dark") document.documentElement.dataset.theme = saved;
   }
 
-  function encodeShareConfig(payload) {
-    const bytes = new TextEncoder().encode(JSON.stringify(payload));
+  function bytesToBase64Url(bytes) {
     let binary = "";
     bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
     return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+  }
+
+  function base64UrlToBytes(raw) {
+    let base64 = String(raw).replaceAll("-", "+").replaceAll("_", "/");
+    while (base64.length % 4) base64 += "=";
+    return Uint8Array.from(atob(base64), (ch) => ch.charCodeAt(0));
+  }
+
+  function encodeShareConfig(payload) {
+    return bytesToBase64Url(new TextEncoder().encode(JSON.stringify(payload)));
+  }
+
+  // 스냅숏(v2) 코덱: deflate 압축 + base64url. 접두사 "1"=deflate, "0"=무압축 폴백.
+  async function encodeSnapshot(payload) {
+    const bytes = new TextEncoder().encode(JSON.stringify(payload));
+    if (typeof CompressionStream === "undefined") return `0${bytesToBase64Url(bytes)}`;
+    const stream = new Blob([bytes]).stream().pipeThrough(new CompressionStream("deflate-raw"));
+    const compressed = new Uint8Array(await new Response(stream).arrayBuffer());
+    return `1${bytesToBase64Url(compressed)}`;
+  }
+
+  async function decodeSnapshot(raw) {
+    try {
+      const text = String(raw);
+      const bytes = base64UrlToBytes(text.slice(1));
+      let jsonBytes = bytes;
+      if (text[0] === "1") {
+        if (typeof DecompressionStream === "undefined") return null;
+        const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+        jsonBytes = new Uint8Array(await new Response(stream).arrayBuffer());
+      } else if (text[0] !== "0") {
+        return null;
+      }
+      const payload = JSON.parse(new TextDecoder().decode(jsonBytes));
+      if (payload?.v !== 2 || !Array.isArray(payload.a) || !payload.a.length) return null;
+      return payload;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function shortHash(text) {
+    let hash = 5381;
+    for (let i = 0; i < text.length; i += 1) hash = ((hash << 5) + hash + text.charCodeAt(i)) >>> 0;
+    return hash.toString(16).slice(0, 5).padStart(5, "0");
   }
 
   function decodeShareConfig(raw) {
@@ -187,9 +235,12 @@
     const plotWidth = width - margin.left - margin.right;
     const plotHeight = height - margin.top - margin.bottom;
     const { series, months } = result;
-    const values = series.flatMap((point) => [point.balance, point.benchmarkBalance, point.principal]);
+    const yFormatter = options.yFormatter || fmtCompactKRW;
+    const values = series.flatMap((point) => options.hidePrincipal
+      ? [point.balance, point.benchmarkBalance]
+      : [point.balance, point.benchmarkBalance, point.principal]);
     const max = Math.max(...values) * 1.05;
-    const min = 0;
+    const min = options.hidePrincipal ? Math.min(...values) * 0.95 : 0;
     const xFor = (index) => margin.left + index / Math.max(1, series.length - 1) * plotWidth;
     const yFor = (value) => margin.top + (max - value) / (max - min) * plotHeight;
 
@@ -202,7 +253,7 @@
       ctx.beginPath(); ctx.moveTo(margin.left, y); ctx.lineTo(width - margin.right, y); ctx.stroke();
       ctx.fillStyle = cssVar("--muted-2");
       ctx.textAlign = "right";
-      ctx.fillText(fmtCompactKRW(max - (max - min) * i / 4), margin.left - 8, y);
+      ctx.fillText(yFormatter(max - (max - min) * i / 4), margin.left - 8, y);
     }
     const labelCount = width < 520 ? 4 : 6;
     for (let i = 0; i < labelCount; i += 1) {
@@ -215,7 +266,7 @@
     const lines = [
       { key: "balance", color: cssVar("--accent"), width: 2.3, fill: true },
       { key: "benchmarkBalance", color: cssVar("--blue"), width: 1.6 },
-      { key: "principal", color: cssVar("--muted-2"), width: 1.2, dash: [5, 5] },
+      ...(options.hidePrincipal ? [] : [{ key: "principal", color: cssVar("--muted-2"), width: 1.2, dash: [5, 5] }]),
     ];
     lines.forEach((line) => {
       const points = series.map((point, index) => [xFor(index), yFor(point[line.key])]);
@@ -252,14 +303,16 @@
       options.legendEl.innerHTML = [
         ["포트폴리오", cssVar("--accent"), "line"],
         [options.benchmarkName || "벤치마크", cssVar("--blue"), "line"],
-        ["납입 원금", cssVar("--muted-2"), "dash"],
+        ...(options.hidePrincipal ? [] : [["납입 원금", cssVar("--muted-2"), "dash"]]),
       ].map(([label, color, type]) => `<span class="legend-item"><i class="${type === "dash" ? "legend-dash" : "legend-line"}" style="${type === "dash" ? `color:${color}` : `background:${color}`}"></i>${escapeHtml(label)}</span>`).join("");
     }
   }
 
   window.BacktestK = {
+    ENGINE_VERSION,
     cssVar, sum, fmtPct, fmtKRW, fmtCompactKRW, fmtDate, escapeHtml,
     applySavedTheme, encodeShareConfig, decodeShareConfig, fetchJson,
+    encodeSnapshot, decodeSnapshot, shortHash,
     returnMapFrom, isRebalanceMonth, rebalanceLabel, runStaticBacktest, drawGrowthChart,
   };
 })();
