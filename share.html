@@ -88,12 +88,12 @@
       </div>
 
       <div class="card share-section" style="margin-top:16px">
-        <h2>포트폴리오 패스포트</h2>
-        <p style="margin:0 0 12px;color:var(--muted);font-size:13.5px">SNS에 공유하기 좋은 한 장짜리 성적표입니다. 수익률·최대 낙폭·회복기간을 같은 크기로 담고, 투자금액 대신 100 지수 기준으로 표시합니다.</p>
-        <div class="passport-actions">
-          <button id="ppWide" class="secondary-btn">링크 미리보기 · 블로그 (1200×630)</button>
-          <button id="ppInsta" class="secondary-btn">인스타그램 피드 (1080×1350)</button>
-          <button id="ppSquare" class="secondary-btn">카카오톡 · 정사각 (1080×1080)</button>
+        <h2>이미지 저장하기</h2>
+        <button id="ppToggle" class="primary-btn" style="width:100%" aria-expanded="false">이미지 저장하기</button>
+        <div id="ppFormats" class="passport-actions" style="margin-top:12px" hidden>
+          <button id="ppWide" class="secondary-btn">블로그 (1200×630)</button>
+          <button id="ppInsta" class="secondary-btn">인스타그램 (1080×1350)</button>
+          <button id="ppSquare" class="secondary-btn">카카오톡 (1080×1080)</button>
         </div>
         <div class="passport-preview"><canvas id="passportCanvas" width="1200" height="630"></canvas></div>
       </div>

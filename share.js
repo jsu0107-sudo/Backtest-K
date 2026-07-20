@@ -134,12 +134,11 @@
     $("#sharePeriod").textContent = `${fmtDate(vm.startMonth)} – ${fmtDate(vm.endMonth)} · ${rebalanceLabel(vm.cond.r)} 리밸런싱 · 벤치마크 ${vm.benchmarkName}`;
 
     const note = $("#snapshotNote");
-    if (vm.mode === "snapshot") {
+    if (vm.dataAsOf) {
       note.hidden = false;
-      note.textContent = `🔒 ${vm.dataAsOf || "?"} 데이터 기준 스냅숏 — 데이터가 갱신돼도 이 결과는 변하지 않습니다`;
+      note.textContent = `데이터 기준일 ${vm.dataAsOf}`;
     } else {
-      note.hidden = false;
-      note.textContent = "이전 형식 링크 — 최신 데이터로 다시 계산된 결과입니다";
+      note.hidden = true;
     }
 
     const m = vm.metrics;
@@ -260,15 +259,11 @@
     let y = PAD;
     ctx.textBaseline = "alphabetic";
 
-    // 헤더: 브랜드 + 검증 칩
+    // 헤더: 브랜드
     ctx.fillStyle = "#45e3b5";
     ctx.font = font(800, tall ? 30 : 24);
     ctx.textAlign = "left";
     ctx.fillText("BACKTEST-K", PAD, y + 8 * S);
-    ctx.font = font(600, tall ? 22 : 17);
-    ctx.fillStyle = "#7f96aa";
-    ctx.textAlign = "right";
-    ctx.fillText(vm.verify || "", width - PAD, y + 8 * S);
     y += M.headerGap * S;
 
     // 제목 + 기간
@@ -406,24 +401,37 @@
   function bindPassport(vm) {
     const canvas = $("#passportCanvas");
     if (!canvas) return;
+    const formats = $("#ppFormats");
+    const toggle = $("#ppToggle");
+    const preview = canvas.closest(".passport-preview");
+
     const download = (formatKey) => {
       renderPassport(canvas, vm, formatKey);
       canvas.toBlob((blob) => {
         if (!blob) { showToast("이미지 생성에 실패했습니다."); return; }
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `backtest-k-passport-${PASSPORT_FORMATS[formatKey].label}.png`;
+        link.download = `backtest-k-${PASSPORT_FORMATS[formatKey].label}.png`;
         document.body.appendChild(link);
         link.click();
         link.remove();
         setTimeout(() => URL.revokeObjectURL(link.href), 5000);
-        showToast("패스포트 이미지를 저장했습니다.");
+        showToast("이미지를 저장했습니다.");
       }, "image/png");
     };
+
+    // 미리보기와 규격 선택은 "이미지 저장하기"를 누르기 전까지 숨긴다.
+    if (preview) preview.hidden = true;
+    toggle?.addEventListener("click", () => {
+      const open = formats.hidden;
+      formats.hidden = !open;
+      if (preview) preview.hidden = !open;
+      toggle.setAttribute("aria-expanded", String(open));
+      if (open) renderPassport(canvas, vm, "wide");
+    });
     $("#ppWide")?.addEventListener("click", () => download("wide"));
     $("#ppInsta")?.addEventListener("click", () => download("insta"));
     $("#ppSquare")?.addEventListener("click", () => download("square"));
-    renderPassport(canvas, vm, "wide"); // 미리보기
   }
 
   // ---------- 초기화 ----------
