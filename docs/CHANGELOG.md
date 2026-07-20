@@ -6,6 +6,15 @@
 
 ## 2026-07-20
 
+### 랜딩 페이지 404 수정 — 내부 링크 절대 경로화
+
+- 증상: /portfolio 카드의 "백테스트 결과 보기" 클릭 시 Vercel 404.
+- 원인: `vercel.json`의 `trailingSlash: false` 때문에 /portfolio가 슬래시 없이
+  서빙되고, 상대 링크 `./korea-60-40`의 기준 경로가 루트가 되어 `/korea-60-40`으로
+  해석됨. ⚠️ **정적 페이지의 내부 링크·자산 경로는 반드시 절대 경로(`/...`)로 쓸 것.**
+- 조치: build_portfolio_pages.py의 모든 내부 링크·자산·스크립트 경로를 절대 경로로
+  변경 후 재생성. portfolio.js `basePath`도 `/`로.
+
 ### `c3b0e72` 전략 랜딩 페이지 5종 + 공용 엔진 분리
 
 - **engine.js 신설**: 공유·랜딩 페이지 공용 계산/차트 모듈(`window.BacktestK`).

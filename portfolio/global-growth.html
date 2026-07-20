@@ -16,8 +16,8 @@
   <meta name="twitter:card" content="summary_large_image" />
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "채권이 없는데 괜찮은가요?", "acceptedAnswer": {"@type": "Answer", "text": "낙폭 방어를 포기하고 장기 성장에 베팅하는 구성입니다. 적립식으로 장기 투자할 수 있고 큰 낙폭을 견딜 수 있는 투자자에게 적합하며, 그렇지 않다면 균형 성장이나 올웨더가 맞습니다."}}, {"@type": "Question", "name": "S&P500과 나스닥100을 둘 다 담는 이유는?", "acceptedAnswer": {"@type": "Answer", "text": "나스닥100은 S&P500 안의 기술·성장주 비중을 의도적으로 키우는 오버레이입니다. 사실상 '미국 대형주 + 기술주 추가 베팅'으로 읽는 것이 정확합니다."}}]}</script>
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "백테스트K", "item": "https://backtest-k.vercel.app/"}, {"@type": "ListItem", "position": 2, "name": "전략 모음", "item": "https://backtest-k.vercel.app/portfolio/"}, {"@type": "ListItem", "position": 3, "name": "글로벌 성장 포트폴리오", "item": "https://backtest-k.vercel.app/portfolio/global-growth"}]}</script>
-  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="../styles.css" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/styles.css" />
   <style>
     .pf-shell { width: min(880px, calc(100% - 32px)); margin: 0 auto; padding: 36px 0 60px; display: grid; gap: 16px; }
     .pf-breadcrumb { color: var(--muted-2); font-size: 13px; }
@@ -47,7 +47,7 @@
 </head>
 <body>
   <header class="topbar" style="justify-content:center">
-    <a class="brand" href="../" aria-label="백테스트K 홈">
+    <a class="brand" href="/" aria-label="백테스트K 홈">
       <span class="brand-mark" aria-hidden="true">
         <svg viewBox="0 0 32 32" role="img"><path d="M6 23.5 12.2 17l4.4 4.2L26 10.8"/><path d="M20.5 10.8H26v5.5"/></svg>
       </span>
@@ -56,7 +56,7 @@
   </header>
 
   <main class="pf-shell">
-    <nav class="pf-breadcrumb" aria-label="현재 위치"><a href="../">백테스트K</a> › <a href="./">전략 모음</a> › 글로벌 성장 포트폴리오</nav>
+    <nav class="pf-breadcrumb" aria-label="현재 위치"><a href="/">백테스트K</a> › <a href="/portfolio/">전략 모음</a> › 글로벌 성장 포트폴리오</nav>
 
     <div class="pf-heading">
       <p class="eyebrow">PORTFOLIO STRATEGY</p>
@@ -100,8 +100,8 @@
     </div>
 
     <div class="pf-cta">
-      <a id="pfCta" class="primary-btn" href="../">이 조합으로 백테스트 실행 →</a>
-      <a class="secondary-btn" href="./">다른 전략 보기</a>
+      <a id="pfCta" class="primary-btn" href="/">이 조합으로 백테스트 실행 →</a>
+      <a class="secondary-btn" href="/portfolio/">다른 전략 보기</a>
     </div>
 
       <footer class="pf-footer">
@@ -115,11 +115,11 @@
       name: "글로벌 성장 포트폴리오",
       alloc: [["360750", 40], ["133690", 30], ["069500", 20], ["411060", 10]],
       benchmark: "360750",
-      basePath: "../",
+      basePath: "/",
       settings: { i: 10000000, m: 500000, t: "start", r: "annual", c: 1.5 },
     };
   </script>
-  <script src="../engine.js"></script>
-  <script src="../portfolio.js"></script>
+  <script src="/engine.js"></script>
+  <script src="/portfolio.js"></script>
 </body>
 </html>

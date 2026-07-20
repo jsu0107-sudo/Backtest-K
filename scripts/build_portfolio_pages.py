@@ -113,8 +113,10 @@ PAGES = [
     },
 ]
 
-HEAD_EXTRA = """  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="../styles.css" />
+# trailingSlash:false 환경에서 /portfolio가 슬래시 없이 서빙되면 상대 링크의
+# 기준 경로가 루트로 바뀌어 404가 난다. 내부 링크·자산은 모두 절대 경로를 쓴다.
+HEAD_EXTRA = """  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/styles.css" />
   <style>
     .pf-shell {{ width: min(880px, calc(100% - 32px)); margin: 0 auto; padding: 36px 0 60px; display: grid; gap: 16px; }}
     .pf-breadcrumb {{ color: var(--muted-2); font-size: 13px; }}
@@ -143,7 +145,7 @@ HEAD_EXTRA = """  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
   </style>"""
 
 TOPBAR = """  <header class="topbar" style="justify-content:center">
-    <a class="brand" href="../" aria-label="백테스트K 홈">
+    <a class="brand" href="/" aria-label="백테스트K 홈">
       <span class="brand-mark" aria-hidden="true">
         <svg viewBox="0 0 32 32" role="img"><path d="M6 23.5 12.2 17l4.4 4.2L26 10.8"/><path d="M20.5 10.8H26v5.5"/></svg>
       </span>
@@ -222,7 +224,7 @@ def render_page(page: dict) -> str:
 {TOPBAR}
 
   <main class=\"pf-shell\">
-    <nav class=\"pf-breadcrumb\" aria-label=\"현재 위치\"><a href=\"../\">백테스트K</a> › <a href=\"./\">전략 모음</a> › {page['name']}</nav>
+    <nav class=\"pf-breadcrumb\" aria-label=\"현재 위치\"><a href=\"/\">백테스트K</a> › <a href=\"/portfolio/\">전략 모음</a> › {page['name']}</nav>
 
     <div class=\"pf-heading\">
       <p class=\"eyebrow\">PORTFOLIO STRATEGY</p>
@@ -258,8 +260,8 @@ def render_page(page: dict) -> str:
     </div>
 
     <div class=\"pf-cta\">
-      <a id=\"pfCta\" class=\"primary-btn\" href=\"../\">이 조합으로 백테스트 실행 →</a>
-      <a class=\"secondary-btn\" href=\"./\">다른 전략 보기</a>
+      <a id=\"pfCta\" class=\"primary-btn\" href=\"/\">이 조합으로 백테스트 실행 →</a>
+      <a class=\"secondary-btn\" href=\"/portfolio/\">다른 전략 보기</a>
     </div>
 
 {FOOTER}
@@ -270,12 +272,12 @@ def render_page(page: dict) -> str:
       name: {json.dumps(page['name'], ensure_ascii=False)},
       alloc: {alloc_js},
       benchmark: {json.dumps(page['benchmark'], ensure_ascii=False)},
-      basePath: "../",
+      basePath: "/",
       settings: {{ i: 10000000, m: 500000, t: "start", r: "annual", c: 1.5 }},
     }};
   </script>
-  <script src=\"../engine.js\"></script>
-  <script src=\"../portfolio.js\"></script>
+  <script src=\"/engine.js\"></script>
+  <script src=\"/portfolio.js\"></script>
 </body>
 </html>
 """
@@ -284,7 +286,7 @@ def render_page(page: dict) -> str:
 def render_index(pages: list[dict]) -> str:
     head_extra = HEAD_EXTRA.replace("{{", "{").replace("}}", "}")
     cards = "\n".join(
-        f"""      <a class=\"card pf-card\" href=\"./{page['slug']}\">
+        f"""      <a class=\"card pf-card\" href=\"/portfolio/{page['slug']}\">
         <h2>{page['name']}</h2>
         <p>{page['description']}</p>
         <span>백테스트 결과 보기 →</span>
@@ -314,7 +316,7 @@ def render_index(pages: list[dict]) -> str:
 {TOPBAR}
 
   <main class=\"pf-shell\">
-    <nav class=\"pf-breadcrumb\" aria-label=\"현재 위치\"><a href=\"../\">백테스트K</a> › 전략 모음</nav>
+    <nav class=\"pf-breadcrumb\" aria-label=\"현재 위치\"><a href=\"/\">백테스트K</a> › 전략 모음</nav>
     <div class=\"pf-heading\">
       <p class=\"eyebrow\">PORTFOLIO STRATEGIES</p>
       <h1>대표 자산배분 전략 백테스트</h1>

@@ -16,8 +16,8 @@
   <meta name="twitter:card" content="summary_large_image" />
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "왜 주식 60% 채권 40%인가요?", "acceptedAnswer": {"@type": "Answer", "text": "특별한 최적화 결과라기보다, 주식의 성장과 채권의 방어를 균형 있게 섞는 관행적 기준점입니다. 투자자의 위험 성향에 따라 70/30, 50/50 등으로 조정하는 출발점으로 쓰입니다."}}, {"@type": "Question", "name": "국내 자산만으로 충분한가요?", "acceptedAnswer": {"@type": "Answer", "text": "환율 변수가 없다는 장점이 있지만 한국 시장 단일 국가 위험에 노출됩니다. 미국 주식을 섞은 균형 성장 포트폴리오와 비교해 보세요."}}]}</script>
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "백테스트K", "item": "https://backtest-k.vercel.app/"}, {"@type": "ListItem", "position": 2, "name": "전략 모음", "item": "https://backtest-k.vercel.app/portfolio/"}, {"@type": "ListItem", "position": 3, "name": "한국 60/40 포트폴리오", "item": "https://backtest-k.vercel.app/portfolio/korea-60-40"}]}</script>
-  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="../styles.css" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/styles.css" />
   <style>
     .pf-shell { width: min(880px, calc(100% - 32px)); margin: 0 auto; padding: 36px 0 60px; display: grid; gap: 16px; }
     .pf-breadcrumb { color: var(--muted-2); font-size: 13px; }
@@ -47,7 +47,7 @@
 </head>
 <body>
   <header class="topbar" style="justify-content:center">
-    <a class="brand" href="../" aria-label="백테스트K 홈">
+    <a class="brand" href="/" aria-label="백테스트K 홈">
       <span class="brand-mark" aria-hidden="true">
         <svg viewBox="0 0 32 32" role="img"><path d="M6 23.5 12.2 17l4.4 4.2L26 10.8"/><path d="M20.5 10.8H26v5.5"/></svg>
       </span>
@@ -56,7 +56,7 @@
   </header>
 
   <main class="pf-shell">
-    <nav class="pf-breadcrumb" aria-label="현재 위치"><a href="../">백테스트K</a> › <a href="./">전략 모음</a> › 한국 60/40 포트폴리오</nav>
+    <nav class="pf-breadcrumb" aria-label="현재 위치"><a href="/">백테스트K</a> › <a href="/portfolio/">전략 모음</a> › 한국 60/40 포트폴리오</nav>
 
     <div class="pf-heading">
       <p class="eyebrow">PORTFOLIO STRATEGY</p>
@@ -98,8 +98,8 @@
     </div>
 
     <div class="pf-cta">
-      <a id="pfCta" class="primary-btn" href="../">이 조합으로 백테스트 실행 →</a>
-      <a class="secondary-btn" href="./">다른 전략 보기</a>
+      <a id="pfCta" class="primary-btn" href="/">이 조합으로 백테스트 실행 →</a>
+      <a class="secondary-btn" href="/portfolio/">다른 전략 보기</a>
     </div>
 
       <footer class="pf-footer">
@@ -113,11 +113,11 @@
       name: "한국 60/40 포트폴리오",
       alloc: [["069500", 60], ["114260", 40]],
       benchmark: "INDEX_KOSPI",
-      basePath: "../",
+      basePath: "/",
       settings: { i: 10000000, m: 500000, t: "start", r: "annual", c: 1.5 },
     };
   </script>
-  <script src="../engine.js"></script>
-  <script src="../portfolio.js"></script>
+  <script src="/engine.js"></script>
+  <script src="/portfolio.js"></script>
 </body>
 </html>
