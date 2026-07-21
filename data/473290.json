@@ -6,10 +6,10 @@
   "asset_type": "etf",
   "category": "채권",
   "currency": "KRW",
-  "description": "순자산 상위 ETF #147 (수집 시점 시가총액 기준)",
+  "description": "순자산 상위 ETF #148 (수집 시점 시가총액 기준)",
   "listing_date": "2023-12-11",
   "listing_date_source": "한국예탁결제원 SEIBro",
-  "data_as_of": "2026-07-20",
+  "data_as_of": "2026-07-21",
   "first_month": "2024-01",
   "last_month": "2026-06",
   "monthly_return_count": 30,
@@ -45,17 +45,13 @@
       "상업적 서비스 전 데이터 제공자 이용조건과 재배포 권한을 다시 확인해야 합니다."
     ]
   },
-  "universe_rank": 147,
+  "universe_rank": 148,
   "market_value_krw_100m": 4847.0,
   "latest_raw_close": {
-    "date": "2026-07-20",
+    "date": "2026-07-21",
     "close": 10845.0
   },
   "recent_raw_closes": [
-    {
-      "date": "2026-07-06",
-      "close": 10820.0
-    },
     {
       "date": "2026-07-07",
       "close": 10820.0
@@ -90,6 +86,10 @@
     },
     {
       "date": "2026-07-20",
+      "close": 10845.0
+    },
+    {
+      "date": "2026-07-21",
       "close": 10845.0
     }
   ],
