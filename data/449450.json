@@ -6,10 +6,10 @@
   "asset_type": "etf",
   "category": "국내주식",
   "currency": "KRW",
-  "description": "순자산 상위 ETF #78 (수집 시점 시가총액 기준)",
+  "description": "순자산 상위 ETF #77 (수집 시점 시가총액 기준)",
   "listing_date": "2023-01-04",
   "listing_date_source": "한국예탁결제원 SEIBro",
-  "data_as_of": "2026-07-21",
+  "data_as_of": "2026-07-22",
   "first_month": "2023-02",
   "last_month": "2026-06",
   "monthly_return_count": 41,
@@ -45,17 +45,13 @@
       "상업적 서비스 전 데이터 제공자 이용조건과 재배포 권한을 다시 확인해야 합니다."
     ]
   },
-  "universe_rank": 78,
-  "market_value_krw_100m": 10212.0,
+  "universe_rank": 77,
+  "market_value_krw_100m": 10349.0,
   "latest_raw_close": {
-    "date": "2026-07-21",
-    "close": 51035.0
+    "date": "2026-07-22",
+    "close": 51720.0
   },
   "recent_raw_closes": [
-    {
-      "date": "2026-07-07",
-      "close": 59635.0
-    },
     {
       "date": "2026-07-08",
       "close": 54075.0
@@ -91,6 +87,10 @@
     {
       "date": "2026-07-21",
       "close": 51035.0
+    },
+    {
+      "date": "2026-07-22",
+      "close": 51720.0
     }
   ],
   "monthly_returns": [
@@ -116,12 +116,12 @@
     },
     {
       "month": "2023-06",
-      "return": 0.0959141204,
+      "return": 0.0959140358,
       "observation_date": "2023-06-30"
     },
     {
       "month": "2023-07",
-      "return": -0.0934066769,
+      "return": -0.093406607,
       "observation_date": "2023-07-28"
     },
     {
@@ -151,12 +151,12 @@
     },
     {
       "month": "2024-01",
-      "return": -0.0202144544,
+      "return": -0.0202145355,
       "observation_date": "2024-01-31"
     },
     {
       "month": "2024-02",
-      "return": 0.1625262349,
+      "return": 0.1625263312,
       "observation_date": "2024-02-29"
     },
     {
@@ -201,12 +201,12 @@
     },
     {
       "month": "2024-11",
-      "return": -0.0590030958,
+      "return": -0.0590029961,
       "observation_date": "2024-11-29"
     },
     {
       "month": "2024-12",
-      "return": 0.01675676,
+      "return": 0.0167566522,
       "observation_date": "2024-12-30"
     },
     {
