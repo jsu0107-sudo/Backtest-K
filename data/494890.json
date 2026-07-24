@@ -6,10 +6,10 @@
   "asset_type": "etf",
   "category": "국내주식",
   "currency": "KRW",
-  "description": "순자산 상위 ETF #69 (수집 시점 시가총액 기준)",
+  "description": "순자산 상위 ETF #72 (수집 시점 시가총액 기준)",
   "listing_date": "2024-10-28",
   "listing_date_source": "한국예탁결제원 SEIBro",
-  "data_as_of": "2026-07-23",
+  "data_as_of": "2026-07-24",
   "first_month": "2024-11",
   "last_month": "2026-06",
   "monthly_return_count": 20,
@@ -45,17 +45,13 @@
       "상업적 서비스 전 데이터 제공자 이용조건과 재배포 권한을 다시 확인해야 합니다."
     ]
   },
-  "universe_rank": 69,
-  "market_value_krw_100m": 11240.0,
+  "universe_rank": 72,
+  "market_value_krw_100m": 10754.0,
   "latest_raw_close": {
-    "date": "2026-07-23",
-    "close": 32675.0
+    "date": "2026-07-24",
+    "close": 30725.0
   },
   "recent_raw_closes": [
-    {
-      "date": "2026-07-09",
-      "close": 33900.0
-    },
     {
       "date": "2026-07-10",
       "close": 34870.0
@@ -91,27 +87,31 @@
     {
       "date": "2026-07-23",
       "close": 32675.0
+    },
+    {
+      "date": "2026-07-24",
+      "close": 30725.0
     }
   ],
   "monthly_returns": [
     {
       "month": "2024-11",
-      "return": -0.0408789086,
+      "return": -0.0408790066,
       "observation_date": "2024-11-29"
     },
     {
       "month": "2024-12",
-      "return": -0.0181139774,
+      "return": -0.018114084,
       "observation_date": "2024-12-30"
     },
     {
       "month": "2025-01",
-      "return": 0.0493759157,
+      "return": 0.0493761383,
       "observation_date": "2025-01-31"
     },
     {
       "month": "2025-02",
-      "return": 0.0093072036,
+      "return": 0.0093070992,
       "observation_date": "2025-02-28"
     },
     {
@@ -126,12 +126,12 @@
     },
     {
       "month": "2025-05",
-      "return": 0.0636132753,
+      "return": 0.0636131747,
       "observation_date": "2025-05-30"
     },
     {
       "month": "2025-06",
-      "return": 0.1545453986,
+      "return": 0.1545455079,
       "observation_date": "2025-06-30"
     },
     {
