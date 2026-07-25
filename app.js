@@ -456,6 +456,7 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
         renderBenchmarkOptions();
         syncDateInputs();
         updateAllocationState();
+        refreshPeriodNotice();
       });
       $(".weight-input", rowElement).addEventListener("input", (event) => {
         state.portfolio[index].weight = Number(event.target.value) || 0;
@@ -473,6 +474,7 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
         renderAssetRows();
         renderPresetState();
         updateAllocationState();
+        refreshPeriodNotice();
       });
     });
     $("#addAsset").disabled = state.portfolio.length >= 8;
@@ -501,19 +503,61 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
 
   // 분석 구간이 왜 이 길이인지 알려준다.
   // ① 특정 자산이 구간을 줄이면 그 자산을 지목  ② 60개월 미만이면 경고 강조
-  function renderPeriodNotice(ids, min, max) {
+  const monthsBetween = (from, to) => {
+    const [y1, m1] = from.split("-").map(Number);
+    const [y2, m2] = to.split("-").map(Number);
+    return (y2 * 12 + m2) - (y1 * 12 + m1) + 1;
+  };
+
+  // 자산들의 공통 보유 구간. 수익률이 이미 로드됐으면 정확히 계산하고,
+  // 아직이면 카탈로그 메타데이터(firstMonth/lastMonth)로 추정한다.
+  // 덕분에 자산을 고르는 즉시 — 데이터를 받기 전에 — 구간 변화를 알려줄 수 있다.
+  function portfolioRange(ids) {
+    const maps = returnsByIdFor(ids);
+    if (ids.every((id) => maps[id])) {
+      const dates = commonMonths(maps, ids, "0000-01", "9999-12");
+      if (!dates.length) return null;
+      return { min: dates[0], max: dates.at(-1), months: dates.length };
+    }
+    let min = null;
+    let max = null;
+    for (const id of ids) {
+      const asset = state.assets[id];
+      if (!asset?.firstMonth || !asset?.lastMonth) return null;
+      if (!min || asset.firstMonth > min) min = asset.firstMonth;
+      if (!max || asset.lastMonth < max) max = asset.lastMonth;
+    }
+    if (!min || !max || min > max) return null;
+    return { min, max, months: monthsBetween(min, max) };
+  }
+
+  // 현재 포트폴리오 구성 기준으로 구간 안내를 다시 그린다.
+  // 자산을 추가·삭제·교체한 직후 호출해 "구간이 짧아진다"를 즉시 알린다.
+  function refreshPeriodNotice() {
+    const ids = [...state.portfolio.map((row) => row.assetId), $("#benchmark")?.value].filter(Boolean);
+    if (ids.length) renderPeriodNotice(ids);
+  }
+
+  function renderPeriodNotice(ids) {
     const notice = $("#periodNotice");
     if (!notice) return;
-    const selected = commonDatesFor(ids, $("#startDate").value, $("#endDate").value);
-    const months = selected.length;
-    const available = commonDatesFor(ids, "0000-01", "9999-12").length;
+    const range = portfolioRange(ids);
+    if (!range) { notice.hidden = true; return; }
+    const { min, max } = range;
+    const available = range.months;
+
+    // 선택 구간(입력값)과 보유 구간을 각각 계산한다.
+    const startValue = $("#startDate").value || min;
+    const endValue = $("#endDate").value || max;
+    const selectedStart = startValue < min ? min : startValue;
+    const selectedEnd = endValue > max ? max : endValue;
+    const months = selectedStart > selectedEnd ? 0 : Math.min(available, monthsBetween(selectedStart, selectedEnd));
 
     // 공통 구간의 시작을 결정하는(=가장 늦게 시작한) 자산을 찾는다.
     let binding = null;
     ids.forEach((id) => {
       const asset = state.assets[id];
-      const map = asset?.returnMap;
-      const first = asset?.firstMonth || (map instanceof Map ? [...map.keys()][0] : null);
+      const first = asset?.firstMonth;
       if (!first) return;
       if (!binding || first > binding.first) binding = { id, name: asset.name, first };
     });
@@ -522,14 +566,12 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
     // 손실이 1년 이상일 때만 "단축" 안내를 띄운다 (몇 달 차이는 노이즈).
     let lostMonths = 0;
     if (binding && ids.length > 2) {
-      const others = ids.filter((id) => id !== binding.id);
-      lostMonths = commonDatesFor(others, "0000-01", "9999-12").length - available;
+      const others = portfolioRange(ids.filter((id) => id !== binding.id));
+      lostMonths = others ? others.months - available : 0;
     }
 
     // 실제 분석에 쓰이는 구간(선택 구간)을 기준으로 표시한다.
-    const shownStart = selected[0] || min;
-    const shownEnd = selected.at(-1) || max;
-    const parts = [`분석 구간 <strong>${escapeHtml(fmtDate(shownStart))} – ${escapeHtml(fmtDate(shownEnd))}</strong> (${months}개월)`];
+    const parts = [`분석 구간 <strong>${escapeHtml(fmtDate(selectedStart))} – ${escapeHtml(fmtDate(selectedEnd))}</strong> (${months}개월)`];
     if (months && available > months) {
       parts.push(`보유 데이터는 ${escapeHtml(fmtDate(min))}부터 (전체 ${available}개월)`);
     }
@@ -572,7 +614,7 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
       endInput.value = max;
       startInput.value = min;
     }
-    renderPeriodNotice(ids, min, max);
+    renderPeriodNotice(ids);
     const compareInput = $("#compareStart");
     if (compareInput) {
       const allFirstMonths = [...state.compareSelected].map((id) => state.assets[id]?.firstMonth).filter(Boolean).sort();
@@ -655,14 +697,19 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
     $("#benchmark").value = state.assets[preset.benchmark] ? preset.benchmark : rows[0][0];
     renderBenchmarkOptions();
     updateAllocationState();
+    // 프리셋의 자산을 새로 받아오는 동안도 "계산 중"에 포함된다 (모바일에서 이 구간이 가장 길다).
+    const startedAt = run ? beginComputing() : 0;
     try {
       await ensureAssetsLoaded([...rows.map(([id]) => id), $("#benchmark").value]);
       syncDateInputs(true);
       renderDataTable();
       if (run) await runBacktest({ userInitiated: true });
     } catch (error) {
-      $("#formError").textContent = error.message;
       showToast(error.message);
+      setResultError(`${error.message} 네트워크 상태를 확인한 뒤 다시 시도해주세요.`);
+      if (run) endComputing(startedAt, { failed: true });
+    } finally {
+      if (run && computingDepth > 0) endComputing(startedAt);
     }
   }
 
@@ -705,19 +752,23 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
   async function runBacktest(options = {}) {
     let settings = gatherBacktestSettings();
     const totalWeight = sum(settings.allocations.map((item) => item.weight));
+    const fail = (message) => {
+      setResultError(message);
+      endComputing(0, { failed: true });
+      return null;
+    };
+
     if (Math.abs(totalWeight - 1) > 0.0001) {
-      $("#formError").textContent = "자산 비중의 합계를 100%로 맞춰주세요.";
-      return;
+      return fail(`자산 비중의 합계가 ${(totalWeight * 100).toFixed(1)}%입니다. 100%로 맞춰주세요.`);
     }
     if (!settings.startDate || !settings.endDate || settings.startDate >= settings.endDate) {
-      $("#formError").textContent = "종료월은 시작월보다 뒤여야 합니다.";
-      return;
+      return fail("종료월이 시작월보다 앞서거나 같습니다. 기간을 다시 선택해주세요.");
     }
     if (settings.initialAmount < 0 || settings.monthlyContribution < 0) {
-      $("#formError").textContent = "투자금은 0원 이상이어야 합니다.";
-      return;
+      return fail("투자금은 0원 이상이어야 합니다.");
     }
 
+    const startedAt = beginComputing();
     const ids = [...settings.allocations.map((item) => item.assetId), settings.benchmarkId];
     state.backtestLoading = true;
     $("#runBacktest span").textContent = "데이터 불러오는 중";
@@ -727,9 +778,8 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
       syncDateInputs();
       settings = gatherBacktestSettings();
     } catch (error) {
-      $("#formError").textContent = error.message;
       showToast(error.message);
-      return;
+      return fail(`${error.message} 네트워크 상태를 확인한 뒤 다시 시도해주세요.`);
     } finally {
       state.backtestLoading = false;
       $("#runBacktest span").textContent = "백테스트 실행";
@@ -737,10 +787,10 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
     }
     const dates = commonDatesFor(ids, settings.startDate, settings.endDate);
     if (dates.length < 12) {
-      $("#formError").textContent = "선택한 자산들의 공통 데이터가 12개월 미만입니다.";
-      return;
+      const names = ids.map((id) => state.assets[id]?.name).filter(Boolean).join(", ");
+      return fail(`선택한 자산들의 공통 데이터가 ${dates.length}개월뿐입니다(최소 12개월 필요). 상장일이 늦은 자산을 빼거나 기간을 넓혀보세요. 대상: ${names}`);
     }
-    $("#formError").textContent = "";
+    setResultError("");
 
     // settings는 데이터 로드 후 재수집되므로, 조회 테이블도 최신 settings 기준으로 만든다.
     const runIds = [...settings.allocations.map((item) => item.assetId), settings.benchmarkId];
@@ -752,7 +802,9 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
 
     renderBacktestResults();
     $("#mcInitial").value = Math.round(state.lastBacktest.metrics.finalBalance);
+    endComputing(startedAt);
     showToast(`${dates.length}개월 백테스트를 계산했습니다.`);
+    return state.lastBacktest;
   }
 
   function formatMonthDuration(months) {
@@ -2105,16 +2157,14 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
       const unused = state.assetOrder.find((id) => !state.portfolio.some((row) => row.assetId === id)) || state.assetOrder[0];
       state.portfolio.push({ assetId: unused, weight: 0 });
       markPortfolioCustomized();
-      renderAssetRows(); renderPresetState(); updateAllocationState();
+      renderAssetRows(); renderPresetState(); updateAllocationState(); refreshPeriodNotice();
     });
     $("#runBacktest").addEventListener("click", () => runBacktest({ userInitiated: true }));
     // 사용자가 기간을 직접 만지면 이후 자산 변경이 그 설정을 덮어쓰지 않게 한다.
     ["#startDate", "#endDate"].forEach((selector) => {
       $(selector)?.addEventListener("change", () => {
         state.periodTouched = true;
-        const ids = [...state.portfolio.map((row) => row.assetId), $("#benchmark").value].filter(Boolean);
-        const range = commonDatesFor(ids, "0000-01", "9999-12");
-        if (range.length) renderPeriodNotice(ids, range[0], range.at(-1));
+        refreshPeriodNotice();
       });
     });
     $("#modeQuick")?.addEventListener("click", () => setUiMode("quick"));
@@ -2281,6 +2331,62 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
     }
   }
 
+  // ── 계산 상태 표시 ────────────────────────────────────────────────
+  // 스켈레톤은 120ms가 지나야 붙인다. 대부분의 계산은 그 전에 끝나므로
+  // 화면이 깜빡이지 않고, 데이터를 새로 받아오는 느린 경우에만 나타난다.
+  const SKELETON_DELAY_MS = 120;
+  let skeletonTimer = null;
+  // 프리셋 적용처럼 "데이터 로드 → 백테스트"로 중첩 호출되는 경로가 있다.
+  // 깊이를 세어 가장 바깥 호출이 시작/종료를 관리해야 실제 대기 시간이 측정된다.
+  let computingDepth = 0;
+  let computingStartedAt = 0;
+
+  function beginComputing() {
+    computingDepth += 1;
+    if (computingDepth > 1) return computingStartedAt;
+    computingStartedAt = performance.now();
+    clearTimeout(skeletonTimer);
+    skeletonTimer = setTimeout(() => {
+      $$(".results-area").forEach((area) => area.classList.add("is-computing"));
+    }, SKELETON_DELAY_MS);
+    const status = $("#resultStatus");
+    if (status) {
+      status.className = "result-status computing";
+      $("#resultStatusText").textContent = "계산 중";
+    }
+    setResultError("");
+    return computingStartedAt;
+  }
+
+  function endComputing(startedAt, { failed = false } = {}) {
+    computingDepth = Math.max(0, computingDepth - 1);
+    if (computingDepth > 0 && !failed) return; // 바깥 호출이 마무리한다
+    computingDepth = 0;
+    clearTimeout(skeletonTimer);
+    $$(".results-area").forEach((area) => area.classList.remove("is-computing"));
+    const status = $("#resultStatus");
+    if (!status) return;
+    if (failed) {
+      status.className = "result-status failed";
+      $("#resultStatusText").textContent = "계산 실패";
+      return;
+    }
+    const elapsed = performance.now() - (startedAt || computingStartedAt);
+    status.className = "result-status";
+    $("#resultStatusText").textContent = `${(elapsed / 1000).toFixed(elapsed < 1000 ? 2 : 1)}초 만에 계산 완료`;
+  }
+
+  // 실패를 조용히 넘기지 않는다. 좌측 폼과 결과 영역 양쪽에 이유를 남긴다.
+  function setResultError(message) {
+    const box = $("#resultError");
+    if (box) {
+      box.hidden = !message;
+      box.innerHTML = message ? `<strong>계산할 수 없습니다</strong> — ${escapeHtml(message)}` : "";
+    }
+    const formError = $("#formError");
+    if (formError) formError.textContent = message || "";
+  }
+
   function setSampleBanner(visible) {
     const banner = $("#sampleNotice");
     if (banner) banner.hidden = !visible;
@@ -2300,6 +2406,12 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
       state.marketDataReady = false;
       buildDemoAssets();
       state.compareSelected = new Set(["US_EQ", "KR_EQ", "KR_BOND10", "GOLD_KRW"]);
+      // 조용히 데모로 넘어가지 않는다 — 실데이터가 아님을 결과 화면에 명시한다.
+      const fallback = $("#dataFallbackNotice");
+      if (fallback) {
+        fallback.hidden = false;
+        fallback.innerHTML = "<strong>실데이터를 불러오지 못했습니다</strong> — 아래 결과는 실제 시세가 아닌 <strong>합성 데모 데이터</strong>로 계산한 것입니다. 네트워크를 확인한 뒤 새로고침해주세요.";
+      }
     }
     restoreCustomAssets();
     const preset = getPreset(SAMPLE_PORTFOLIO.presetKey) || getPreset("balanced");

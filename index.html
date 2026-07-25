@@ -140,9 +140,13 @@
                 <svg viewBox="0 0 24 24"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="m16 6-4-4-4 4"/><path d="M12 2v13"/></svg>
                 공유하기
               </button>
-              <div class="result-status"><span></span>계산 완료</div>
+              <div id="resultStatus" class="result-status" role="status"><span></span><em id="resultStatusText">계산 완료</em></div>
             </div>
           </div>
+
+          <div id="dataFallbackNotice" class="notice-banner error" role="alert" hidden></div>
+
+          <div id="resultError" class="notice-banner error" role="alert" hidden></div>
 
           <div id="sampleNotice" class="notice-banner sample" role="note" hidden>
             <strong>샘플 결과입니다</strong> — 왼쪽에서 자산·비중·투자금을 내 조건으로 바꿔 다시 계산해 보세요.
