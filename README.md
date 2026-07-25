@@ -4,20 +4,34 @@
 
 ## 바로 실행
 
-### 방법 1 — 단일 파일
+### 방법 1 — 프로젝트 폴더 (권장)
+
+```bash
+npm run dev
+```
+
+브라우저에서 `http://localhost:8123`을 엽니다.
+
+> 앱이 ES 모듈(`core/*.js`)을 쓰므로 `index.html`을 `file://`로 직접 열면 동작하지 않습니다. 반드시 HTTP로 실행하세요.
+
+### 방법 2 — 단일 파일 (오프라인)
 
 `backtestK_single.html`을 더블클릭하면 브라우저에서 바로 실행됩니다.
 
 > 단일 파일판은 오프라인 UI 확인용 합성 데모입니다. 자동 갱신 실데이터는 HTTP로 실행하는 프로젝트판과 Vercel 배포판에서만 로드됩니다.
+>
+> **이 파일은 생성 산출물입니다.** 직접 수정하지 말고 소스를 고친 뒤 `npm run build:single`로 재생성하세요.
 
-### 방법 2 — 프로젝트 폴더
+## 개발 스크립트
 
-```bash
-cd backtest-k-mvp
-python3 -m http.server 8080
-```
+| 명령 | 설명 |
+|---|---|
+| `npm run dev` | 정적 서버 실행 (포트 8123) |
+| `npm run precompute` | 첫 화면 샘플 백테스트를 미리 계산 → `data/precomputed/` + `index.html` 인라인 블록 |
+| `npm run build:single` | `backtestK_single.html` 재생성 + `SHA256SUMS.txt` 갱신 |
+| `npm test` | 계산 골든 회귀 + 생성물 최신성 검사(Node) + 데이터 파이프라인 검증(Python) |
 
-브라우저에서 `http://localhost:8080`을 엽니다.
+계산 산식은 `core/backtest.js`와 `core/stats.js`에만 있습니다. 산식을 바꾸면 `npm test`로 골든 회귀(`tests/fixtures/golden-backtest.json`)를 반드시 확인하세요.
 
 ## 구현 기능
 

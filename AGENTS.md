@@ -33,8 +33,13 @@
 3. **데이터 계약**: `data/*.json` 스키마는 `scripts/validate_market_data.py`가 검증하는
    계약이다. 필드 삭제 금지, 추가는 허용. 프런트 수정 없이 공급자를 교체할 수 있어야
    한다 (docs/DATA_PIPELINE.md).
-4. **/portfolio/*.html은 생성물**: 직접 수정하지 말고
-   `scripts/build_portfolio_pages.py`의 PAGES를 고친 뒤 재생성한다.
+4. **생성물은 직접 수정하지 않는다** (모두 `npm test`가 최신성을 감시한다):
+   - `/portfolio/*.html` → `scripts/build_portfolio_pages.py`의 PAGES 수정 후 재생성
+   - `backtestK_single.html` → `npm run build:single` (소스는 index/styles/engine/core/app 한 벌뿐)
+   - `index.html`의 `<!-- BEGIN/END PRECOMPUTED -->` 블록, `data/precomputed/*`
+     → `npm run precompute`. 첫 화면 샘플이므로 데이터 갱신 시 CI가 자동 재생성한다.
+   - ⚠️ 생성 스크립트에서 파일 내용을 `String.replace`로 끼워 넣을 때는 **반드시 함수 치환**을
+     쓴다. 문자열 치환은 `$$`·`$&`를 특수 패턴으로 해석해 코드를 조용히 망가뜨린다.
 5. **인증키**: `DATA_GO_KR_API_KEY`는 GitHub Actions secret로만 주입. 저장소·프런트·
    생성 JSON에 키를 기록하지 않는다.
 6. **통화 입력**: `#initialAmount`/`#monthlyContribution` 값은 콤마 포맷 문자열 —
