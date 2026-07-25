@@ -13,7 +13,8 @@ import { dirname, join } from "node:path";
 import { buildSingleHtml } from "../scripts/build_single.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const onDisk = readFileSync(join(root, "backtestK_single.html"), "utf8");
+// 줄바꿈은 체크아웃 설정(core.autocrlf)에 따라 달라지므로 비교 전에 정규화한다.
+const onDisk = readFileSync(join(root, "backtestK_single.html"), "utf8").replace(/\r\n/g, "\n");
 
 test("backtestK_single.html이 현재 소스와 일치 (재생성 누락 감시)", () => {
   assert.equal(

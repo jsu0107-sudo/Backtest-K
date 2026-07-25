@@ -94,7 +94,9 @@ export function buildSingleHtml() {
     (_match, title) => `<title>${title} (단일 파일)</title>\n  <!-- 자동 생성물 — 수동 편집 금지. npm run build:single 로 재생성한다. -->`,
   );
 
-  return html;
+  // Windows 체크아웃(core.autocrlf)에서 소스가 CRLF로 내려와도 산출물은 항상 LF로 고정한다.
+  // 그래야 "재생성 누락 감시" 테스트가 OS에 따라 오탐하지 않는다.
+  return html.replace(/\r\n/g, "\n");
 }
 
 function regenerateChecksums(extraFiles) {
