@@ -7,6 +7,7 @@ import {
   annualReturnRows,
   correlationMatrix,
 } from "./core/backtest.js";
+import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
 
 (() => {
   "use strict";
@@ -18,8 +19,10 @@ import {
     assets: {},
     assetOrder: [],
     portfolio: [],
-    activePreset: "balanced",
-    portfolioName: "균형 성장 포트폴리오",
+    activePreset: SAMPLE_PORTFOLIO.presetKey,
+    portfolioName: SAMPLE_PORTFOLIO.name,
+    periodTouched: false,
+    sampleMode: false,
     lastBacktest: null,
     monteCarlo: null,
     compareSelected: new Set(["360750", "069500", "114260", "411060"]),
@@ -496,6 +499,51 @@ import {
     return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
   }
 
+  // 분석 구간이 왜 이 길이인지 알려준다.
+  // ① 특정 자산이 구간을 줄이면 그 자산을 지목  ② 60개월 미만이면 경고 강조
+  function renderPeriodNotice(ids, min, max) {
+    const notice = $("#periodNotice");
+    if (!notice) return;
+    const selected = commonDatesFor(ids, $("#startDate").value, $("#endDate").value);
+    const months = selected.length;
+    const available = commonDatesFor(ids, "0000-01", "9999-12").length;
+
+    // 공통 구간의 시작을 결정하는(=가장 늦게 시작한) 자산을 찾는다.
+    let binding = null;
+    ids.forEach((id) => {
+      const asset = state.assets[id];
+      const map = asset?.returnMap;
+      const first = asset?.firstMonth || (map instanceof Map ? [...map.keys()][0] : null);
+      if (!first) return;
+      if (!binding || first > binding.first) binding = { id, name: asset.name, first };
+    });
+
+    // 그 자산을 뺐을 때 몇 개월이 더 확보되는지 계산한다.
+    // 손실이 1년 이상일 때만 "단축" 안내를 띄운다 (몇 달 차이는 노이즈).
+    let lostMonths = 0;
+    if (binding && ids.length > 2) {
+      const others = ids.filter((id) => id !== binding.id);
+      lostMonths = commonDatesFor(others, "0000-01", "9999-12").length - available;
+    }
+
+    // 실제 분석에 쓰이는 구간(선택 구간)을 기준으로 표시한다.
+    const shownStart = selected[0] || min;
+    const shownEnd = selected.at(-1) || max;
+    const parts = [`분석 구간 <strong>${escapeHtml(fmtDate(shownStart))} – ${escapeHtml(fmtDate(shownEnd))}</strong> (${months}개월)`];
+    if (months && available > months) {
+      parts.push(`보유 데이터는 ${escapeHtml(fmtDate(min))}부터 (전체 ${available}개월)`);
+    }
+    if (binding && lostMonths >= 12) {
+      parts.push(`<strong>${escapeHtml(binding.name)}</strong> 때문에 ${escapeHtml(fmtDate(binding.first))}부터로 단축됩니다 (−${lostMonths}개월)`);
+    }
+    const tooShort = months > 0 && months < 60;
+    if (tooShort) parts.push("구간이 5년 미만이라 결과 신뢰도가 낮습니다");
+
+    notice.className = `period-notice${tooShort ? " warn" : ""}`;
+    notice.innerHTML = parts.join(" · ");
+    notice.hidden = months === 0;
+  }
+
   function syncDateInputs(resetToAvailable = false) {
     const benchmarkId = $("#benchmark")?.value;
     const ids = [...state.portfolio.map((row) => row.assetId), benchmarkId].filter(Boolean);
@@ -510,9 +558,21 @@ import {
     startInput.max = max;
     endInput.min = min;
     endInput.max = max;
-    if (resetToAvailable || !endInput.value || endInput.value > max || endInput.value < min) endInput.value = max;
-    const defaultStart = shiftMonth(endInput.value || max, -119);
-    if (resetToAvailable || !startInput.value || startInput.value < min || startInput.value >= endInput.value) startInput.value = defaultStart < min ? min : defaultStart;
+    // 사용자가 기간을 직접 만지지 않았다면 보유 데이터 공통 구간 전체를 쓴다.
+    // (종료월 −119개월로 자르던 기존 규칙은 보유 이력을 조용히 버렸다.)
+    // resetToAvailable은 "표준값으로 되돌린다"는 명시적 동작(프리셋 적용·빠른 체크 전환)이므로
+    // 사용자 수정 플래그도 함께 해제한다. 그 외 경로(자산 추가·삭제·교체)는 설정을 보존한다.
+    if (resetToAvailable) state.periodTouched = false;
+    if (state.periodTouched) {
+      // 사용자 설정 보존 — 범위를 벗어난 값만 최소한으로 보정한다.
+      if (endInput.value > max || endInput.value < min) endInput.value = max;
+      if (startInput.value < min) startInput.value = min;
+      if (startInput.value >= endInput.value) startInput.value = min;
+    } else {
+      endInput.value = max;
+      startInput.value = min;
+    }
+    renderPeriodNotice(ids, min, max);
     const compareInput = $("#compareStart");
     if (compareInput) {
       const allFirstMonths = [...state.compareSelected].map((id) => state.assets[id]?.firstMonth).filter(Boolean).sort();
@@ -599,7 +659,7 @@ import {
       await ensureAssetsLoaded([...rows.map(([id]) => id), $("#benchmark").value]);
       syncDateInputs(true);
       renderDataTable();
-      if (run) await runBacktest();
+      if (run) await runBacktest({ userInitiated: true });
     } catch (error) {
       $("#formError").textContent = error.message;
       showToast(error.message);
@@ -641,7 +701,8 @@ import {
     return commonMonths(returnsByIdFor(ids), ids, startDate, endDate);
   }
 
-  async function runBacktest() {
+  // options.userInitiated: 사용자가 직접 실행한 경우. 샘플 배너 해제와 계측에 쓴다.
+  async function runBacktest(options = {}) {
     let settings = gatherBacktestSettings();
     const totalWeight = sum(settings.allocations.map((item) => item.weight));
     if (Math.abs(totalWeight - 1) > 0.0001) {
@@ -684,6 +745,10 @@ import {
     // settings는 데이터 로드 후 재수집되므로, 조회 테이블도 최신 settings 기준으로 만든다.
     const runIds = [...settings.allocations.map((item) => item.assetId), settings.benchmarkId];
     state.lastBacktest = runBacktestCore({ settings, dates, returnsById: returnsByIdFor(runIds) });
+    if (options.userInitiated) {
+      state.sampleMode = false;
+      setSampleBanner(false);
+    }
 
     renderBacktestResults();
     $("#mcInitial").value = Math.round(state.lastBacktest.metrics.finalBalance);
@@ -709,7 +774,7 @@ import {
     if (!result) return;
     const { settings, dates, metrics, annualReturns } = result;
     $("#resultTitle").textContent = settings.name;
-    $("#resultPeriod").textContent = `${fmtDate(dates[0])} – ${fmtDate(dates.at(-1))} · ${rebalanceLabel(settings.rebalance)}`;
+    $("#resultPeriod").textContent = `${fmtDate(dates[0])} – ${fmtDate(dates.at(-1))} (${dates.length}개월) · ${rebalanceLabel(settings.rebalance)}`;
 
     const priceIndexNames = [...new Set([...settings.allocations.map((item) => item.assetId), settings.benchmarkId])]
       .map((id) => state.assets[id])
@@ -960,14 +1025,16 @@ import {
   function renderInsights() {
     const result = state.lastBacktest;
     const { metrics, settings, riskContributions } = result;
+    // 위험기여도는 사전 계산 샘플에서 지연 로드되므로 아직 비어 있을 수 있다.
     const topRisk = riskContributions.slice().sort((a, b) => b.contribution - a.contribution)[0];
+    const topRiskName = topRisk ? state.assets[topRisk.assetId]?.name : null;
     const gain = metrics.finalBalance - metrics.principal;
     const benchmarkGap = metrics.annualizedReturn - metrics.benchmarkAnnualized;
     const recovery = metrics.recoveryMonths === null ? "분석 종료일까지 전고점을 회복하지 못했습니다." : `저점 이후 ${metrics.recoveryMonths}개월 만에 전고점을 회복했습니다.`;
     const costRatio = metrics.principal > 0 ? metrics.totalTradingCost / metrics.principal : 0;
     const insights = [
       { title: "수익과 현금흐름을 분리해서 보세요", body: `입출금 영향을 제거한 TWRR은 ${fmtPct(metrics.annualizedReturn, 2)}, 실제 납입 시점을 반영한 MWRR은 ${fmtPct(metrics.mwrr, 2)}입니다. 두 값의 차이는 적립 시점과 시장 경로에서 발생합니다.` },
-      { title: `${state.assets[topRisk.assetId].name}이 위험을 가장 많이 설명합니다`, body: `목표 비중은 ${fmtPct(topRisk.weight, 1)}지만 추정 위험 기여도는 ${fmtPct(topRisk.contribution, 1)}입니다. 비중과 위험 기여도는 같지 않습니다.` },
+      ...(topRiskName ? [{ title: `${topRiskName}이 위험을 가장 많이 설명합니다`, body: `목표 비중은 ${fmtPct(topRisk.weight, 1)}지만 추정 위험 기여도는 ${fmtPct(topRisk.contribution, 1)}입니다. 비중과 위험 기여도는 같지 않습니다.` }] : []),
       { title: `최악의 구간은 ${fmtPct(metrics.maxDrawdown, 1)}였습니다`, body: `고점에서 저점까지 ${metrics.drawdownMonths}개월이 걸렸고, ${recovery} 실제 투자에서는 이 구간의 행동 가능성을 먼저 검토해야 합니다.` },
       { title: `누적 손익 ${fmtCompactKRW(gain)}, 비용 ${fmtCompactKRW(metrics.totalTradingCost)}`, body: `입력한 ${settings.tradingCostBps.toFixed(1)}bp 거래비용 기준이며 원금 대비 비용은 ${fmtPct(costRatio, 3)}입니다. 벤치마크 대비 연환산 차이는 ${fmtPp(benchmarkGap, 2)}입니다.` },
     ];
@@ -2040,7 +2107,16 @@ import {
       markPortfolioCustomized();
       renderAssetRows(); renderPresetState(); updateAllocationState();
     });
-    $("#runBacktest").addEventListener("click", runBacktest);
+    $("#runBacktest").addEventListener("click", () => runBacktest({ userInitiated: true }));
+    // 사용자가 기간을 직접 만지면 이후 자산 변경이 그 설정을 덮어쓰지 않게 한다.
+    ["#startDate", "#endDate"].forEach((selector) => {
+      $(selector)?.addEventListener("change", () => {
+        state.periodTouched = true;
+        const ids = [...state.portfolio.map((row) => row.assetId), $("#benchmark").value].filter(Boolean);
+        const range = commonDatesFor(ids, "0000-01", "9999-12");
+        if (range.length) renderPeriodNotice(ids, range[0], range.at(-1));
+      });
+    });
     $("#modeQuick")?.addEventListener("click", () => setUiMode("quick"));
     $("#modeLab")?.addEventListener("click", () => setUiMode("lab"));
     $("#loadSample").addEventListener("click", () => applyPreset("balanced"));
@@ -2114,9 +2190,108 @@ import {
     });
   }
 
+  // 사전 계산된 샘플 결과를 첫 페인트에 렌더한다 (네트워크 왕복 0회).
+  // 인라인 페이로드는 성과요약 지표 + 성장 곡선만 담고 있고,
+  // 낙폭·연도별·상관·위험기여는 loadDeferredSample()이 이어서 채운다.
+  function hydrateSample() {
+    const node = document.getElementById("precomputedSample");
+    if (!node?.textContent?.trim()) return false;
+    try {
+      const payload = JSON.parse(node.textContent);
+      if (payload.schemaVersion !== 1 || !payload.dates?.length) return false;
+
+      // 렌더 함수들이 참조하는 표시용 자산 정보만 심는다 (수익률 Map은 없음).
+      Object.entries(payload.assets || {}).forEach(([id, info], index) => {
+        state.assets[id] = {
+          id,
+          code: info.code,
+          name: info.name,
+          category: info.category,
+          color: COLORS[index % COLORS.length],
+          description: "",
+          source: "market",
+          sourceLabel: "사전 계산 샘플",
+          returnMap: null,
+          firstMonth: payload.dates[0],
+          lastMonth: payload.dates.at(-1),
+          distributionIncluded: info.distributionIncluded,
+        };
+      });
+
+      const columns = payload.series;
+      const series = payload.dates.map((date, i) => ({
+        date,
+        balance: columns.balance[i],
+        principal: columns.principal[i],
+        benchmarkBalance: columns.benchmarkBalance[i],
+        realBalance: columns.realBalance[i],
+        realBenchmarkBalance: columns.realBenchmarkBalance[i],
+        realPrincipal: columns.realPrincipal[i],
+        unitIndex: columns.unitIndex[i],
+        benchmarkIndex: columns.benchmarkIndex[i],
+      }));
+
+      state.lastBacktest = {
+        settings: payload.settings,
+        dates: payload.dates,
+        series,
+        monthlyReturns: [],
+        benchmarkReturns: [],
+        metrics: payload.metrics,
+        annualReturns: [],
+        drawdowns: [],
+        benchmarkDrawdowns: [],
+        drawdownHistory: [],
+        riskContributions: [],
+        correlations: [],
+      };
+      state.portfolioName = payload.settings.name;
+      state.sampleMode = true;
+      renderBacktestResults();
+      setSampleBanner(true);
+      loadDeferredSample(); // 카탈로그 로드를 기다리지 않고 병렬로 시작한다.
+      return true;
+    } catch (error) {
+      console.warn("사전 계산 샘플 하이드레이트 실패", error);
+      return false;
+    }
+  }
+
+  // 첫 화면에 없던 부분(낙폭·연도별·상관·위험기여)을 사전 계산 파일에서 채운다.
+  // 실제 계산이 이미 끝났다면 덮어쓰지 않는다.
+  async function loadDeferredSample() {
+    try {
+      const response = await fetch("data/precomputed/default-backtest.json", { cache: "no-cache" });
+      if (!response.ok) return;
+      const payload = await response.json();
+      if (!state.sampleMode || !state.lastBacktest) return;
+      Object.assign(state.lastBacktest, {
+        monthlyReturns: payload.monthlyReturns || [],
+        benchmarkReturns: payload.benchmarkReturns || [],
+        annualReturns: payload.annualReturns || [],
+        drawdowns: payload.drawdowns || [],
+        benchmarkDrawdowns: payload.benchmarkDrawdowns || [],
+        drawdownHistory: payload.drawdownHistory || [],
+        riskContributions: payload.riskContributions || [],
+        correlations: payload.correlations || [],
+      });
+      if (state.sampleMode) renderBacktestResults();
+    } catch (_) {
+      // 지연 로드 실패는 조용히 넘긴다 — 곧 실제 계산 결과가 덮어쓴다.
+    }
+  }
+
+  function setSampleBanner(visible) {
+    const banner = $("#sampleNotice");
+    if (banner) banner.hidden = !visible;
+  }
+
   async function init() {
     const savedTheme = storage.getItem("backtestK.theme");
     if (savedTheme === "light" || savedTheme === "dark") document.documentElement.dataset.theme = savedTheme;
+    // 공유 링크로 들어온 경우엔 샘플을 그리지 않는다 (곧 해당 조합으로 덮어쓰므로).
+    const hasSharedConfig = new URLSearchParams(window.location.search).has("c");
+    if (!hasSharedConfig && !storage.getItem("backtestK.settings")) hydrateSample();
     try {
       await loadMarketCatalog();
     } catch (error) {
@@ -2127,7 +2302,7 @@ import {
       state.compareSelected = new Set(["US_EQ", "KR_EQ", "KR_BOND10", "GOLD_KRW"]);
     }
     restoreCustomAssets();
-    const preset = getPreset("balanced");
+    const preset = getPreset(SAMPLE_PORTFOLIO.presetKey) || getPreset("balanced");
     state.portfolio = preset.rows.filter(([assetId]) => state.assets[assetId]).map(([assetId, weight]) => ({ assetId, weight }));
     $("#benchmark").value = state.assets[preset.benchmark] ? preset.benchmark : state.portfolio[0]?.assetId || state.assetOrder[0];
     renderBenchmarkOptions();

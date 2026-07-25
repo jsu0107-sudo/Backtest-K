@@ -6,6 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "python -m http.server 8123",
+    "precompute": "node scripts/precompute_default.mjs",
+    "build:single": "node scripts/build_single.mjs",
     "test": "node --test tests/*.test.mjs && python -m unittest discover -s tests"
   },
   "engines": {
