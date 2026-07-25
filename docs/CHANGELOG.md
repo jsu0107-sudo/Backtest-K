@@ -4,6 +4,37 @@
 추적 문서다. 기능 커밋을 만들면 이 파일에 항목을 추가한다. 데이터 자동 갱신
 커밋(`chore(data)`)은 기록하지 않는다.
 
+## 2026-07-22 — Phase 0 (첫 진입 이탈 최소화)
+
+### 계산 코어 순수 모듈 분리 + 골든 회귀 테스트
+
+Phase 0의 사전 계산(precompute)을 jsdom 없이 하기 위한 선행 작업. 표시 계층만
+바꾸는 Phase 0 원칙에 따라 **산식은 한 줄도 바꾸지 않았다** (아래 검증 참고).
+
+- **신규 `core/`** (순수 ESM, DOM·전역 상태 의존 0):
+  - `core/stats.js` — sum/mean/표준편차/분산/공분산/상관
+  - `core/backtest.js` — `runBacktest({settings, dates, returnsById})` + 지표·IRR·
+    낙폭·낙폭에피소드·연도별·위험기여도·상관행렬. app.js에서 옮긴 산식 그대로이고
+    유일한 변경은 `state.assets[id].returnMap` → 인자 `returnsById[id]`.
+  - `core/data-loader.js` — `normalizeMonth`/`returnMapFromPayload` (로딩 규칙)
+- **`app.js` −247줄**: 계산 함수 전부 제거, `runBacktest`는 DOM 읽기 → 검증 →
+  데이터 로드 → **코어 호출 1줄** → 렌더로 축소. ESM 전환(`import`), `index.html`의
+  스크립트를 `type="module"`로 변경.
+  - ⚠️ ESM 전환 결과 `index.html`을 `file://`로 직접 열면 동작하지 않는다.
+    로컬 확인은 `npm run dev`(포트 8123) 또는 `backtestK_single.html` 사용.
+- **골든 회귀** `tests/golden-backtest.test.mjs` + `tests/fixtures/golden-backtest.json`:
+  리팩터 이전 브라우저 실행 결과(균형 성장 54개월, 한국 60/40 203개월)를 전체 결과
+  객체 SHA-256으로 고정. **입력 수익률도 픽스처에 동결**해 데이터 갱신에 영향받지
+  않게 했고, 데이터 개정을 따로 감시하는 테스트를 추가했다.
+- `package.json` 신설: `npm run dev`(정적 서버), `npm test`(Node 골든 + Python).
+  런타임 의존성 0개.
+
+**검증**: ① 추출 직후 Node에서 골든 2건 전체 해시 일치 → 산식 동일성 증명.
+② 리팩터된 앱을 브라우저에서 실행해 지표(19.35% / −9.58% / 1.27 / 2.2억원)·
+성과요약 17행·낙폭 6건·연도별 5행·상관 16셀·위험기여 4건이 픽스처와 일치.
+③ 자산 비교·몬테카를로·공유(스냅숏) 탭 회귀 확인, 콘솔 에러 0.
+④ `npm test` 전체 통과(Node 3 + Python 14).
+
 ## 2026-07-21
 
 ### 공유 이미지 UI 정리

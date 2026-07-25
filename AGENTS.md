@@ -13,9 +13,17 @@
 
 ## 불변 조건 (어기면 사용자 신뢰 훼손)
 
-1. **산식 동기화**: `engine.js`의 `runStaticBacktest`는 `app.js`의 `runBacktest`와
-   동일한 산식이어야 한다. 본편 산식을 바꾸면 engine.js도 같이 바꾸고, 공유
-   페이지(share.html) 수치가 본편 결과와 일치하는지 확인한다.
+1. **계산은 `core/`에만 둔다**: 백테스트 산식의 유일한 소스는 `core/backtest.js` +
+   `core/stats.js`(순수 ESM, DOM·전역 상태 의존 없음)다. `app.js`는 DOM 입출력과
+   렌더링만 담당한다. 산식을 수정하면 **반드시 `npm test`**로 골든 회귀
+   (`tests/fixtures/golden-backtest.json`)를 확인한다. 골든이 깨졌는데 의도한
+   변경이 아니면 되돌린다.
+   - 골든 픽스처는 입력 수익률까지 동결돼 있어 데이터 갱신에 영향받지 않는다.
+     "라이브 data/와 동결 입력이 일치" 테스트만 깨졌다면 **코드가 아니라 데이터
+     개정**이므로, 확인 후 픽스처를 갱신한다.
+   - `engine.js`의 `runStaticBacktest`는 아직 공유·랜딩 페이지용 축약 사본이다
+     (지표 일부 없음). **후속 과제**: `core/`로 통일. 그때까지 본편 산식을 바꾸면
+     공유 페이지 수치와 어긋날 수 있음을 인지할 것.
 2. **공유 코덱 v1/v2**: 레거시 `?c=`(v1, base64url JSON `{v:1,n,a,b,s,e,i,m,t,r,c,f,rf}`)와
    스냅숏 프래그먼트(v2, `/p/<slug>#<payload>`, deflate 압축, `engine.js
    encodeSnapshot/decodeSnapshot`) 모두 이미 배포된 링크가 있으므로 하위 호환을
