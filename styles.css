@@ -249,7 +249,8 @@ select option { color: #102033; background: #fff; }
 .chart-wrap.large { height: 330px; }
 .chart-wrap.medium { height: 260px; }
 .chart-wrap.xlarge { height: 450px; }
-.chart-wrap canvas { width: 100%; height: 100%; display: block; }
+/* 세로 스크롤은 유지하면서 가로 드래그는 툴팁 추적에 쓴다(터치 지원). */
+.chart-wrap canvas { width: 100%; height: 100%; display: block; touch-action: pan-y; }
 .chart-tooltip {
   position: absolute; z-index: 4; pointer-events: none; display: none; min-width: 175px; padding: 10px 12px;
   background: rgba(4, 13, 24, .94); color: #eaf3fb; border: 1px solid rgba(151,177,204,.22); border-radius: 9px;
@@ -511,6 +512,45 @@ html.quick-mode .quick-hint { display: block; }
   .chart-wrap.large { height: 290px; }
   .chart-wrap.xlarge { height: 360px; }
 }
+
+/* ── 모바일 (한국 트래픽의 70~80%) ─────────────────────────────
+   터치 타겟 최소 44×44, 표 첫 열 고정, 실행 버튼 하단 고정. */
+@media (max-width: 767px) {
+  .nav-btn, .mode-btn, .analysis-tab, .preset-chip,
+  .secondary-btn, .primary-btn, .add-row-btn, .text-btn, .rename-btn { min-height: 44px; }
+  .icon-btn { width: 44px; height: 44px; }
+  .remove-asset { width: 44px; height: 44px; }
+  .rename-btn { min-width: 44px; justify-content: center; }
+  .asset-row { grid-template-columns: 1fr 88px 44px; }
+  input, select { min-height: 44px; }
+  .chart-toggle { min-height: 44px; }
+  .chart-toggle input { width: 20px; height: 20px; }
+
+  /* 가로 스크롤 시 첫 열(지표명·연도·자산명)이 따라오게 고정한다. */
+  .table-scroll { position: relative; }
+  .table-scroll th:first-child,
+  .table-scroll td:first-child {
+    position: sticky; left: 0; z-index: 2;
+    background: var(--surface);
+    box-shadow: 1px 0 0 var(--border);
+  }
+  .table-scroll thead th:first-child { z-index: 3; }
+  .correlation-wrap th:first-child, .correlation-wrap td:first-child { position: static; box-shadow: none; }
+}
+
+/* 실행 버튼이 화면 밖으로 밀렸을 때만 뜨는 하단 고정 바 */
+.sticky-run {
+  position: fixed; z-index: 60; left: 0; right: 0; bottom: 0;
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(to top, var(--bg) 62%, rgba(7,17,31,0));
+  border-top: 1px solid var(--border);
+}
+/* 등장 효과는 두지 않는다. transform/rAF에 기대면 렌더링이 멈춘 탭에서
+   바가 화면 밖에 걸린 채로 남는다(실제로 겪음). 표시/숨김만 단순하게 처리한다. */
+.sticky-run[hidden] { display: none; }
+.sticky-run .primary-btn { width: 100%; min-height: 52px; font-size: 15px; }
+.sticky-run .primary-btn:disabled { opacity: .5; }
+@media (min-width: 768px) { .sticky-run { display: none !important; } }
 
 @media (max-width: 620px) {
   .brand-copy small, .mvp-badge, #exportButton { display: none; }

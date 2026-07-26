@@ -441,7 +441,7 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
             <ul class="asset-suggestions" role="listbox" hidden></ul>
           </div>
         </div>
-        <div class="input-affix"><input class="weight-input" type="number" min="0" max="100" step="0.5" value="${row.weight}" aria-label="${escapeHtml(asset.name)} 비중"/><span>%</span></div>
+        <div class="input-affix"><input class="weight-input" type="number" inputmode="decimal" min="0" max="100" step="0.5" value="${row.weight}" aria-label="${escapeHtml(asset.name)} 비중"/><span>%</span></div>
         <button class="remove-asset" type="button" aria-label="자산 삭제">×</button>
       </div>`;
     }).join("");
@@ -637,6 +637,13 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
     meter.style.background = total > 100 ? "var(--red)" : "linear-gradient(90deg, var(--accent), var(--blue))";
     $("#runBacktest").disabled = !valid || state.backtestLoading;
     $("#formError").textContent = valid ? "" : "자산 비중의 합계를 100%로 맞춰주세요.";
+
+    // 모바일 하단 고정 버튼도 같은 상태를 따른다.
+    const stickyButton = $("#stickyRunButton");
+    if (stickyButton) {
+      stickyButton.disabled = !valid || state.backtestLoading;
+      $("#stickyRunLabel").textContent = `합계 ${total.toFixed(1)}% · 백테스트 실행`;
+    }
   }
 
   const MARKET_PRESETS = {
@@ -1106,7 +1113,7 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
   function bindLineChartInteractions(canvas) {
     if (canvas.__lineBound) return;
     canvas.__lineBound = true;
-    canvas.addEventListener("mousemove", (event) => {
+    const onPointerMove = (event) => {
       const config = canvas.__chartConfig;
       if (!config || !config.data?.length) return;
       const rect = canvas.getBoundingClientRect();
@@ -1116,14 +1123,34 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
       config.hoverIndex = Math.round(x / Math.max(1, plotWidth) * (config.data.length - 1));
       drawLineChart(canvas, config);
       showLineTooltip(canvas, config, event);
-    });
-    canvas.addEventListener("mouseleave", () => {
+    };
+    const onPointerLeave = () => {
       const config = canvas.__chartConfig;
       if (!config) return;
       config.hoverIndex = null;
       drawLineChart(canvas, config);
       const tooltip = document.getElementById(config.tooltipId);
       if (tooltip) tooltip.style.display = "none";
+    };
+    bindPointerChart(canvas, onPointerMove, onPointerLeave);
+  }
+
+  // 마우스·터치·펜을 한 번에 다룬다. 터치에서는 누른 뒤 끌 때만 좌표가 오므로
+  // pointerdown도 이동으로 취급한다. 세로 스크롤은 CSS touch-action: pan-y로 살려둔다.
+  function bindPointerChart(canvas, onMove, onLeave) {
+    canvas.addEventListener("pointerdown", (event) => {
+      // 캡처는 편의 기능일 뿐이므로 실패해도 툴팁 표시를 막지 않는다.
+      // (활성 포인터가 아니면 NotFoundError가 나고, 그러면 이후 로직이 통째로 중단된다.)
+      if (event.pointerType !== "mouse") {
+        try { canvas.setPointerCapture?.(event.pointerId); } catch (_) { /* 무시 */ }
+      }
+      onMove(event);
+    });
+    canvas.addEventListener("pointermove", onMove);
+    canvas.addEventListener("pointerleave", onLeave);
+    canvas.addEventListener("pointercancel", onLeave);
+    canvas.addEventListener("pointerup", (event) => {
+      if (event.pointerType !== "mouse") onLeave();
     });
   }
 
@@ -1267,7 +1294,7 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
     state.chartConfigs.set(canvasId, { type: "bar", config });
     if (!canvas.__barBound) {
       canvas.__barBound = true;
-      canvas.addEventListener("mousemove", (event) => {
+      const onPointerMove = (event) => {
         const cfg = canvas.__barConfig;
         if (!cfg || !cfg.categories?.length) return;
         const rect = canvas.getBoundingClientRect();
@@ -1277,15 +1304,16 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
         cfg.hoverIndex = clamp(Math.floor(x / Math.max(1, plotWidth) * cfg.categories.length), 0, cfg.categories.length - 1);
         drawBarChart(canvas, cfg);
         showBarTooltip(canvas, cfg, event);
-      });
-      canvas.addEventListener("mouseleave", () => {
+      };
+      const onPointerLeave = () => {
         const cfg = canvas.__barConfig;
         if (!cfg) return;
         cfg.hoverIndex = null;
         drawBarChart(canvas, cfg);
         const tooltip = document.getElementById(cfg.tooltipId);
         if (tooltip) tooltip.style.display = "none";
-      });
+      };
+      bindPointerChart(canvas, onPointerMove, onPointerLeave);
     }
     drawBarChart(canvas, config);
   }
@@ -1487,7 +1515,7 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
     state.chartConfigs.set(canvasId, { type: "fan", config });
     if (!canvas.__fanBound) {
       canvas.__fanBound = true;
-      canvas.addEventListener("mousemove", (event) => {
+      const onPointerMove = (event) => {
         const cfg = canvas.__fanConfig;
         if (!cfg) return;
         const rect = canvas.getBoundingClientRect();
@@ -1497,14 +1525,15 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
         cfg.hoverIndex = Math.round(x / Math.max(1, plotWidth) * (cfg.mc.percentileSeries.length - 1));
         drawFanChart(canvas, cfg);
         showFanTooltip(canvas, cfg, event);
-      });
-      canvas.addEventListener("mouseleave", () => {
+      };
+      const onPointerLeave = () => {
         const cfg = canvas.__fanConfig;
         if (!cfg) return;
         cfg.hoverIndex = null;
         drawFanChart(canvas, cfg);
         $("#mcTooltip").style.display = "none";
-      });
+      };
+      bindPointerChart(canvas, onPointerMove, onPointerLeave);
     }
     drawFanChart(canvas, config);
   }
@@ -2160,6 +2189,7 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
       renderAssetRows(); renderPresetState(); updateAllocationState(); refreshPeriodNotice();
     });
     $("#runBacktest").addEventListener("click", () => runBacktest({ userInitiated: true }));
+    setupStickyRun();
     // 사용자가 기간을 직접 만지면 이후 자산 변경이 그 설정을 덮어쓰지 않게 한다.
     ["#startDate", "#endDate"].forEach((selector) => {
       $(selector)?.addEventListener("change", () => {
@@ -2385,6 +2415,40 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
     }
     const formError = $("#formError");
     if (formError) formError.textContent = message || "";
+  }
+
+  // 모바일에서 실행 버튼이 화면 밖으로 밀렸을 때만 하단 고정 바를 띄운다.
+  // (768px 미만에서만 동작하고, 원래 버튼이 보이면 중복 노출하지 않는다.)
+  function setupStickyRun() {
+    const bar = $("#stickyRun");
+    const target = $("#runBacktest");
+    if (!bar || !target) return;
+
+    // IntersectionObserver 대신 좌표로 판정한다. 동작이 동일하면서
+    // 렌더링이 멈춘 환경(백그라운드 탭 등)에서도 상태가 어긋나지 않는다.
+    const sync = () => {
+      const mobile = window.matchMedia("(max-width: 767px)").matches;
+      const rect = target.getBoundingClientRect();
+      const targetVisible = rect.bottom > 0 && rect.top < window.innerHeight;
+      const show = mobile && !targetVisible;
+      if (bar.hidden === !show) return;
+      bar.hidden = !show;
+    };
+
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => { ticking = false; sync(); });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", sync);
+    $("#stickyRunButton")?.addEventListener("click", () => {
+      runBacktest({ userInitiated: true });
+      // 결과를 바로 볼 수 있게 결과 영역으로 이동한다.
+      $(".results-area")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    sync();
   }
 
   function setSampleBanner(visible) {
