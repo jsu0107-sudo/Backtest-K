@@ -805,6 +805,7 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
     if (options.userInitiated) {
       state.sampleMode = false;
       setSampleBanner(false);
+      window.trackEvent?.("backtest_run");
     }
 
     renderBacktestResults();
@@ -2056,6 +2057,7 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
       showToast("먼저 백테스트를 실행하세요.");
       return;
     }
+    window.trackEvent?.("result_share");
     const snapshot = buildShareSnapshot();
     const encoded = await window.BacktestK.encodeSnapshot(snapshot);
     const slug = `bk-${state.lastBacktest.settings.allocations.length}asset-${window.BacktestK.shortHash(encoded)}`;

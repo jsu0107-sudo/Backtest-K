@@ -31,6 +31,13 @@ npm run dev
 | `npm run build:single` | `backtestK_single.html` 재생성 + `SHA256SUMS.txt` 갱신 |
 | `npm test` | 계산 골든 회귀 + 생성물 최신성 검사(Node) + 데이터 파이프라인 검증(Python) |
 
+## 계측 (선택)
+
+방문·실행·공유를 보려면 [GoatCounter](https://www.goatcounter.com)에서 사이트를 만들고
+`analytics.js`의 `SITE_CODE`에 코드를 넣으세요. 비워두면 계측은 완전히 비활성입니다.
+쿠키를 쓰지 않으며 `page_view`·`backtest_run`·`result_share` 3개만 수집합니다.
+localhost·`file://`·추적 거부(DNT) 환경에서는 스크립트를 로드하지 않습니다.
+
 계산 산식은 `core/backtest.js`와 `core/stats.js`에만 있습니다. 산식을 바꾸면 `npm test`로 골든 회귀(`tests/fixtures/golden-backtest.json`)를 반드시 확인하세요.
 
 ## 구현 기능

@@ -276,6 +276,7 @@ def render_page(page: dict) -> str:
       settings: {{ i: 10000000, m: 500000, t: "start", r: "annual", c: 1.5 }},
     }};
   </script>
+  <script src=\"/analytics.js\"></script>
   <script src=\"/engine.js\"></script>
   <script src=\"/portfolio.js\"></script>
 </body>
@@ -311,6 +312,7 @@ def render_index(pages: list[dict]) -> str:
   <meta property=\"og:image\" content=\"{SITE}/og-image.png\" />
   <meta name=\"twitter:card\" content=\"summary_large_image\" />
 {head_extra}
+  <script src=\"/analytics.js\"></script>
 </head>
 <body>
 {TOPBAR}

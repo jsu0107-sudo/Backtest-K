@@ -73,6 +73,11 @@ export function buildSingleHtml() {
     () => `href="data:image/svg+xml;base64,${Buffer.from(favicon, "utf8").toString("base64")}"`,
   );
 
+  // 2-1) 계측 스크립트는 제외한다. 단일 파일은 오프라인 확인용이라
+  //      외부 의존이 없어야 하고, file://에서는 어차피 비활성이다.
+  html = html.replace(/\s*<script src="\.\/analytics\.js"><\/script>/, "");
+  if (html.includes("analytics.js")) throw new Error("계측 스크립트 태그를 제거하지 못했다.");
+
   // 3) 스크립트 3종(engine + core + app) → 클래식 스크립트 한 덩어리
   const bundle = [
     "// ⚠️ 이 파일은 자동 생성물이다. 직접 수정하지 마라 — npm run build:single 로 재생성한다.",

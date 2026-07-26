@@ -6,6 +6,21 @@
 
 ## 2026-07-22 — Phase 0 (첫 진입 이탈 최소화)
 
+### 최소 계측 (Phase 0 작업 4)
+
+이벤트는 **딱 3개만** 둔다. 늘리지 말 것.
+
+- `analytics.js` — GoatCounter 로더. 쿠키를 쓰지 않고 커스텀 이벤트가 무료다.
+  (Vercel Web Analytics는 커스텀 이벤트가 Pro 전용이라 실행 완료율을 못 본다.)
+- **`page_view`**: 스크립트가 자동 집계. index / share / portfolio 전 페이지에 삽입.
+- **`backtest_run`**: `runBacktest({ userInitiated: true })` 경로에서만 발생한다.
+  첫 진입의 사전 계산 렌더와 초기 자동 실행은 계측하지 않는다(실행 완료율이 부풀지 않도록).
+- **`result_share`**: 공유하기 클릭.
+- ⚠️ **설정 필요**: `analytics.js`의 `SITE_CODE`가 비어 있으면 계측은 완전히 비활성이다.
+  GoatCounter에서 사이트를 만든 뒤 그 코드를 넣어야 켜진다.
+- localhost·`file://`·추적 거부(DNT) 환경에서는 스크립트를 아예 로드하지 않는다.
+- 단일 파일(`backtestK_single.html`)에는 계측을 포함하지 않는다(외부 의존 0 원칙).
+
 ### 모바일 대응 (Phase 0 작업 3)
 
 375 / 390 / 430px에서 실측 후 수정. 착수 시점 44px 미만 터치 타겟이 **38개**였다.

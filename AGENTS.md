@@ -44,6 +44,9 @@
    생성 JSON에 키를 기록하지 않는다.
 6. **통화 입력**: `#initialAmount`/`#monthlyContribution` 값은 콤마 포맷 문자열 —
    읽기 `parseCurrencyInputValue`, 쓰기 `formatCurrencyInputValue`.
+7. **계측 이벤트는 3개로 고정**: `page_view`·`backtest_run`·`result_share`.
+   추가 요청이 없으면 늘리지 않는다. `backtest_run`은 사용자가 직접 실행한 경우만
+   (`userInitiated`) — 사전 계산 샘플 렌더·초기 자동 실행은 제외해야 완료율이 정확하다.
 
 ## 검증 루틴
 
