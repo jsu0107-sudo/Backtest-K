@@ -251,19 +251,32 @@
       <div class="workspace-grid monte-grid">
         <aside class="control-panel card">
           <div class="panel-heading"><div><span class="step-index">01</span><h2>시뮬레이션 조건</h2></div></div>
-          <label class="field"><span>시작 자산</span><div class="input-affix"><input id="mcInitial" type="number" min="0" step="1000000" value="100000000"/><span>원</span></div></label>
-          <label class="field"><span>월 적립금</span><div class="input-affix"><input id="mcContribution" type="number" min="0" step="100000" value="1000000"/><span>원</span></div></label>
-          <label class="field"><span>월 인출금</span><div class="input-affix"><input id="mcWithdrawal" type="number" min="0" step="100000" value="0"/><span>원</span></div></label>
-          <label class="field"><span>목표 자산</span><div class="input-affix"><input id="mcGoal" type="number" min="0" step="10000000" value="500000000"/><span>원</span></div></label>
+          <label class="field"><span>시작 자산</span><div class="input-affix currency-affix"><span class="currency-prefix" aria-hidden="true">₩</span><input id="mcInitial" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="100,000,000" aria-label="시작 자산(원)"/></div></label>
+          <p id="mcInitialHint" class="period-notice" role="status" hidden></p>
+          <label class="field"><span>월 적립금</span><div class="input-affix currency-affix"><span class="currency-prefix" aria-hidden="true">₩</span><input id="mcContribution" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="1,000,000" aria-label="월 적립금(원)"/></div></label>
+          <label class="field"><span>월 인출금</span><div class="input-affix currency-affix"><span class="currency-prefix" aria-hidden="true">₩</span><input id="mcWithdrawal" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="0" aria-label="월 인출금(원)"/></div></label>
+          <label class="field"><span>목표 자산</span><div class="input-affix currency-affix"><span class="currency-prefix" aria-hidden="true">₩</span><input id="mcGoal" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="500,000,000" aria-label="목표 자산(원)"/></div></label>
+          <p id="mcGoalHint" class="period-notice" role="status" hidden></p>
           <div class="form-grid two-col">
             <label class="field"><span>기간</span><select id="mcYears"><option value="10">10년</option><option value="20" selected>20년</option><option value="30">30년</option><option value="40">40년</option></select></label>
             <label class="field"><span>경로 수</span><select id="mcSimulations"><option value="300">300회</option><option value="500" selected>500회</option><option value="1000">1,000회</option></select></label>
           </div>
           <label class="field"><span>모형</span><select id="mcMethod"><option value="bootstrap">과거 월 수익률 재표본추출</option><option value="normal">정규분포 근사</option></select></label>
           <button id="runMonteCarlo" class="primary-btn full-width"><span>시뮬레이션 실행</span><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
-          <p class="control-footnote">확률은 입력한 과거 자료와 모형에 의존합니다. 예측치가 아니라 조건부 시나리오입니다.</p>
+          <button id="reseedMonteCarlo" class="secondary-btn full-width" style="margin-top:8px" title="같은 조건에 새로운 난수를 적용합니다">🎲 다른 난수로 다시 굴리기</button>
+          <p class="control-footnote">같은 조건이면 항상 같은 결과가 나옵니다. 확률은 입력한 과거 자료와 모형에 의존하며, 예측치가 아니라 조건부 시나리오입니다.</p>
         </aside>
         <section class="results-area">
+          <div class="mc-toolbar card">
+            <div>
+              <p class="eyebrow">SIMULATION RESULT</p>
+              <p id="mcSummary">조건을 입력하고 시뮬레이션을 실행하세요.</p>
+            </div>
+            <div id="mcStatus" class="result-status" role="status"><span></span><em id="mcStatusText">계산 완료</em></div>
+          </div>
+
+          <div id="mcError" class="notice-banner error" role="alert" hidden></div>
+
           <div id="mcMetricCards" class="metric-grid four"></div>
           <div class="card chart-card hero-chart-card">
             <div class="card-header"><div><p class="eyebrow">PERCENTILE FAN</p><h3>예상 자산 범위</h3></div><div class="chart-legend" id="mcLegend"></div></div>

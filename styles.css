@@ -451,6 +451,10 @@ html.quick-mode .quick-hint { display: block; }
   .results-area.is-computing .card::after { animation: none; background: rgba(151,177,204,.06); }
 }
 
+.mc-toolbar { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.mc-toolbar p:not(.eyebrow) { margin: 4px 0 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+@media (max-width: 620px) { .mc-toolbar { flex-direction: column; align-items: flex-start; gap: 10px; } }
+
 .result-status em { font-style: normal; font-variant-numeric: tabular-nums; }
 .result-status.computing span { background: var(--blue); box-shadow: 0 0 0 5px var(--blue-soft); }
 .result-status.computing em { color: var(--blue); }

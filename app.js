@@ -22,6 +22,9 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
     activePreset: SAMPLE_PORTFOLIO.presetKey,
     portfolioName: SAMPLE_PORTFOLIO.name,
     periodTouched: false,
+    mcInitialTouched: false,
+    mcGoalTouched: false,
+    mcReseedCounter: 0,
     sampleMode: false,
     lastBacktest: null,
     monteCarlo: null,
@@ -809,7 +812,7 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
     }
 
     renderBacktestResults();
-    $("#mcInitial").value = Math.round(state.lastBacktest.metrics.finalBalance);
+    syncMonteCarloDefaults(state.lastBacktest.metrics.finalBalance);
     endComputing(startedAt);
     showToast(`${dates.length}개월 백테스트를 계산했습니다.`);
     return state.lastBacktest;
@@ -1404,22 +1407,73 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
     tooltip.style.top = `${clamp(y - 20, 6, wrapRect.height - 100)}px`;
   }
 
-  function runMonteCarlo() {
+  // 백테스트 최종 자산을 몬테카를로 시작값으로 이어준다.
+  // 읽기 쉽게 만원 단위로 반올림하고, 사용자가 직접 고친 뒤에는 덮어쓰지 않는다.
+  function syncMonteCarloDefaults(finalBalance) {
+    const initialInput = $("#mcInitial");
+    if (!initialInput || state.mcInitialTouched) { renderMonteCarloHints(); return; }
+    const rounded = Math.round((Number(finalBalance) || 0) / 10000) * 10000;
+    initialInput.value = formatCurrencyInputValue(String(rounded));
+
+    // 목표가 시작보다 작으면 달성 확률이 100%로 고정돼 지표가 죽는다.
+    // 사용자가 목표를 손대지 않았다면 시작 자산 기준으로 다시 잡아준다.
+    const goalInput = $("#mcGoal");
+    if (goalInput && !state.mcGoalTouched && rounded > 0) {
+      const suggested = Math.round((rounded * 3) / 10000000) * 10000000; // 1천만원 단위
+      goalInput.value = formatCurrencyInputValue(String(Math.max(suggested, rounded + 10000000)));
+    }
+    renderMonteCarloHints();
+  }
+
+  // 입력값이 서로 모순일 때 조용히 넘어가지 않고 이유를 알려준다.
+  function renderMonteCarloHints() {
+    const initial = parseCurrencyInputValue($("#mcInitial")?.value || "0");
+    const goal = parseCurrencyInputValue($("#mcGoal")?.value || "0");
+    const initialHint = $("#mcInitialHint");
+    const goalHint = $("#mcGoalHint");
+
+    if (initialHint) {
+      const auto = !state.mcInitialTouched && state.lastBacktest;
+      initialHint.hidden = !auto;
+      initialHint.className = "period-notice";
+      initialHint.innerHTML = auto
+        ? `백테스트 최종 자산(<strong>${escapeHtml(fmtCompactKRW(initial))}</strong>)을 이어받았습니다. 직접 고치면 이후 백테스트에 덮어쓰지 않습니다.`
+        : "";
+    }
+    if (goalHint) {
+      const conflict = goal > 0 && goal <= initial;
+      goalHint.hidden = !conflict;
+      goalHint.className = "period-notice warn";
+      goalHint.innerHTML = conflict
+        ? "목표가 시작 자산보다 작아 <strong>달성 확률이 100%로 고정</strong>됩니다. 목표를 높여야 의미 있는 확률이 나옵니다."
+        : "";
+    }
+  }
+
+  // options.reseed: "다시 굴리기" — 같은 조건에 새 난수를 적용한다.
+  function runMonteCarlo(options = {}) {
     if (!state.lastBacktest) runBacktest();
     const sourceReturns = state.lastBacktest?.monthlyReturns || [];
     if (sourceReturns.length < 12) {
-      showToast("먼저 12개월 이상의 백테스트를 실행하세요.");
+      setMonteCarloError("백테스트 월 수익률이 12개월 미만이라 시뮬레이션할 수 없습니다. 백테스트 탭에서 더 긴 구간으로 먼저 실행해주세요.");
+      endComputing(0, { failed: true, statusEl: "#mcStatus", textEl: "#mcStatusText" });
       return;
     }
-    const initial = Number($("#mcInitial").value);
-    const contribution = Number($("#mcContribution").value);
-    const withdrawal = Number($("#mcWithdrawal").value);
-    const goal = Number($("#mcGoal").value);
+    setMonteCarloError("");
+    const startedAt = beginComputing({ statusEl: "#mcStatus", textEl: "#mcStatusText" });
+    const initial = parseCurrencyInputValue($("#mcInitial").value);
+    const contribution = parseCurrencyInputValue($("#mcContribution").value);
+    const withdrawal = parseCurrencyInputValue($("#mcWithdrawal").value);
+    const goal = parseCurrencyInputValue($("#mcGoal").value);
     const years = Number($("#mcYears").value);
     const simulations = Number($("#mcSimulations").value);
     const method = $("#mcMethod").value;
     const months = years * 12;
-    const mcSeed = (Date.now() >>> 0) ^ 0xA53C9E1B;
+    // 같은 조건이면 같은 결과가 나오도록 조건에서 시드를 만든다.
+    // "다시 굴리기"를 눌렀을 때만 시드를 바꿔 새 난수를 쓴다.
+    if (options.reseed) state.mcReseedCounter = (state.mcReseedCounter || 0) + 1;
+    const mcSeed = monteCarloSeed({ initial, contribution, withdrawal, goal, years, simulations, method,
+                                    nonce: state.mcReseedCounter || 0, source: sourceReturns.length });
     const random = mulberry32(mcSeed);
     const avg = mean(sourceReturns);
     const std = standardDeviation(sourceReturns);
@@ -1472,7 +1526,26 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
       p90Final: quantileSorted(finals, 0.9),
     };
     renderMonteCarlo();
+    endComputing(startedAt, { statusEl: "#mcStatus", textEl: "#mcStatusText" });
     showToast(`${simulations.toLocaleString()}개 경로를 계산했습니다.`);
+  }
+
+  // 조건이 같으면 같은 시드 → 같은 결과. 재현성을 보장한다.
+  function monteCarloSeed(config) {
+    const text = JSON.stringify(config);
+    let hash = 2166136261;
+    for (let i = 0; i < text.length; i += 1) {
+      hash ^= text.charCodeAt(i);
+      hash = Math.imul(hash, 16777619);
+    }
+    return hash >>> 0;
+  }
+
+  function setMonteCarloError(message) {
+    const box = $("#mcError");
+    if (!box) return;
+    box.hidden = !message;
+    box.innerHTML = message ? `<strong>시뮬레이션할 수 없습니다</strong> — ${escapeHtml(message)}` : "";
   }
 
   function quantileSorted(sortedValues, q) {
@@ -1486,11 +1559,20 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
   function renderMonteCarlo() {
     const mc = state.monteCarlo;
     if (!mc) return;
+    const summary = $("#mcSummary");
+    if (summary) {
+      const methodLabel = mc.method === "normal" ? "정규분포 근사" : "과거 수익률 재표본추출";
+      const flow = mc.withdrawal > 0 ? `월 ${fmtCompactKRW(mc.withdrawal)} 인출` : `월 ${fmtCompactKRW(mc.contribution)} 적립`;
+      summary.textContent = `${fmtCompactKRW(mc.initial)}에서 시작 · ${flow} · ${mc.years}년 · ${mc.simulations.toLocaleString()}개 경로 · ${methodLabel}`;
+    }
     const cards = [
       { label: "목표 달성 확률", value: fmtPct(mc.goalProbability, 1), sub: `목표 ${fmtCompactKRW(mc.goal)}`, tone: mc.goalProbability >= 0.7 ? "" : "orange" },
       { label: "중앙값 최종자산", value: fmtCompactKRW(mc.medianFinal), sub: "50번째 백분위", tone: "blue" },
       { label: "하방 10% 자산", value: fmtCompactKRW(mc.p10Final), sub: "10번째 백분위", tone: "red" },
-      { label: "자산 고갈 확률", value: fmtPct(mc.ruinProbability, 1), sub: mc.withdrawal > 0 ? "인출 시나리오" : "인출 없음", tone: "red" },
+      // 인출이 없으면 고갈 확률은 항상 0%라 정보량이 없다. 그때는 상위 구간을 보여준다.
+      mc.withdrawal > 0
+        ? { label: "자산 고갈 확률", value: fmtPct(mc.ruinProbability, 1), sub: `월 ${fmtCompactKRW(mc.withdrawal)} 인출 기준`, tone: "red" }
+        : { label: "상위 10% 자산", value: fmtCompactKRW(mc.p90Final), sub: "90번째 백분위", tone: "orange" },
     ];
     $("#mcMetricCards").innerHTML = cards.map((card) => `<article class="metric-card card ${card.tone}"><div class="metric-label">${escapeHtml(card.label)}</div><strong class="metric-value">${escapeHtml(card.value)}</strong><div class="metric-sub">${escapeHtml(card.sub)}</div></article>`).join("");
     $("#mcLegend").innerHTML = [
@@ -1503,7 +1585,9 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
       { icon: "target", tone: "", title: "목표 달성", desc: `${mc.years}년 뒤 ${fmtCompactKRW(mc.goal)} 이상`, value: fmtPct(mc.goalProbability, 1) },
       { icon: "shield", tone: "blue", title: "중앙 경로", desc: "절반의 경로가 이 값 이상", value: fmtCompactKRW(mc.medianFinal) },
       { icon: "down", tone: "red", title: "보수적 경로", desc: "10% 경로는 이 값 이하", value: fmtCompactKRW(mc.p10Final) },
-      { icon: "time", tone: "blue", title: "단순 필요 적립", desc: "수익률을 무시한 참고치", value: `${fmtCompactKRW(requiredMonthly)}/월` },
+      requiredMonthly > 0
+        ? { icon: "time", tone: "blue", title: "단순 필요 적립", desc: "수익률을 무시한 참고치", value: `${fmtCompactKRW(requiredMonthly)}/월` }
+        : { icon: "time", tone: "blue", title: "이미 목표 이상", desc: "시작 자산이 목표를 넘었습니다", value: `+${fmtCompactKRW(mc.initial - mc.goal)}` },
     ];
     $("#mcInsights").innerHTML = items.map((item) => `<div class="risk-item"><span class="risk-icon ${item.tone}">${iconSvg(item.icon)}</span><div class="risk-copy"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.desc)}</span></div><strong class="risk-value">${escapeHtml(item.value)}</strong></div>`).join("");
   }
@@ -2179,7 +2263,13 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
   }
 
   function bindEvents() {
-    ["#initialAmount", "#monthlyContribution"].forEach((selector) => bindCurrencyInput($(selector)));
+    ["#initialAmount", "#monthlyContribution", "#mcInitial", "#mcContribution", "#mcWithdrawal", "#mcGoal"]
+      .forEach((selector) => bindCurrencyInput($(selector)));
+
+    // 사용자가 직접 고친 값은 이후 백테스트 결과로 덮어쓰지 않는다.
+    $("#mcInitial")?.addEventListener("input", () => { state.mcInitialTouched = true; renderMonteCarloHints(); });
+    $("#mcGoal")?.addEventListener("input", () => { state.mcGoalTouched = true; renderMonteCarloHints(); });
+    $("#reseedMonteCarlo")?.addEventListener("click", () => runMonteCarlo({ reseed: true }));
     $$(".nav-btn").forEach((button) => button.addEventListener("click", () => switchView(button.dataset.view)));
     $$("[data-view-link]").forEach((button) => button.addEventListener("click", () => switchView(button.dataset.viewLink)));
     $$(".preset-chip").forEach((button) => button.addEventListener("click", () => applyPreset(button.dataset.preset)));
@@ -2232,7 +2322,8 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
       }, { once: true });
     });
     $$(".analysis-tab").forEach((button) => button.addEventListener("click", () => switchResultTab(button.dataset.resultTab)));
-    $("#runMonteCarlo").addEventListener("click", runMonteCarlo);
+    // 클릭 이벤트가 options로 넘어가지 않게 감싼다(reseed로 오해되면 재현성이 깨진다).
+    $("#runMonteCarlo").addEventListener("click", () => runMonteCarlo());
     $("#compareStart").addEventListener("change", renderComparison);
     $("#compareAssetSearch").addEventListener("input", (event) => {
       state.compareFilter = event.target.value;
@@ -2373,7 +2464,8 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
   let computingDepth = 0;
   let computingStartedAt = 0;
 
-  function beginComputing() {
+  // statusEl/textEl로 어느 화면의 상태 표시를 쓸지 고른다 (백테스트·몬테카를로 공용).
+  function beginComputing({ statusEl = "#resultStatus", textEl = "#resultStatusText" } = {}) {
     computingDepth += 1;
     if (computingDepth > 1) return computingStartedAt;
     computingStartedAt = performance.now();
@@ -2381,31 +2473,31 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
     skeletonTimer = setTimeout(() => {
       $$(".results-area").forEach((area) => area.classList.add("is-computing"));
     }, SKELETON_DELAY_MS);
-    const status = $("#resultStatus");
+    const status = $(statusEl);
     if (status) {
       status.className = "result-status computing";
-      $("#resultStatusText").textContent = "계산 중";
+      $(textEl).textContent = "계산 중";
     }
-    setResultError("");
+    if (statusEl === "#resultStatus") setResultError("");
     return computingStartedAt;
   }
 
-  function endComputing(startedAt, { failed = false } = {}) {
+  function endComputing(startedAt, { failed = false, statusEl = "#resultStatus", textEl = "#resultStatusText" } = {}) {
     computingDepth = Math.max(0, computingDepth - 1);
     if (computingDepth > 0 && !failed) return; // 바깥 호출이 마무리한다
     computingDepth = 0;
     clearTimeout(skeletonTimer);
     $$(".results-area").forEach((area) => area.classList.remove("is-computing"));
-    const status = $("#resultStatus");
+    const status = $(statusEl);
     if (!status) return;
     if (failed) {
       status.className = "result-status failed";
-      $("#resultStatusText").textContent = "계산 실패";
+      $(textEl).textContent = "계산 실패";
       return;
     }
     const elapsed = performance.now() - (startedAt || computingStartedAt);
     status.className = "result-status";
-    $("#resultStatusText").textContent = `${(elapsed / 1000).toFixed(elapsed < 1000 ? 2 : 1)}초 만에 계산 완료`;
+    $(textEl).textContent = `${(elapsed / 1000).toFixed(elapsed < 1000 ? 2 : 1)}초 만에 계산 완료`;
   }
 
   // 실패를 조용히 넘기지 않는다. 좌측 폼과 결과 영역 양쪽에 이유를 남긴다.
