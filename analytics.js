@@ -12,7 +12,7 @@
 (() => {
   "use strict";
 
-  const SITE_CODE = ""; // ← 예: "backtest-k"
+  const SITE_CODE = "sw17"; // https://sw17.goatcounter.com
 
   const disabled =
     !SITE_CODE ||
