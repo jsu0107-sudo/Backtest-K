@@ -1,5 +1,5 @@
 {
-  "note": "코어 분리 이전(app.js 단일 구현, 커밋 edcfd8f) 브라우저 실행 결과를 고정한 골든 기준. hash는 결과 객체 전체를 키 정렬 후 JSON 직렬화한 SHA-256이며, 비유한수(NaN/Infinity)는 문자열 \"__NF__\"로 치환한다. 데이터 기준일 2026-07-20 스냅숏(data/ 커밋 4c0a8b9 이후) 기준. 입력 수익률(inputReturns)도 함께 동결해 두었으므로 이 테스트는 데이터 갱신과 무관하게 코드 변경만 검증한다.",
+  "note": "코어 분리 이전(app.js 단일 구현, 커밋 edcfd8f) 브라우저 실행 결과를 고정한 골든 기준. hash는 결과 객체 전체를 키 정렬하고 유한수는 유효숫자 14자리로 정규화한 뒤 JSON 직렬화한 SHA-256이며, 비유한수(NaN/Infinity)는 문자열 \"__NF__\"로 치환한다. 데이터 기준일 2026-07-20 스냅숏(data/ 커밋 4c0a8b9 이후) 기준. 입력 수익률(inputReturns)도 함께 동결해 두었으므로 이 테스트는 데이터 갱신과 무관하게 코드 변경만 검증한다.",
   "capturedAt": "2026-07-22",
   "dataAsOf": "2026-07-20",
   "scenarios": [
@@ -38,7 +38,7 @@
         "name": "균형 성장 포트폴리오"
       },
       "expect": {
-        "hash": "589b14c10ce6fbbfc82d854a9fff882a95bc46c3509ac9f3e767dcdc78f72e57",
+        "hash": "35e7802280c0e6aa9d4e6c5c24efbd682e83993ea702e0b84e46912911a5e496",
         "months": 54,
         "period": [
           "2022-01",
@@ -97,7 +97,7 @@
         "name": "한국 60/40 포트폴리오"
       },
       "expect": {
-        "hash": "381e0f7ad25003f55f4f2e30e637ee5f36cce2b910fb6ff372db6926a386f75b",
+        "hash": "aefefb4e14c8b51b51581e2afdb28ee9bb81b82a06b45336b39d371065ed2839",
         "months": 203,
         "period": [
           "2009-08",

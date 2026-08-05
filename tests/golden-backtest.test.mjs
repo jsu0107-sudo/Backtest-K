@@ -19,6 +19,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const readJson = (relative) => JSON.parse(readFileSync(join(root, relative), "utf8"));
 
 // 브라우저 캡처와 동일한 정규화: 키 정렬 + 비유한수 치환.
+// 장기 누적 시계열은 V8 버전에 따라 15번째 유효숫자부터 달라질 수 있으므로,
+// 전체 결과 해시는 14자리로 맞춘다. 핵심 지표는 아래에서 원래 값 그대로 비교한다.
 function canonicalize(value) {
   if (Array.isArray(value)) return value.map(canonicalize);
   if (value && typeof value === "object") {
@@ -27,7 +29,10 @@ function canonicalize(value) {
       return out;
     }, {});
   }
-  if (typeof value === "number" && !Number.isFinite(value)) return "__NF__";
+  if (typeof value === "number") {
+    if (!Number.isFinite(value)) return "__NF__";
+    return Number(value.toPrecision(14));
+  }
   return value;
 }
 
