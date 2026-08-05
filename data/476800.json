@@ -6,13 +6,13 @@
   "asset_type": "etf",
   "category": "부동산",
   "currency": "KRW",
-  "description": "순자산 상위 ETF #147 (수집 시점 시가총액 기준)",
+  "description": "순자산 상위 ETF #146 (수집 시점 시가총액 기준)",
   "listing_date": "2024-03-04",
   "listing_date_source": "한국예탁결제원 SEIBro",
-  "data_as_of": "2026-07-24",
+  "data_as_of": "2026-08-05",
   "first_month": "2024-04",
-  "last_month": "2026-06",
-  "monthly_return_count": 27,
+  "last_month": "2026-07",
+  "monthly_return_count": 28,
   "distribution": {
     "included": true,
     "method": "adjusted_close",
@@ -45,45 +45,13 @@
       "상업적 서비스 전 데이터 제공자 이용조건과 재배포 권한을 다시 확인해야 합니다."
     ]
   },
-  "universe_rank": 147,
-  "market_value_krw_100m": 4816.0,
+  "universe_rank": 146,
+  "market_value_krw_100m": 4824.0,
   "latest_raw_close": {
-    "date": "2026-07-24",
-    "close": 4210.0
+    "date": "2026-08-05",
+    "close": 4230.0
   },
   "recent_raw_closes": [
-    {
-      "date": "2026-07-10",
-      "close": 4290.0
-    },
-    {
-      "date": "2026-07-13",
-      "close": 4260.0
-    },
-    {
-      "date": "2026-07-14",
-      "close": 4195.0
-    },
-    {
-      "date": "2026-07-15",
-      "close": 4185.0
-    },
-    {
-      "date": "2026-07-16",
-      "close": 4220.0
-    },
-    {
-      "date": "2026-07-20",
-      "close": 4205.0
-    },
-    {
-      "date": "2026-07-21",
-      "close": 4205.0
-    },
-    {
-      "date": "2026-07-22",
-      "close": 4200.0
-    },
     {
       "date": "2026-07-23",
       "close": 4215.0
@@ -91,143 +59,180 @@
     {
       "date": "2026-07-24",
       "close": 4210.0
+    },
+    {
+      "date": "2026-07-27",
+      "close": 4270.0
+    },
+    {
+      "date": "2026-07-28",
+      "close": 4225.0
+    },
+    {
+      "date": "2026-07-29",
+      "close": 4175.0
+    },
+    {
+      "date": "2026-07-30",
+      "close": 4190.0
+    },
+    {
+      "date": "2026-07-31",
+      "close": 4210.0
+    },
+    {
+      "date": "2026-08-03",
+      "close": 4210.0
+    },
+    {
+      "date": "2026-08-04",
+      "close": 4210.0
+    },
+    {
+      "date": "2026-08-05",
+      "close": 4230.0
     }
   ],
   "monthly_returns": [
     {
       "month": "2024-04",
-      "return": -0.0161669274,
+      "return": -0.0161664767,
       "observation_date": "2024-04-30"
     },
     {
       "month": "2024-05",
-      "return": 0.0308402165,
+      "return": 0.0308398609,
       "observation_date": "2024-05-31"
     },
     {
       "month": "2024-06",
-      "return": 0.0054863348,
+      "return": 0.0054864464,
       "observation_date": "2024-06-28"
     },
     {
       "month": "2024-07",
-      "return": 0.0470474227,
+      "return": 0.0470475285,
       "observation_date": "2024-07-31"
     },
     {
       "month": "2024-08",
-      "return": -0.0199867619,
+      "return": -0.0199869696,
       "observation_date": "2024-08-30"
     },
     {
       "month": "2024-09",
-      "return": -0.0236431785,
+      "return": -0.0236433948,
       "observation_date": "2024-09-30"
     },
     {
       "month": "2024-10",
-      "return": -0.0428593639,
+      "return": -0.0428592626,
       "observation_date": "2024-10-31"
     },
     {
       "month": "2024-11",
-      "return": -0.0322796675,
+      "return": -0.0322798447,
       "observation_date": "2024-11-29"
     },
     {
       "month": "2024-12",
-      "return": -0.0283672363,
+      "return": -0.0283668264,
       "observation_date": "2024-12-30"
     },
     {
       "month": "2025-01",
-      "return": 0.0083571954,
+      "return": 0.0083570714,
       "observation_date": "2025-01-31"
     },
     {
       "month": "2025-02",
-      "return": 0.0567911412,
+      "return": 0.0567912632,
       "observation_date": "2025-02-28"
     },
     {
       "month": "2025-03",
-      "return": -0.0096670178,
+      "return": -0.0096670166,
       "observation_date": "2025-03-31"
     },
     {
       "month": "2025-04",
-      "return": 0.0365780717,
+      "return": 0.0365780674,
       "observation_date": "2025-04-30"
     },
     {
       "month": "2025-05",
-      "return": -0.006936214,
+      "return": -0.0069364382,
       "observation_date": "2025-05-30"
     },
     {
       "month": "2025-06",
-      "return": -0.0010965104,
+      "return": -0.0010962839,
       "observation_date": "2025-06-30"
     },
     {
       "month": "2025-07",
-      "return": 0.0110574191,
+      "return": 0.0110575313,
       "observation_date": "2025-07-31"
     },
     {
       "month": "2025-08",
-      "return": 0.0072324517,
+      "return": 0.0072325622,
       "observation_date": "2025-08-29"
     },
     {
       "month": "2025-09",
-      "return": 0.0189147496,
+      "return": 0.0189145206,
       "observation_date": "2025-09-30"
     },
     {
       "month": "2025-10",
-      "return": 0.0111826712,
+      "return": 0.0111824515,
       "observation_date": "2025-10-31"
     },
     {
       "month": "2025-11",
-      "return": 0.0180536852,
+      "return": 0.0180539033,
       "observation_date": "2025-11-28"
     },
     {
       "month": "2025-12",
-      "return": 0.0111124486,
+      "return": 0.0111123413,
       "observation_date": "2025-12-30"
     },
     {
       "month": "2026-01",
-      "return": 0.0122004774,
+      "return": 0.0122002675,
       "observation_date": "2026-01-30"
     },
     {
       "month": "2026-02",
-      "return": 0.014163899,
+      "return": 0.0141639019,
       "observation_date": "2026-02-27"
     },
     {
       "month": "2026-03",
-      "return": -0.0184043257,
+      "return": -0.0184040227,
       "observation_date": "2026-03-31"
     },
     {
       "month": "2026-04",
-      "return": 0.0154482968,
+      "return": 0.0154480868,
       "observation_date": "2026-04-30"
     },
     {
       "month": "2026-05",
-      "return": -0.0887986186,
+      "return": -0.0887985251,
       "observation_date": "2026-05-29"
     },
     {
       "month": "2026-06",
       "return": -0.034600024,
       "observation_date": "2026-06-30"
+    },
+    {
+      "month": "2026-07",
+      "return": 0.0056598459,
+      "observation_date": "2026-07-31"
     }
   ]
 }

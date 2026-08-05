@@ -6,13 +6,13 @@
   "asset_type": "etf",
   "category": "해외주식",
   "currency": "KRW",
-  "description": "순자산 상위 ETF #131 (수집 시점 시가총액 기준)",
+  "description": "순자산 상위 ETF #122 (수집 시점 시가총액 기준)",
   "listing_date": "2022-02-18",
   "listing_date_source": "한국예탁결제원 SEIBro",
-  "data_as_of": "2026-07-24",
+  "data_as_of": "2026-08-05",
   "first_month": "2022-03",
-  "last_month": "2026-06",
-  "monthly_return_count": 52,
+  "last_month": "2026-07",
+  "monthly_return_count": 53,
   "distribution": {
     "included": true,
     "method": "adjusted_close",
@@ -45,45 +45,13 @@
       "상업적 서비스 전 데이터 제공자 이용조건과 재배포 권한을 다시 확인해야 합니다."
     ]
   },
-  "universe_rank": 131,
-  "market_value_krw_100m": 5748.0,
+  "universe_rank": 122,
+  "market_value_krw_100m": 6404.0,
   "latest_raw_close": {
-    "date": "2026-07-24",
-    "close": 41955.0
+    "date": "2026-08-05",
+    "close": 43565.0
   },
   "recent_raw_closes": [
-    {
-      "date": "2026-07-10",
-      "close": 48000.0
-    },
-    {
-      "date": "2026-07-13",
-      "close": 47550.0
-    },
-    {
-      "date": "2026-07-14",
-      "close": 46830.0
-    },
-    {
-      "date": "2026-07-15",
-      "close": 47700.0
-    },
-    {
-      "date": "2026-07-16",
-      "close": 46375.0
-    },
-    {
-      "date": "2026-07-20",
-      "close": 43390.0
-    },
-    {
-      "date": "2026-07-21",
-      "close": 44060.0
-    },
-    {
-      "date": "2026-07-22",
-      "close": 44410.0
-    },
     {
       "date": "2026-07-23",
       "close": 43735.0
@@ -91,6 +59,38 @@
     {
       "date": "2026-07-24",
       "close": 41955.0
+    },
+    {
+      "date": "2026-07-27",
+      "close": 42520.0
+    },
+    {
+      "date": "2026-07-28",
+      "close": 39835.0
+    },
+    {
+      "date": "2026-07-29",
+      "close": 38795.0
+    },
+    {
+      "date": "2026-07-30",
+      "close": 37405.0
+    },
+    {
+      "date": "2026-07-31",
+      "close": 39845.0
+    },
+    {
+      "date": "2026-08-03",
+      "close": 40280.0
+    },
+    {
+      "date": "2026-08-04",
+      "close": 41600.0
+    },
+    {
+      "date": "2026-08-05",
+      "close": 43565.0
     }
   ],
   "monthly_returns": [
@@ -353,6 +353,11 @@
       "month": "2026-06",
       "return": 0.0131335733,
       "observation_date": "2026-06-30"
+    },
+    {
+      "month": "2026-07",
+      "return": -0.2347801037,
+      "observation_date": "2026-07-31"
     }
   ]
 }
