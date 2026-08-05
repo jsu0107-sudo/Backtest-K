@@ -50,7 +50,7 @@ jobs:
         # DATA_GO_KR_API_KEY secret이 없으면 스크립트가 스스로 건너뛴다(exit 0).
         env:
           DATA_GO_KR_API_KEY: ${{ secrets.DATA_GO_KR_API_KEY }}
-        run: python scripts/verify_official_prices.py data
+        run: python scripts/verify_official_prices.py data --allow-unavailable
 
       - name: Commit refreshed JSON
         shell: bash

@@ -1,6 +1,18 @@
+import json
+import os
+import tempfile
 import unittest
+from pathlib import Path
+from unittest.mock import patch
 
-from scripts.verify_official_prices import VerificationError, build_request_url, parse_price_items, reconcile
+import scripts.verify_official_prices as official_verification
+from scripts.verify_official_prices import (
+    VerificationError,
+    build_request_url,
+    parse_price_items,
+    reconcile,
+    unavailable_output,
+)
 
 
 def api_payload(rows, total_count=None):
@@ -81,6 +93,39 @@ class OfficialVerificationTests(unittest.TestCase):
     def test_build_request_url_encodes_raw_key(self):
         url = build_request_url("abc+def==", page_no=1, num_of_rows=10, begin_bas_dt="20260701", end_bas_dt="20260716")
         self.assertIn("serviceKey=abc%2Bdef%3D%3D", url)
+
+    def test_unavailable_output_is_explicit_and_contains_no_error_detail(self):
+        output = unavailable_output(coverage_begin="20260715", coverage_end="20260805", record_count=147)
+        self.assertEqual(output["status"], "unavailable")
+        self.assertEqual(output["checked"], 0)
+        self.assertEqual(output["missing_official"], 147)
+        self.assertEqual(output["unavailable_reason"], "official_api_request_failed")
+        self.assertNotIn("error", output)
+
+    def test_main_allows_transient_api_failure_and_writes_status(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            data_dir = Path(temp_dir) / "data"
+            data_dir.mkdir()
+            (data_dir / "assets.json").write_text(json.dumps({
+                "assets": [{"asset_type": "etf", "file": "data/069500.json"}],
+            }), encoding="utf-8")
+            (data_dir / "069500.json").write_text(json.dumps({
+                "ticker": "069500",
+                "name": "KODEX 200",
+                "recent_raw_closes": [{"date": "2026-08-04", "close": 31500.0}],
+            }), encoding="utf-8")
+
+            with patch.dict(os.environ, {official_verification.ENV_KEY: "test-key"}), patch.object(
+                official_verification,
+                "collect_official_closes",
+                side_effect=VerificationError("timed out"),
+            ):
+                result = official_verification.main([str(data_dir), "--allow-unavailable"])
+
+            self.assertEqual(result, 0)
+            output = json.loads((data_dir / "official_verification.json").read_text(encoding="utf-8"))
+            self.assertEqual(output["status"], "unavailable")
+            self.assertEqual(output["missing_official"], 1)
 
 
 if __name__ == "__main__":

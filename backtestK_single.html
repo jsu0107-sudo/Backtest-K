@@ -3723,7 +3723,9 @@ const runBacktestCore = runBacktest;
       const catalog = state.dataCatalog;
       const official = state.officialVerification;
       let officialChip = "<span>공식시세 대사 <strong>대기 (API 키 미등록)</strong></span>";
-      if (official && Number(official.checked) > 0) {
+      if (official?.status === "unavailable") {
+        officialChip = "<span>공식시세 대사 <strong>일시 확인 불가</strong></span>";
+      } else if (official && Number(official.checked) > 0) {
         officialChip = Number(official.mismatched) === 0
           ? `<span>공식시세 대사 <strong>${Number(official.matched).toLocaleString()}/${Number(official.checked).toLocaleString()} 일치</strong></span>`
           : `<span>공식시세 대사 <strong>불일치 ${Number(official.mismatched).toLocaleString()}건</strong></span>`;

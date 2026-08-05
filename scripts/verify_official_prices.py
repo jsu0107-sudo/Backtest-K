@@ -10,6 +10,9 @@
 * 키가 없으면 기본적으로 검증을 건너뛰고 종료 코드 0을 반환한다.  GitHub
   Actions에서 secret이 아직 등록되지 않아도 파이프라인이 깨지지 않게 하기
   위해서다 (``--require-key``로 강제 실패 가능).
+* ``--allow-unavailable``을 사용하면 공식 API가 일시적으로 응답하지 않을 때
+  ``status=unavailable`` 결과를 기록하고 종료 코드 0을 반환한다. 월 수익률 데이터
+  게시가 보조 대사 API 장애에 막히지 않게 하기 위한 예약 작업 전용 옵션이다.
 * 공식 API의 종가는 분배금 미조정 원시 종가이므로 수익률(수정종가) 자체가
   아니라 "시세 원천이 거래소 공표값과 일치하는가"를 검증한다.  분배금 원장
   독립 대사는 별도 후속 작업이다 (docs/DATA_PIPELINE.md 참고).
@@ -218,6 +221,30 @@ def reconcile(
     }
 
 
+def unavailable_output(*, coverage_begin: str, coverage_end: str, record_count: int) -> dict[str, Any]:
+    """Build a public, credential-free status record for a transient API outage."""
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "generated_at": dt.datetime.now(tz=dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+        "source": {"name": API_NAME, "url": API_ENDPOINT},
+        "coverage_begin": coverage_begin,
+        "coverage_end": coverage_end,
+        "official_tickers": 0,
+        "checked": 0,
+        "matched": 0,
+        "mismatched": 0,
+        "missing_official": record_count,
+        "missing_local": 0,
+        "max_diff_bps": 0.0,
+        "tolerance_bps": DEFAULT_TOLERANCE_BPS,
+        "official_basdt_begin": None,
+        "official_basdt_end": None,
+        "mismatches": [],
+        "status": "unavailable",
+        "unavailable_reason": "official_api_request_failed",
+    }
+
+
 def load_etf_records(data_dir: Path) -> list[dict[str, Any]]:
     catalog = json.loads((data_dir / "assets.json").read_text(encoding="utf-8"))
     records: list[dict[str, Any]] = []
@@ -247,6 +274,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--tolerance-bps", type=float, default=DEFAULT_TOLERANCE_BPS)
     parser.add_argument("--lookback-days", type=int, default=21, help="공식 시세 조회 구간(일)")
     parser.add_argument("--require-key", action="store_true", help="인증키가 없으면 실패로 처리")
+    parser.add_argument(
+        "--allow-unavailable",
+        action="store_true",
+        help="공식 API 일시 장애 시 unavailable 상태를 기록하고 성공 종료",
+    )
     args = parser.parse_args(argv)
 
     service_key = os.environ.get(ENV_KEY, "").strip()
@@ -267,8 +299,19 @@ def main(argv: list[str] | None = None) -> int:
         print("no ETF records found in catalog — nothing to verify", file=sys.stderr)
         return 1
 
-    official_closes = collect_official_closes(service_key, begin_bas_dt=begin, end_bas_dt=end)
-    summary = reconcile(records, official_closes, tolerance_bps=args.tolerance_bps)
+    try:
+        official_closes = collect_official_closes(service_key, begin_bas_dt=begin, end_bas_dt=end)
+        summary = reconcile(records, official_closes, tolerance_bps=args.tolerance_bps)
+    except VerificationError as error:
+        if not args.allow_unavailable:
+            raise
+        print(f"official price reconciliation unavailable: {error}", file=sys.stderr)
+        output = unavailable_output(coverage_begin=begin, coverage_end=end, record_count=len(records))
+        output["tolerance_bps"] = args.tolerance_bps
+        output_path = args.output or (args.data_dir / "official_verification.json")
+        output_path.write_text(json.dumps(output, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(json.dumps({"checked": 0, "matched": 0, "status": "unavailable"}, ensure_ascii=False, indent=2))
+        return 0
 
     output = {
         "schema_version": SCHEMA_VERSION,
