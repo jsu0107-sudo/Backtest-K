@@ -1,13 +1,13 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-08-11T12:00:38Z",
+  "generated_at": "2026-08-12T12:01:56Z",
   "source": {
     "name": "금융위원회_증권상품시세정보 getETFPriceInfo (공공데이터포털)",
     "url": "https://apis.data.go.kr/1160100/service/GetSecuritiesProductInfoService/getETFPriceInfo"
   },
-  "coverage_begin": "20260721",
-  "coverage_end": "20260811",
-  "official_tickers": 1160,
+  "coverage_begin": "20260722",
+  "coverage_end": "20260812",
+  "official_tickers": 1163,
   "checked": 147,
   "matched": 147,
   "mismatched": 0,
@@ -15,8 +15,8 @@
   "missing_local": 0,
   "max_diff_bps": 0.0,
   "tolerance_bps": 20.0,
-  "official_basdt_begin": "20260721",
-  "official_basdt_end": "20260810",
+  "official_basdt_begin": "20260722",
+  "official_basdt_end": "20260811",
   "mismatches": [],
   "status": "ok"
 }
