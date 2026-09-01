@@ -9,10 +9,10 @@
   "description": "순자산 상위 ETF #67 (수집 시점 시가총액 기준)",
   "listing_date": "2022-08-25",
   "listing_date_source": "한국예탁결제원 SEIBro",
-  "data_as_of": "2026-08-21",
+  "data_as_of": "2026-09-01",
   "first_month": "2022-09",
-  "last_month": "2026-07",
-  "monthly_return_count": 47,
+  "last_month": "2026-08",
+  "monthly_return_count": 48,
   "distribution": {
     "included": true,
     "method": "adjusted_close",
@@ -46,40 +46,12 @@
     ]
   },
   "universe_rank": 67,
-  "market_value_krw_100m": 12296.0,
+  "market_value_krw_100m": 12280.0,
   "latest_raw_close": {
-    "date": "2026-08-21",
-    "close": 14085.0
+    "date": "2026-09-01",
+    "close": 13970.0
   },
   "recent_raw_closes": [
-    {
-      "date": "2026-08-07",
-      "close": 14440.0
-    },
-    {
-      "date": "2026-08-10",
-      "close": 14485.0
-    },
-    {
-      "date": "2026-08-11",
-      "close": 14470.0
-    },
-    {
-      "date": "2026-08-12",
-      "close": 14445.0
-    },
-    {
-      "date": "2026-08-13",
-      "close": 14500.0
-    },
-    {
-      "date": "2026-08-14",
-      "close": 14520.0
-    },
-    {
-      "date": "2026-08-18",
-      "close": 14395.0
-    },
     {
       "date": "2026-08-19",
       "close": 14225.0
@@ -91,6 +63,34 @@
     {
       "date": "2026-08-21",
       "close": 14085.0
+    },
+    {
+      "date": "2026-08-24",
+      "close": 14040.0
+    },
+    {
+      "date": "2026-08-25",
+      "close": 14100.0
+    },
+    {
+      "date": "2026-08-26",
+      "close": 14100.0
+    },
+    {
+      "date": "2026-08-27",
+      "close": 14090.0
+    },
+    {
+      "date": "2026-08-28",
+      "close": 14030.0
+    },
+    {
+      "date": "2026-08-31",
+      "close": 13950.0
+    },
+    {
+      "date": "2026-09-01",
+      "close": 13970.0
     }
   ],
   "monthly_returns": [
@@ -328,6 +328,11 @@
       "month": "2026-07",
       "return": -0.0771216521,
       "observation_date": "2026-07-31"
+    },
+    {
+      "month": "2026-08",
+      "return": -0.0244755245,
+      "observation_date": "2026-08-31"
     }
   ]
 }
