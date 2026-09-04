@@ -9,7 +9,7 @@
   "description": "순자산 상위 ETF #120 (수집 시점 시가총액 기준)",
   "listing_date": "2022-02-18",
   "listing_date_source": "한국예탁결제원 SEIBro",
-  "data_as_of": "2026-09-02",
+  "data_as_of": "2026-09-04",
   "first_month": "2022-03",
   "last_month": "2026-08",
   "monthly_return_count": 54,
@@ -46,20 +46,12 @@
     ]
   },
   "universe_rank": 120,
-  "market_value_krw_100m": 6280.0,
+  "market_value_krw_100m": 6405.0,
   "latest_raw_close": {
-    "date": "2026-09-02",
-    "close": 37935.0
+    "date": "2026-09-04",
+    "close": 38585.0
   },
   "recent_raw_closes": [
-    {
-      "date": "2026-08-20",
-      "close": 40955.0
-    },
-    {
-      "date": "2026-08-21",
-      "close": 39840.0
-    },
     {
       "date": "2026-08-24",
       "close": 39080.0
@@ -91,6 +83,14 @@
     {
       "date": "2026-09-02",
       "close": 37935.0
+    },
+    {
+      "date": "2026-09-03",
+      "close": 37830.0
+    },
+    {
+      "date": "2026-09-04",
+      "close": 38585.0
     }
   ],
   "monthly_returns": [

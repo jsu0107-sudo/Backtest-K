@@ -6,10 +6,10 @@
   "asset_type": "etf",
   "category": "현금성",
   "currency": "KRW",
-  "description": "순자산 상위 ETF #36 (수집 시점 시가총액 기준)",
+  "description": "순자산 상위 ETF #37 (수집 시점 시가총액 기준)",
   "listing_date": "2022-11-28",
   "listing_date_source": "한국예탁결제원 SEIBro",
-  "data_as_of": "2026-09-02",
+  "data_as_of": "2026-09-04",
   "first_month": "2022-12",
   "last_month": "2026-08",
   "monthly_return_count": 45,
@@ -45,21 +45,13 @@
       "상업적 서비스 전 데이터 제공자 이용조건과 재배포 권한을 다시 확인해야 합니다."
     ]
   },
-  "universe_rank": 36,
-  "market_value_krw_100m": 24071.0,
+  "universe_rank": 37,
+  "market_value_krw_100m": 24074.0,
   "latest_raw_close": {
-    "date": "2026-09-02",
-    "close": 111750.0
+    "date": "2026-09-04",
+    "close": 111790.0
   },
   "recent_raw_closes": [
-    {
-      "date": "2026-08-20",
-      "close": 111645.0
-    },
-    {
-      "date": "2026-08-21",
-      "close": 111660.0
-    },
     {
       "date": "2026-08-24",
       "close": 111675.0
@@ -91,6 +83,14 @@
     {
       "date": "2026-09-02",
       "close": 111750.0
+    },
+    {
+      "date": "2026-09-03",
+      "close": 111775.0
+    },
+    {
+      "date": "2026-09-04",
+      "close": 111790.0
     }
   ],
   "monthly_returns": [
