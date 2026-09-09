@@ -6,10 +6,10 @@
   "asset_type": "etf",
   "category": "해외주식",
   "currency": "KRW",
-  "description": "순자산 상위 ETF #56 (수집 시점 시가총액 기준)",
+  "description": "순자산 상위 ETF #55 (수집 시점 시가총액 기준)",
   "listing_date": "2024-07-05",
   "listing_date_source": "한국예탁결제원 SEIBro",
-  "data_as_of": "2026-09-07",
+  "data_as_of": "2026-09-08",
   "first_month": "2024-08",
   "last_month": "2026-08",
   "monthly_return_count": 25,
@@ -45,17 +45,13 @@
       "상업적 서비스 전 데이터 제공자 이용조건과 재배포 권한을 다시 확인해야 합니다."
     ]
   },
-  "universe_rank": 56,
-  "market_value_krw_100m": 14879.0,
+  "universe_rank": 55,
+  "market_value_krw_100m": 15203.0,
   "latest_raw_close": {
-    "date": "2026-09-07",
-    "close": 19400.0
+    "date": "2026-09-08",
+    "close": 19500.0
   },
   "recent_raw_closes": [
-    {
-      "date": "2026-08-25",
-      "close": 19410.0
-    },
     {
       "date": "2026-08-26",
       "close": 19145.0
@@ -91,27 +87,31 @@
     {
       "date": "2026-09-07",
       "close": 19400.0
+    },
+    {
+      "date": "2026-09-08",
+      "close": 19500.0
     }
   ],
   "monthly_returns": [
     {
       "month": "2024-08",
-      "return": 0.0177036044,
+      "return": 0.0177037098,
       "observation_date": "2024-08-30"
     },
     {
       "month": "2024-09",
-      "return": 0.1249341428,
+      "return": 0.1249342334,
       "observation_date": "2024-09-30"
     },
     {
       "month": "2024-10",
-      "return": 0.1143396105,
+      "return": 0.1143393132,
       "observation_date": "2024-10-31"
     },
     {
       "month": "2024-11",
-      "return": 0.0975608063,
+      "return": 0.097560897,
       "observation_date": "2024-11-29"
     },
     {
@@ -121,22 +121,22 @@
     },
     {
       "month": "2025-01",
-      "return": 0.1225566381,
+      "return": 0.1225567146,
       "observation_date": "2025-01-31"
     },
     {
       "month": "2025-02",
-      "return": -0.1970801083,
+      "return": -0.1970802994,
       "observation_date": "2025-02-28"
     },
     {
       "month": "2025-03",
-      "return": -0.108658132,
+      "return": -0.1086578106,
       "observation_date": "2025-03-31"
     },
     {
       "month": "2025-04",
-      "return": 0.0899391034,
+      "return": 0.0899388957,
       "observation_date": "2025-04-30"
     },
     {
@@ -146,12 +146,12 @@
     },
     {
       "month": "2025-06",
-      "return": 0.090577064,
+      "return": 0.0905771356,
       "observation_date": "2025-06-30"
     },
     {
       "month": "2025-07",
-      "return": 0.1808508382,
+      "return": 0.1808507607,
       "observation_date": "2025-07-31"
     },
     {
@@ -166,12 +166,12 @@
     },
     {
       "month": "2025-10",
-      "return": 0.1109728588,
+      "return": 0.1109727493,
       "observation_date": "2025-10-31"
     },
     {
       "month": "2025-11",
-      "return": -0.0972292507,
+      "return": -0.0972291617,
       "observation_date": "2025-11-28"
     },
     {
@@ -186,12 +186,12 @@
     },
     {
       "month": "2026-02",
-      "return": 0.121903678,
+      "return": 0.1219035691,
       "observation_date": "2026-02-27"
     },
     {
       "month": "2026-03",
-      "return": -0.0449019551,
+      "return": -0.0449018624,
       "observation_date": "2026-03-31"
     },
     {
