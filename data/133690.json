@@ -9,7 +9,7 @@
   "description": "순자산 상위 ETF #3 (수집 시점 시가총액 기준)",
   "listing_date": "2010-10-15",
   "listing_date_source": "한국예탁결제원 SEIBro",
-  "data_as_of": "2026-09-08",
+  "data_as_of": "2026-09-10",
   "first_month": "2010-11",
   "last_month": "2026-08",
   "monthly_return_count": 190,
@@ -46,20 +46,12 @@
     ]
   },
   "universe_rank": 3,
-  "market_value_krw_100m": 114458.0,
+  "market_value_krw_100m": 114167.0,
   "latest_raw_close": {
-    "date": "2026-09-08",
-    "close": 176020.0
+    "date": "2026-09-10",
+    "close": 174540.0
   },
   "recent_raw_closes": [
-    {
-      "date": "2026-08-26",
-      "close": 178630.0
-    },
-    {
-      "date": "2026-08-27",
-      "close": 179590.0
-    },
     {
       "date": "2026-08-28",
       "close": 179490.0
@@ -91,97 +83,105 @@
     {
       "date": "2026-09-08",
       "close": 176020.0
+    },
+    {
+      "date": "2026-09-09",
+      "close": 174985.0
+    },
+    {
+      "date": "2026-09-10",
+      "close": 174540.0
     }
   ],
   "monthly_returns": [
     {
       "month": "2010-11",
-      "return": 0.0392719802,
+      "return": 0.0392717816,
       "observation_date": "2010-11-30"
     },
     {
       "month": "2010-12",
-      "return": 0.0188937985,
+      "return": 0.0188938939,
       "observation_date": "2010-12-30"
     },
     {
       "month": "2011-01",
-      "return": 0.0045228985,
+      "return": 0.0045230824,
       "observation_date": "2011-01-31"
     },
     {
       "month": "2011-02",
-      "return": 0.0387211698,
+      "return": 0.0387210711,
       "observation_date": "2011-02-28"
     },
     {
       "month": "2011-03",
-      "return": -0.0320761576,
+      "return": -0.0320765072,
       "observation_date": "2011-03-31"
     },
     {
       "month": "2011-04",
-      "return": 0.0071652673,
+      "return": 0.0071653603,
       "observation_date": "2011-04-29"
     },
     {
       "month": "2011-05",
-      "return": -0.0177858191,
+      "return": -0.0177855512,
       "observation_date": "2011-05-31"
     },
     {
       "month": "2011-06",
-      "return": -0.0276142197,
+      "return": -0.0276143092,
       "observation_date": "2011-06-30"
     },
     {
       "month": "2011-07",
-      "return": 0.0158286725,
+      "return": 0.0158288618,
       "observation_date": "2011-07-29"
     },
     {
       "month": "2011-08",
-      "return": -0.0348304301,
+      "return": -0.0348307963,
       "observation_date": "2011-08-31"
     },
     {
       "month": "2011-09",
-      "return": 0.0731244558,
+      "return": 0.0731247595,
       "observation_date": "2011-09-30"
     },
     {
       "month": "2011-10",
-      "return": 0.0247787357,
+      "return": 0.0247783737,
       "observation_date": "2011-10-31"
     },
     {
       "month": "2011-11",
-      "return": -0.0427459413,
+      "return": -0.0427456892,
       "observation_date": "2011-11-30"
     },
     {
       "month": "2011-12",
-      "return": 0.0410462618,
+      "return": 0.0410464452,
       "observation_date": "2011-12-29"
     },
     {
       "month": "2012-01",
-      "return": 0.0602254404,
+      "return": 0.0602249894,
       "observation_date": "2012-01-31"
     },
     {
       "month": "2012-02",
-      "return": 0.0588474671,
+      "return": 0.0588474818,
       "observation_date": "2012-02-29"
     },
     {
       "month": "2012-03",
-      "return": 0.0640680554,
+      "return": 0.0640680704,
       "observation_date": "2012-03-30"
     },
     {
       "month": "2012-04",
-      "return": -0.0112443367,
+      "return": -0.0112441179,
       "observation_date": "2012-04-30"
     },
     {
@@ -191,52 +191,52 @@
     },
     {
       "month": "2012-06",
-      "return": -0.0162019817,
+      "return": -0.0162022115,
       "observation_date": "2012-06-29"
     },
     {
       "month": "2012-07",
-      "return": 0.0172347622,
+      "return": 0.0172351555,
       "observation_date": "2012-07-31"
     },
     {
       "month": "2012-08",
-      "return": 0.0421685548,
+      "return": 0.0421684718,
       "observation_date": "2012-08-31"
     },
     {
       "month": "2012-09",
-      "return": 0.0046964895,
+      "return": 0.0046964157,
       "observation_date": "2012-09-28"
     },
     {
       "month": "2012-10",
-      "return": -0.0722761581,
+      "return": -0.0722759388,
       "observation_date": "2012-10-31"
     },
     {
       "month": "2012-11",
-      "return": -0.0031006261,
+      "return": -0.0031010194,
       "observation_date": "2012-11-30"
     },
     {
       "month": "2012-12",
-      "return": -0.0244946799,
+      "return": -0.0244944467,
       "observation_date": "2012-12-28"
     },
     {
       "month": "2013-01",
-      "return": 0.0522122402,
+      "return": 0.0522119119,
       "observation_date": "2013-01-31"
     },
     {
       "month": "2013-02",
-      "return": -0.0026516567,
+      "return": -0.0026515803,
       "observation_date": "2013-02-28"
     },
     {
       "month": "2013-03",
-      "return": 0.0596278259,
+      "return": 0.0596279895,
       "observation_date": "2013-03-29"
     },
     {
@@ -246,167 +246,167 @@
     },
     {
       "month": "2013-05",
-      "return": 0.074034303,
+      "return": 0.0740345211,
       "observation_date": "2013-05-31"
     },
     {
       "month": "2013-06",
-      "return": -0.0109889909,
+      "return": -0.0109890564,
       "observation_date": "2013-06-28"
     },
     {
       "month": "2013-07",
-      "return": 0.0370372424,
+      "return": 0.037037032,
       "observation_date": "2013-07-31"
     },
     {
       "month": "2013-08",
-      "return": -0.0042209386,
+      "return": -0.0042206088,
       "observation_date": "2013-08-30"
     },
     {
       "month": "2013-09",
-      "return": 0.0045647669,
+      "return": 0.0045645005,
       "observation_date": "2013-09-30"
     },
     {
       "month": "2013-10",
-      "return": 0.0240181415,
+      "return": 0.0240182735,
       "observation_date": "2013-10-31"
     },
     {
       "month": "2013-11",
-      "return": 0.0453248596,
+      "return": 0.0453246604,
       "observation_date": "2013-11-29"
     },
     {
       "month": "2013-12",
-      "return": 0.0166766808,
+      "return": 0.0166771134,
       "observation_date": "2013-12-30"
     },
     {
       "month": "2014-01",
-      "return": 0.0017894777,
+      "return": 0.0017891739,
       "observation_date": "2014-01-29"
     },
     {
       "month": "2014-02",
-      "return": 0.0419767299,
+      "return": 0.0419769089,
       "observation_date": "2014-02-28"
     },
     {
       "month": "2014-03",
-      "return": -0.0260000014,
+      "return": -0.0260001696,
       "observation_date": "2014-03-31"
     },
     {
       "month": "2014-04",
-      "return": -0.041654354,
+      "return": -0.0416545304,
       "observation_date": "2014-04-30"
     },
     {
       "month": "2014-05",
-      "return": 0.0352006956,
+      "return": 0.0352008866,
       "observation_date": "2014-05-30"
     },
     {
       "month": "2014-06",
-      "return": 0.0242458598,
+      "return": 0.0242459185,
       "observation_date": "2014-06-30"
     },
     {
       "month": "2014-07",
-      "return": 0.0473444147,
+      "return": 0.047344057,
       "observation_date": "2014-07-31"
     },
     {
       "month": "2014-08",
-      "return": 0.0132301256,
+      "return": 0.0132302407,
       "observation_date": "2014-08-29"
     },
     {
       "month": "2014-09",
-      "return": 0.0375409346,
+      "return": 0.0375406069,
       "observation_date": "2014-09-30"
     },
     {
       "month": "2014-10",
-      "return": 0.0115363146,
+      "return": 0.0115365327,
       "observation_date": "2014-10-31"
     },
     {
       "month": "2014-11",
-      "return": 0.1036809449,
+      "return": 0.1036809668,
       "observation_date": "2014-11-28"
     },
     {
       "month": "2014-12",
-      "return": -0.0046971957,
+      "return": -0.0046970056,
       "observation_date": "2014-12-30"
     },
     {
       "month": "2015-01",
-      "return": -0.0356301433,
+      "return": -0.0356299514,
       "observation_date": "2015-01-30"
     },
     {
       "month": "2015-02",
-      "return": 0.0709568123,
+      "return": 0.0709566987,
       "observation_date": "2015-02-27"
     },
     {
       "month": "2015-03",
-      "return": -0.0091389822,
+      "return": -0.0091389814,
       "observation_date": "2015-03-31"
     },
     {
       "month": "2015-04",
-      "return": -0.0122201015,
+      "return": -0.0122202879,
       "observation_date": "2015-04-30"
     },
     {
       "month": "2015-05",
-      "return": 0.049719555,
+      "return": 0.0497198445,
       "observation_date": "2015-05-29"
     },
     {
       "month": "2015-06",
-      "return": -0.0249052942,
+      "return": -0.0249052897,
       "observation_date": "2015-06-30"
     },
     {
       "month": "2015-07",
-      "return": 0.098289648,
+      "return": 0.0982894444,
       "observation_date": "2015-07-31"
     },
     {
       "month": "2015-08",
-      "return": -0.0546095605,
+      "return": -0.0546096449,
       "observation_date": "2015-08-31"
     },
     {
       "month": "2015-09",
-      "return": -0.037996768,
+      "return": -0.0379968607,
       "observation_date": "2015-09-30"
     },
     {
       "month": "2015-10",
-      "return": 0.0894974729,
+      "return": 0.089497768,
       "observation_date": "2015-10-30"
     },
     {
       "month": "2015-11",
-      "return": 0.01844104,
+      "return": 0.0184409532,
       "observation_date": "2015-11-30"
     },
     {
       "month": "2015-12",
-      "return": 0.0162549659,
+      "return": 0.0162550496,
       "observation_date": "2015-12-30"
     },
     {
       "month": "2016-01",
-      "return": -0.0813928254,
+      "return": -0.0813929011,
       "observation_date": "2016-01-29"
     },
     {
@@ -416,77 +416,77 @@
     },
     {
       "month": "2016-03",
-      "return": -0.0145328426,
+      "return": -0.0145331033,
       "observation_date": "2016-03-31"
     },
     {
       "month": "2016-04",
-      "return": -0.029061082,
+      "return": -0.0290609133,
       "observation_date": "2016-04-29"
     },
     {
       "month": "2016-05",
-      "return": 0.0859951944,
+      "return": 0.0859953839,
       "observation_date": "2016-05-31"
     },
     {
       "month": "2016-06",
-      "return": -0.0689017307,
+      "return": -0.0689019758,
       "observation_date": "2016-06-30"
     },
     {
       "month": "2016-07",
-      "return": 0.0481553027,
+      "return": 0.0481555808,
       "observation_date": "2016-07-29"
     },
     {
       "month": "2016-08",
-      "return": 0.0141203275,
+      "return": 0.0141201549,
       "observation_date": "2016-08-31"
     },
     {
       "month": "2016-09",
-      "return": -0.0066499748,
+      "return": -0.0066500598,
       "observation_date": "2016-09-30"
     },
     {
       "month": "2016-10",
-      "return": 0.0422592049,
+      "return": 0.0422595523,
       "observation_date": "2016-10-31"
     },
     {
       "month": "2016-11",
-      "return": 0.0341231213,
+      "return": 0.0341227076,
       "observation_date": "2016-11-30"
     },
     {
       "month": "2016-12",
-      "return": 0.0399842376,
+      "return": 0.0399847206,
       "observation_date": "2016-12-29"
     },
     {
       "month": "2017-01",
-      "return": 0.0026129794,
+      "return": 0.0026126752,
       "observation_date": "2017-01-31"
     },
     {
       "month": "2017-02",
-      "return": 0.0176842134,
+      "return": 0.0176843661,
       "observation_date": "2017-02-28"
     },
     {
       "month": "2017-03",
-      "return": 0.0043901371,
+      "return": 0.0043899136,
       "observation_date": "2017-03-31"
     },
     {
       "month": "2017-04",
-      "return": 0.0409760735,
+      "return": 0.0409763017,
       "observation_date": "2017-04-28"
     },
     {
       "month": "2017-05",
-      "return": 0.0292161263,
+      "return": 0.0292160531,
       "observation_date": "2017-05-31"
     },
     {
@@ -496,117 +496,117 @@
     },
     {
       "month": "2017-07",
-      "return": 0.0229294036,
+      "return": 0.022929334,
       "observation_date": "2017-07-31"
     },
     {
       "month": "2017-08",
-      "return": 0.0145533592,
+      "return": 0.0145534962,
       "observation_date": "2017-08-31"
     },
     {
       "month": "2017-09",
-      "return": 0.0153339328,
+      "return": 0.0153339318,
       "observation_date": "2017-09-29"
     },
     {
       "month": "2017-10",
-      "return": 0.0256576667,
+      "return": 0.0256577311,
       "observation_date": "2017-10-31"
     },
     {
       "month": "2017-11",
-      "return": -0.019949501,
+      "return": -0.0199493697,
       "observation_date": "2017-11-30"
     },
     {
       "month": "2017-12",
-      "return": 0.0121166713,
+      "return": 0.0121162083,
       "observation_date": "2017-12-28"
     },
     {
       "month": "2018-01",
-      "return": 0.072466051,
+      "return": 0.0724662598,
       "observation_date": "2018-01-31"
     },
     {
       "month": "2018-02",
-      "return": 0.009971679,
+      "return": 0.009971558,
       "observation_date": "2018-02-28"
     },
     {
       "month": "2018-03",
-      "return": -0.064250001,
+      "return": -0.064249769,
       "observation_date": "2018-03-30"
     },
     {
       "month": "2018-04",
-      "return": 0.0217323569,
+      "return": 0.021732162,
       "observation_date": "2018-04-30"
     },
     {
       "month": "2018-05",
-      "return": 0.052404605,
+      "return": 0.0524041695,
       "observation_date": "2018-05-31"
     },
     {
       "month": "2018-06",
-      "return": 0.0456936555,
+      "return": 0.0456942728,
       "observation_date": "2018-06-29"
     },
     {
       "month": "2018-07",
-      "return": 0.0210085646,
+      "return": 0.0210084483,
       "observation_date": "2018-07-31"
     },
     {
       "month": "2018-08",
-      "return": 0.0589847817,
+      "return": 0.0589851163,
       "observation_date": "2018-08-31"
     },
     {
       "month": "2018-09",
-      "return": -0.002849736,
+      "return": -0.0028498405,
       "observation_date": "2018-09-28"
     },
     {
       "month": "2018-10",
-      "return": -0.0800206463,
+      "return": -0.0800206294,
       "observation_date": "2018-10-31"
     },
     {
       "month": "2018-11",
-      "return": -0.0153909522,
+      "return": -0.0153914079,
       "observation_date": "2018-11-30"
     },
     {
       "month": "2018-12",
-      "return": -0.0899616296,
+      "return": -0.089961534,
       "observation_date": "2018-12-28"
     },
     {
       "month": "2019-01",
-      "return": 0.0854045229,
+      "return": 0.0854047901,
       "observation_date": "2019-01-31"
     },
     {
       "month": "2019-02",
-      "return": 0.0471229335,
+      "return": 0.047122928,
       "observation_date": "2019-02-28"
     },
     {
       "month": "2019-03",
-      "return": 0.054815629,
+      "return": 0.0548152845,
       "observation_date": "2019-03-29"
     },
     {
       "month": "2019-04",
-      "return": 0.0839979587,
+      "return": 0.0839980836,
       "observation_date": "2019-04-30"
     },
     {
       "month": "2019-05",
-      "return": -0.0595880791,
+      "return": -0.0595879864,
       "observation_date": "2019-05-31"
     },
     {
@@ -616,32 +616,32 @@
     },
     {
       "month": "2019-07",
-      "return": 0.0639797474,
+      "return": 0.0639796461,
       "observation_date": "2019-07-31"
     },
     {
       "month": "2019-08",
-      "return": -0.0132575635,
+      "return": -0.0132573744,
       "observation_date": "2019-08-30"
     },
     {
       "month": "2019-09",
-      "return": -0.0077975888,
+      "return": -0.0077974916,
       "observation_date": "2019-09-30"
     },
     {
       "month": "2019-10",
-      "return": 0.0222466342,
+      "return": 0.0222463381,
       "observation_date": "2019-10-31"
     },
     {
       "month": "2019-11",
-      "return": 0.0559432178,
+      "return": 0.0559432231,
       "observation_date": "2019-11-29"
     },
     {
       "month": "2019-12",
-      "return": 0.0226272674,
+      "return": 0.0226273595,
       "observation_date": "2019-12-30"
     },
     {
@@ -651,32 +651,32 @@
     },
     {
       "month": "2020-02",
-      "return": -0.0774906867,
+      "return": -0.0774906043,
       "observation_date": "2020-02-28"
     },
     {
       "month": "2020-03",
-      "return": -0.0476665901,
+      "return": -0.0476667645,
       "observation_date": "2020-03-31"
     },
     {
       "month": "2020-04",
-      "return": 0.1239061084,
+      "return": 0.1239063077,
       "observation_date": "2020-04-29"
     },
     {
       "month": "2020-05",
-      "return": 0.0846050419,
+      "return": 0.0846047844,
       "observation_date": "2020-05-29"
     },
     {
       "month": "2020-06",
-      "return": 0.0301491828,
+      "return": 0.030149726,
       "observation_date": "2020-06-30"
     },
     {
       "month": "2020-07",
-      "return": 0.0783239392,
+      "return": 0.0783235365,
       "observation_date": "2020-07-31"
     },
     {
@@ -686,52 +686,52 @@
     },
     {
       "month": "2020-09",
-      "return": -0.0682241976,
+      "return": -0.0682242602,
       "observation_date": "2020-09-29"
     },
     {
       "month": "2020-10",
-      "return": -0.0599298852,
+      "return": -0.0599296876,
       "observation_date": "2020-10-30"
     },
     {
       "month": "2020-11",
-      "return": 0.0769094078,
+      "return": 0.0769095398,
       "observation_date": "2020-11-30"
     },
     {
       "month": "2020-12",
-      "return": 0.0380609464,
+      "return": 0.0380606708,
       "observation_date": "2020-12-30"
     },
     {
       "month": "2021-01",
-      "return": 0.0373318197,
+      "return": 0.0373316918,
       "observation_date": "2021-01-29"
     },
     {
       "month": "2021-02",
-      "return": -0.0141191895,
+      "return": -0.0141189447,
       "observation_date": "2021-02-26"
     },
     {
       "month": "2021-03",
-      "return": 0.0194583268,
+      "return": 0.0194582618,
       "observation_date": "2021-03-31"
     },
     {
       "month": "2021-04",
-      "return": 0.0604630944,
+      "return": 0.0604629067,
       "observation_date": "2021-04-30"
     },
     {
       "month": "2021-05",
-      "return": -0.0163592323,
+      "return": -0.0163588871,
       "observation_date": "2021-05-31"
     },
     {
       "month": "2021-06",
-      "return": 0.0792001413,
+      "return": 0.0791998875,
       "observation_date": "2021-06-30"
     },
     {
@@ -741,27 +741,27 @@
     },
     {
       "month": "2021-08",
-      "return": 0.0637328249,
+      "return": 0.0637327202,
       "observation_date": "2021-08-31"
     },
     {
       "month": "2021-09",
-      "return": -0.0309392317,
+      "return": -0.0309395301,
       "observation_date": "2021-09-30"
     },
     {
       "month": "2021-10",
-      "return": 0.03902565,
+      "return": 0.0390256658,
       "observation_date": "2021-10-29"
     },
     {
       "month": "2021-11",
-      "return": 0.0609203866,
+      "return": 0.060920606,
       "observation_date": "2021-11-30"
     },
     {
       "month": "2021-12",
-      "return": 0.0103566427,
+      "return": 0.0103568289,
       "observation_date": "2021-12-30"
     },
     {
@@ -776,12 +776,12 @@
     },
     {
       "month": "2022-03",
-      "return": 0.1011057798,
+      "return": 0.1011055653,
       "observation_date": "2022-03-31"
     },
     {
       "month": "2022-04",
-      "return": -0.0833488437,
+      "return": -0.0833486652,
       "observation_date": "2022-04-29"
     },
     {
@@ -791,82 +791,82 @@
     },
     {
       "month": "2022-06",
-      "return": -0.0487753539,
+      "return": -0.0487752404,
       "observation_date": "2022-06-30"
     },
     {
       "month": "2022-07",
-      "return": 0.1179281566,
+      "return": 0.1179279039,
       "observation_date": "2022-07-29"
     },
     {
       "month": "2022-08",
-      "return": -0.0052744094,
+      "return": -0.0052741965,
       "observation_date": "2022-08-31"
     },
     {
       "month": "2022-09",
-      "return": -0.0364453606,
+      "return": -0.0364454639,
       "observation_date": "2022-09-30"
     },
     {
       "month": "2022-10",
-      "return": 0.0223738714,
+      "return": 0.0223736486,
       "observation_date": "2022-10-31"
     },
     {
       "month": "2022-11",
-      "return": -0.0722285669,
+      "return": -0.072228147,
       "observation_date": "2022-11-30"
     },
     {
       "month": "2022-12",
-      "return": -0.1052243349,
+      "return": -0.105224545,
       "observation_date": "2022-12-29"
     },
     {
       "month": "2023-01",
-      "return": 0.0781997601,
+      "return": 0.0781996945,
       "observation_date": "2023-01-31"
     },
     {
       "month": "2023-02",
-      "return": 0.0915404075,
+      "return": 0.0915405956,
       "observation_date": "2023-02-28"
     },
     {
       "month": "2023-03",
-      "return": 0.0558162112,
+      "return": 0.055816205,
       "observation_date": "2023-03-31"
     },
     {
       "month": "2023-04",
-      "return": 0.042630773,
+      "return": 0.0426306629,
       "observation_date": "2023-04-28"
     },
     {
       "month": "2023-05",
-      "return": 0.0789104189,
+      "return": 0.0789105202,
       "observation_date": "2023-05-31"
     },
     {
       "month": "2023-06",
-      "return": 0.0414652373,
+      "return": 0.0414649518,
       "observation_date": "2023-06-30"
     },
     {
       "month": "2023-07",
-      "return": 0.0029446661,
+      "return": 0.0029450272,
       "observation_date": "2023-07-28"
     },
     {
       "month": "2023-08",
-      "return": 0.0316224984,
+      "return": 0.0316222232,
       "observation_date": "2023-08-31"
     },
     {
       "month": "2023-09",
-      "return": -0.0359625319,
+      "return": -0.0359624479,
       "observation_date": "2023-09-27"
     },
     {
@@ -876,77 +876,77 @@
     },
     {
       "month": "2023-11",
-      "return": 0.0750566442,
+      "return": 0.0750567366,
       "observation_date": "2023-11-30"
     },
     {
       "month": "2023-12",
-      "return": 0.0566650959,
+      "return": 0.056664833,
       "observation_date": "2023-12-28"
     },
     {
       "month": "2024-01",
-      "return": 0.0595541065,
+      "return": 0.0595542789,
       "observation_date": "2024-01-31"
     },
     {
       "month": "2024-02",
-      "return": 0.0284330117,
+      "return": 0.0284330885,
       "observation_date": "2024-02-29"
     },
     {
       "month": "2024-03",
-      "return": 0.0380559235,
+      "return": 0.0380556966,
       "observation_date": "2024-03-29"
     },
     {
       "month": "2024-04",
-      "return": -0.0057914427,
+      "return": -0.0057912996,
       "observation_date": "2024-04-30"
     },
     {
       "month": "2024-05",
-      "return": 0.0429536831,
+      "return": 0.0429537555,
       "observation_date": "2024-05-31"
     },
     {
       "month": "2024-06",
-      "return": 0.0689624997,
+      "return": 0.068962495,
       "observation_date": "2024-06-28"
     },
     {
       "month": "2024-07",
-      "return": -0.0411087051,
+      "return": -0.0411087673,
       "observation_date": "2024-07-31"
     },
     {
       "month": "2024-08",
-      "return": -0.0103180272,
+      "return": -0.0103180949,
       "observation_date": "2024-08-30"
     },
     {
       "month": "2024-09",
-      "return": 0.0054074521,
+      "return": 0.0054075209,
       "observation_date": "2024-09-30"
     },
     {
       "month": "2024-10",
-      "return": 0.0711062159,
+      "return": 0.0711061479,
       "observation_date": "2024-10-31"
     },
     {
       "month": "2024-11",
-      "return": 0.0409526612,
+      "return": 0.0409526638,
       "observation_date": "2024-11-29"
     },
     {
       "month": "2024-12",
-      "return": 0.0888853563,
+      "return": 0.0888855448,
       "observation_date": "2024-12-30"
     },
     {
       "month": "2025-01",
-      "return": -0.0069903491,
+      "return": -0.0069904604,
       "observation_date": "2025-01-31"
     },
     {
@@ -966,57 +966,57 @@
     },
     {
       "month": "2025-05",
-      "return": 0.0636071179,
+      "return": 0.063607182,
       "observation_date": "2025-05-30"
     },
     {
       "month": "2025-06",
-      "return": 0.0413109817,
+      "return": 0.0413107985,
       "observation_date": "2025-06-30"
     },
     {
       "month": "2025-07",
-      "return": 0.0720548182,
+      "return": 0.0720548265,
       "observation_date": "2025-07-31"
     },
     {
       "month": "2025-08",
-      "return": 0.0030223276,
+      "return": 0.0030224359,
       "observation_date": "2025-08-29"
     },
     {
       "month": "2025-09",
-      "return": 0.0500273606,
+      "return": 0.0500274682,
       "observation_date": "2025-09-30"
     },
     {
       "month": "2025-10",
-      "return": 0.0741564984,
+      "return": 0.0741563883,
       "observation_date": "2025-10-31"
     },
     {
       "month": "2025-11",
-      "return": 0.0031919097,
+      "return": 0.0031920051,
       "observation_date": "2025-11-28"
     },
     {
       "month": "2025-12",
-      "return": -0.011969636,
+      "return": -0.0119696348,
       "observation_date": "2025-12-30"
     },
     {
       "month": "2026-01",
-      "return": 0.0048048976,
+      "return": 0.0048048009,
       "observation_date": "2026-01-30"
     },
     {
       "month": "2026-02",
-      "return": -0.0277225179,
+      "return": -0.0277226137,
       "observation_date": "2026-02-27"
     },
     {
       "month": "2026-03",
-      "return": -0.0131720246,
+      "return": -0.0131719274,
       "observation_date": "2026-03-31"
     },
     {
