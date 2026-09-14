@@ -9,7 +9,7 @@
   "description": "순자산 상위 ETF #141 (수집 시점 시가총액 기준)",
   "listing_date": "2021-08-06",
   "listing_date_source": "한국예탁결제원 SEIBro",
-  "data_as_of": "2026-09-10",
+  "data_as_of": "2026-09-14",
   "first_month": "2021-09",
   "last_month": "2026-08",
   "monthly_return_count": 60,
@@ -46,20 +46,12 @@
     ]
   },
   "universe_rank": 141,
-  "market_value_krw_100m": 5129.0,
+  "market_value_krw_100m": 5015.0,
   "latest_raw_close": {
-    "date": "2026-09-10",
-    "close": 12590.0
+    "date": "2026-09-14",
+    "close": 12185.0
   },
   "recent_raw_closes": [
-    {
-      "date": "2026-08-28",
-      "close": 13765.0
-    },
-    {
-      "date": "2026-08-31",
-      "close": 13825.0
-    },
     {
       "date": "2026-09-01",
       "close": 13455.0
@@ -91,6 +83,14 @@
     {
       "date": "2026-09-10",
       "close": 12590.0
+    },
+    {
+      "date": "2026-09-11",
+      "close": 12450.0
+    },
+    {
+      "date": "2026-09-14",
+      "close": 12185.0
     }
   ],
   "monthly_returns": [
