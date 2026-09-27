@@ -639,5 +639,36 @@
       "return": -0.001495988,
       "observation_date": "2026-07-31"
     }
-  ]
+  ],
+  "month_end_quality": {
+    "version": 1,
+    "checked_as_of": "2026-09-27",
+    "calendar": "XKRX",
+    "calendar_source": "exchange_calendars 4.13.2",
+    "expected_complete_month": "2026-08",
+    "last_complete_month": "2026-07",
+    "usable_first_month": "2023-09",
+    "usable_last_month": "2026-07",
+    "usable_month_count": 35,
+    "excluded_months": [
+      {
+        "month": "2023-07",
+        "observation_date": "2023-07-28",
+        "expected_observation_date": "2023-07-31",
+        "reason": "month_end_observation_mismatch"
+      },
+      {
+        "month": "2023-08",
+        "observation_date": "2023-08-31",
+        "expected_observation_date": "2023-08-31",
+        "reason": "baseline_observation_mismatch"
+      }
+    ],
+    "outside_usable_window_count": 74,
+    "status": "stale",
+    "baseline_verification": "legacy_first_baseline_unavailable",
+    "note": "거래일 달력 대조이며 시세·분배금 독립 검증이 아닙니다. 제외된 원본 수익률은 보존합니다."
+  },
+  "return_currency": "KRW",
+  "krw_comparable": true
 }

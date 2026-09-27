@@ -8,6 +8,8 @@ import {
   correlationMatrix,
 } from "./core/backtest.js";
 import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
+import { returnMapFromPayload, dataQualityMessages } from "./core/data-loader.js";
+import "./engine.js";
 
 (() => {
   "use strict";
@@ -222,11 +224,14 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
         returnMap: null,
         listingDate: item.listing_date || null,
         dataAsOf: item.data_as_of || catalog.data_as_of || null,
-        firstMonth: item.first_month || null,
-        lastMonth: item.last_month || null,
+        firstMonth: item.month_end_quality?.usable_first_month || item.first_month || null,
+        lastMonth: item.month_end_quality?.usable_last_month || item.last_month || null,
         observationCount: Number(item.monthly_return_count) || 0,
         distributionIncluded: item.distribution_included === true,
+        qualityMessages: dataQualityMessages({ ...item, distribution: { included: item.distribution_included, verification_status: item.distribution_verification_status } }),
         distributionMethod: item.distribution_method || "unknown",
+        currency: item.currency || null,
+        monthEndQuality: item.month_end_quality || null,
         providerStatus: item.provider_status || catalog.provider_status || "unknown",
         universeRank: Number(item.universe_rank) || null,
       };
@@ -261,16 +266,7 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
   }
 
   function validateMonthlyReturns(payload) {
-    if (!payload || !Array.isArray(payload.monthly_returns)) throw new Error("월 수익률 배열이 없습니다.");
-    const returns = new Map();
-    payload.monthly_returns.forEach((row) => {
-      const month = normalizeMonth(row.month);
-      const value = Number(row.return);
-      if (!month || !Number.isFinite(value) || value <= -1) return;
-      returns.set(month, value);
-    });
-    if (returns.size < 2) throw new Error("유효한 월 수익률이 2개월 미만입니다.");
-    return new Map([...returns.entries()].sort((a, b) => a[0].localeCompare(b[0])));
+    return returnMapFromPayload(payload);
   }
 
   async function ensureAssetLoaded(id) {
@@ -287,8 +283,9 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
       asset.returnMap = validateMonthlyReturns(payload);
       asset.listingDate = payload.listing_date || asset.listingDate;
       asset.dataAsOf = payload.data_as_of || asset.dataAsOf;
-      asset.firstMonth = payload.first_month || [...asset.returnMap.keys()][0];
-      asset.lastMonth = payload.last_month || [...asset.returnMap.keys()].at(-1);
+      asset.firstMonth = [...asset.returnMap.keys()][0];
+      asset.lastMonth = [...asset.returnMap.keys()].at(-1);
+      asset.qualityMessages = dataQualityMessages(payload);
       asset.observationCount = asset.returnMap.size;
       asset.distributionIncluded = payload.distribution?.included === true;
       asset.distributionMethod = payload.distribution?.method || asset.distributionMethod;
@@ -375,7 +372,7 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
       <button type="button" class="asset-suggestion ${index === 0 ? "active" : ""}" data-asset-id="${escapeHtml(id)}">
         <span class="asset-suggestion-code">${escapeHtml(asset.code)}</span>
         <span class="asset-suggestion-copy"><strong>${escapeHtml(asset.name)}</strong><small>${escapeHtml(asset.category)} · ${escapeHtml(asset.firstMonth || "기간 미확인")}–${escapeHtml(asset.lastMonth || "")}</small></span>
-        <span class="asset-suggestion-badge ${asset.distributionIncluded ? "" : "price"}">${asset.distributionIncluded ? "TR" : "가격"}</span>
+        <span class="asset-suggestion-badge ${asset.distributionIncluded ? "" : "price"}">${asset.currency && asset.currency !== "KRW" ? "원화 환산 미검증" : asset.distributionIncluded ? "수정주가" : "가격"}</span>
       </button>
     </li>`).join("");
   }
@@ -789,7 +786,7 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
       settings = gatherBacktestSettings();
     } catch (error) {
       showToast(error.message);
-      return fail(`${error.message} 네트워크 상태를 확인한 뒤 다시 시도해주세요.`);
+      return fail(error.message);
     } finally {
       state.backtestLoading = false;
       $("#runBacktest span").textContent = "백테스트 실행";
@@ -851,6 +848,13 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
         : "";
     }
 
+    const qualityNotice = $("#dataQualityNotice");
+    if (qualityNotice) {
+      const used = [...new Set([...settings.allocations.map(item => item.assetId), settings.benchmarkId])];
+      const details = used.flatMap(id => (state.assets[id]?.qualityMessages || []).map(message => `${state.assets[id].name}: ${message}`));
+      qualityNotice.hidden = !details.length;
+      $("#dataQualityDetails").textContent = details.join("\n");
+    }
     const gain = metrics.finalBalance - metrics.principal;
     const benchmarkGap = metrics.annualizedReturn - metrics.benchmarkAnnualized;
     const cards = [
@@ -1922,8 +1926,8 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
       const dates = asset.returnMap instanceof Map ? [...asset.returnMap.keys()].sort() : [];
       const firstMonth = dates[0] || asset.firstMonth || "";
       const lastMonth = dates.at(-1) || asset.lastMonth || "";
-      const count = dates.length || asset.observationCount || 0;
-      const sourceText = asset.source === "custom" ? "사용자 CSV" : asset.source === "market" ? `${asset.distributionIncluded ? "수정종가 TR" : "가격지수"} · ${asset.dataAsOf || ""}` : "합성 데모";
+      const count = dates.length || asset.monthEndQuality?.usable_month_count || asset.observationCount || 0;
+      const sourceText = asset.source === "custom" ? "사용자 CSV" : asset.source === "market" ? `${asset.currency !== "KRW" ? "원화 환산 미검증 · " : ""}${asset.distributionIncluded ? "공급자 수정종가 · 총수익 독립 대사 미완료" : "가격지수"} · ${asset.dataAsOf || ""}` : "합성 데모";
       return `<tr><td>${escapeHtml(asset.code)}</td><td>${escapeHtml(asset.name)}</td><td>${escapeHtml(asset.category)}</td><td>${fmtDate(firstMonth)} – ${fmtDate(lastMonth)}</td><td>${count.toLocaleString()}개월</td><td><span class="source-pill ${asset.source}">${escapeHtml(sourceText)}</span></td></tr>`;
     }).join("");
     $("#assetDataCount").textContent = `총 ${state.assetOrder.length}개`;
@@ -2118,8 +2122,10 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
       eng: window.BacktestK?.ENGINE_VERSION || "1.0",
       seed: state.monteCarlo?.seed ?? null,
       ver: state.officialVerification?.status === "ok"
-        ? `공식시세 대사 ${state.officialVerification.matched}/${state.officialVerification.checked} 일치`
-        : "프로토타입 데이터 (독립 대사 진행 중)",
+        ? `원시 종가 표본 대사 ${state.officialVerification.matched}/${state.officialVerification.checked} 일치 · 총수익 독립 대사 미완료`
+        : "공급자 데이터 · 총수익 독립 대사 미완료",
+      dq: [...new Set([...settings.allocations.map(item => item.assetId), settings.benchmarkId])]
+        .flatMap(id => (state.assets[id]?.qualityMessages || []).map(message => `${state.assets[id].name}: ${message}`)),
       mx: {
         cagr: round(metrics.annualizedReturn),
         mwrr: round(metrics.mwrr),
@@ -2191,23 +2197,33 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
     const quick = mode === "quick";
     document.documentElement.classList.toggle("quick-mode", quick);
     $("#modeQuick")?.classList.toggle("active", quick);
+    $("#modeQuick")?.setAttribute("aria-pressed", String(quick));
     $("#modeLab")?.classList.toggle("active", !quick);
+    $("#modeLab")?.setAttribute("aria-pressed", String(!quick));
     if (save) storage.setItem("backtestK.uiMode", quick ? "quick" : "lab");
     if (quick && save) syncDateInputs(true);
   }
 
   function switchView(viewName) {
     $$(".app-view").forEach((view) => view.classList.toggle("active", view.id === `view-${viewName}`));
-    $$(".nav-btn").forEach((button) => button.classList.toggle("active", button.dataset.view === viewName));
+    $$(".nav-btn").forEach((button) => {
+      const active = button.dataset.view === viewName;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
     history.replaceState(null, "", `#${viewName}`);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
     if (viewName === "montecarlo" && !state.monteCarlo) runMonteCarlo();
     if (viewName === "compare") renderComparison();
     setTimeout(redrawAllCharts, 80);
   }
 
   function switchResultTab(tabName) {
-    $$(".analysis-tab").forEach((button) => button.classList.toggle("active", button.dataset.resultTab === tabName));
+    $$(".analysis-tab").forEach((button) => {
+      const active = button.dataset.resultTab === tabName;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
     $$(".result-tab-panel").forEach((panel) => panel.classList.toggle("active", panel.id === `result-${tabName}`));
     setTimeout(redrawAllCharts, 50);
   }
@@ -2390,6 +2406,7 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
           firstMonth: payload.dates[0],
           lastMonth: payload.dates.at(-1),
           distributionIncluded: info.distributionIncluded,
+          qualityMessages: info.qualityMessages || [],
         };
       });
 
@@ -2542,7 +2559,7 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
     $("#stickyRunButton")?.addEventListener("click", () => {
       runBacktest({ userInitiated: true });
       // 결과를 바로 볼 수 있게 결과 영역으로 이동한다.
-      $(".results-area")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      $(".results-area")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" });
     });
     sync();
   }
@@ -2554,6 +2571,7 @@ import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
 
   async function init() {
     const savedTheme = storage.getItem("backtestK.theme");
+    $$(".nav-btn").forEach((button) => button.setAttribute("aria-pressed", String(button.classList.contains("active"))));
     if (savedTheme === "light" || savedTheme === "dark") document.documentElement.dataset.theme = savedTheme;
     // 공유 링크로 들어온 경우엔 샘플을 그리지 않는다 (곧 해당 조합으로 덮어쓰므로).
     const hasSharedConfig = new URLSearchParams(window.location.search).has("c");

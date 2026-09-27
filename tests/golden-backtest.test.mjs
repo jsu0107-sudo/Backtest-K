@@ -13,7 +13,6 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 import { runBacktest, commonMonths } from "../core/backtest.js";
-import { returnMapFromPayload } from "../core/data-loader.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const readJson = (relative) => JSON.parse(readFileSync(join(root, relative), "utf8"));
@@ -59,7 +58,9 @@ function liveReturns(ids) {
   for (const id of new Set(ids)) {
     const record = byId.get(id);
     assert.ok(record, `카탈로그에 없는 자산: ${id}`);
-    returnsById[id] = returnMapFromPayload(readJson(record.file));
+    // Raw-return revision watchdog stays intact. Eligibility is separately tested
+    // in data-quality.test.mjs; quarantining a row must not rewrite its value.
+    returnsById[id] = new Map(readJson(record.file).monthly_returns.map(row => [row.month, row.return]));
   }
   return returnsById;
 }

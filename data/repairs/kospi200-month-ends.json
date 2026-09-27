@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "id": "INDEX_KOSPI200",
+  "currency": "KRW",
+  "return_basis": "price_index",
+  "source": {
+    "name": "KRX OPEN API ETF reference-index field",
+    "url": "https://data-dbg.krx.co.kr/svc/apis/etp/etf_bydd_trd",
+    "field": "OBJ_STKPRC_IDX",
+    "reference_etfs": [
+      "069500",
+      "102110"
+    ]
+  },
+  "pairs": [
+    [
+      "20130228",
+      "20130329"
+    ],
+    [
+      "20130329",
+      "20130430"
+    ],
+    [
+      "20260630",
+      "20260731"
+    ],
+    [
+      "20260731",
+      "20260831"
+    ]
+  ],
+  "points": {
+    "20130228": {
+      "close": 268.01,
+      "date": "2013-02-28",
+      "krx_response_sha256": "0a2f554600edb2e162015efc322e7cd59e79b45e8959d1d09844c99c3bb1f2c7",
+      "cross_check": "two KRX ETF reference-index fields"
+    },
+    "20130329": {
+      "close": 263.39,
+      "date": "2013-03-29",
+      "krx_response_sha256": "d1b1dc9f8c1968ca8081c88f4bbf6bd56892847b23beb400d6ea9b2f702cc5ed",
+      "cross_check": "two KRX ETF reference-index fields"
+    },
+    "20130430": {
+      "close": 255.72,
+      "date": "2013-04-30",
+      "krx_response_sha256": "93e33f3ba22fa514ec14e0b9c38f3d03fb4128331cb446a386b9be714aedd91a",
+      "cross_check": "two KRX ETF reference-index fields"
+    },
+    "20260630": {
+      "close": 1370.73,
+      "date": "2026-06-30",
+      "krx_response_sha256": "1df2c1852b725f0606763017ad0d7036b96fe6f744dbccbad16d6a5c2257e684",
+      "cross_check": "KIS + two KRX ETF reference-index fields"
+    },
+    "20260731": {
+      "close": 1046.81,
+      "date": "2026-07-31",
+      "krx_response_sha256": "3e6ab689a89cc9fb18009f39368cd1450f848b29d31ee0d75ca50f0876730b1e",
+      "cross_check": "KIS + two KRX ETF reference-index fields"
+    },
+    "20260831": {
+      "close": 1071.85,
+      "date": "2026-08-31",
+      "krx_response_sha256": "7745b9652f67deac9a8d5a2a748b36baa823c199011acc6edbc6d5d58c7345e3",
+      "cross_check": "KIS + two KRX ETF reference-index fields"
+    }
+  }
+}

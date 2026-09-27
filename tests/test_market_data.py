@@ -47,15 +47,15 @@ class MarketDataTransformTests(unittest.TestCase):
         self.assertEqual(len(notes), 1)
         self.assertIn("월 갭", notes[0])
 
-    def test_trim_stale_trailing_returns_drops_exact_zero_tail(self):
+    def test_zero_returns_are_not_evidence_of_staleness(self):
         rows = [
             {"month": "2026-04", "return": 0.02},
             {"month": "2026-05", "return": 0.0},
             {"month": "2026-06", "return": 0.0},
         ]
         trimmed, count = trim_stale_trailing_returns(rows)
-        self.assertEqual(count, 2)
-        self.assertEqual([row["month"] for row in trimmed], ["2026-04"])
+        self.assertEqual(count, 0)
+        self.assertEqual(trimmed, rows)
         untouched, count2 = trim_stale_trailing_returns([{"month": "2026-06", "return": 0.001}])
         self.assertEqual(count2, 0)
         self.assertEqual(len(untouched), 1)

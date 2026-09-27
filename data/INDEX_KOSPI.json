@@ -1814,5 +1814,102 @@
       "return": -0.2219117097,
       "observation_date": "2026-07-31"
     }
-  ]
+  ],
+  "month_end_quality": {
+    "version": 1,
+    "checked_as_of": "2026-09-27",
+    "calendar": "XKRX",
+    "calendar_source": "exchange_calendars 4.13.2",
+    "expected_complete_month": "2026-08",
+    "last_complete_month": "2026-07",
+    "usable_first_month": "1998-12",
+    "usable_last_month": "2026-07",
+    "usable_month_count": 332,
+    "excluded_months": [
+      {
+        "month": "1997-05",
+        "observation_date": "1997-05-30",
+        "expected_observation_date": "1997-05-31",
+        "reason": "month_end_observation_mismatch"
+      },
+      {
+        "month": "1997-06",
+        "observation_date": "1997-06-30",
+        "expected_observation_date": "1997-06-30",
+        "reason": "baseline_observation_mismatch"
+      },
+      {
+        "month": "1997-08",
+        "observation_date": "1997-08-29",
+        "expected_observation_date": "1997-08-30",
+        "reason": "month_end_observation_mismatch"
+      },
+      {
+        "month": "1997-09",
+        "observation_date": "1997-09-30",
+        "expected_observation_date": "1997-09-30",
+        "reason": "baseline_observation_mismatch"
+      },
+      {
+        "month": "1997-11",
+        "observation_date": "1997-11-28",
+        "expected_observation_date": "1997-11-29",
+        "reason": "month_end_observation_mismatch"
+      },
+      {
+        "month": "1997-12",
+        "observation_date": "1997-12-26",
+        "expected_observation_date": "1997-12-27",
+        "reason": "month_end_observation_mismatch"
+      },
+      {
+        "month": "1998-01",
+        "observation_date": "1998-01-30",
+        "expected_observation_date": "1998-01-31",
+        "reason": "month_end_observation_mismatch"
+      },
+      {
+        "month": "1998-02",
+        "observation_date": "1998-02-27",
+        "expected_observation_date": "1998-02-28",
+        "reason": "month_end_observation_mismatch"
+      },
+      {
+        "month": "1998-03",
+        "observation_date": "1998-03-31",
+        "expected_observation_date": "1998-03-31",
+        "reason": "baseline_observation_mismatch"
+      },
+      {
+        "month": "1998-05",
+        "observation_date": "1998-05-29",
+        "expected_observation_date": "1998-05-30",
+        "reason": "month_end_observation_mismatch"
+      },
+      {
+        "month": "1998-06",
+        "observation_date": "1998-06-30",
+        "expected_observation_date": "1998-06-30",
+        "reason": "baseline_observation_mismatch"
+      },
+      {
+        "month": "1998-10",
+        "observation_date": "1998-10-30",
+        "expected_observation_date": "1998-10-31",
+        "reason": "month_end_observation_mismatch"
+      },
+      {
+        "month": "1998-11",
+        "observation_date": "1998-11-30",
+        "expected_observation_date": "1998-11-30",
+        "reason": "baseline_observation_mismatch"
+      }
+    ],
+    "outside_usable_window_count": 23,
+    "status": "stale",
+    "baseline_verification": "legacy_first_baseline_unavailable",
+    "note": "거래일 달력 대조이며 시세·분배금 독립 검증이 아닙니다. 제외된 원본 수익률은 보존합니다."
+  },
+  "return_currency": "KRW",
+  "krw_comparable": true
 }

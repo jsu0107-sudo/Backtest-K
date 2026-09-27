@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 import { runBacktest, commonMonths } from "../core/backtest.js";
-import { returnMapFromPayload } from "../core/data-loader.js";
+import { returnMapFromPayload, dataQualityMessages } from "../core/data-loader.js";
 import { SAMPLE_PORTFOLIO, sampleSettings } from "../core/sample-portfolio.js";
 import { ENGINE_VERSION } from "../core/version.js";
 
@@ -42,13 +42,15 @@ function build() {
   for (const id of ids) {
     const record = byId.get(id);
     if (!record) throw new Error(`카탈로그에 없는 샘플 자산: ${id}`);
-    returnsById[id] = returnMapFromPayload(readJson(record.file));
+    const payload = readJson(record.file);
+    returnsById[id] = returnMapFromPayload(payload);
     assets[id] = {
       code: record.ticker,
       name: record.name,
       category: record.category,
       assetType: record.asset_type,
       distributionIncluded: record.distribution_included === true,
+      qualityMessages: dataQualityMessages(payload, new Date(`${payload.month_end_quality.checked_as_of}T00:00:00Z`)),
     };
   }
 

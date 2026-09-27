@@ -210,9 +210,7 @@ def _unix_seconds(value: dt.datetime) -> int:
     return int(value.replace(tzinfo=dt.timezone.utc).timestamp())
 
 
-def fetch_yahoo_series(
-    symbol: str, start_date: dt.date, end_date: dt.date
-) -> tuple[list[tuple[dt.date, float]], dict[str, Any], int, dict[str, Any] | None]:
+def fetch_yahoo_payload(symbol: str, start_date: dt.date, end_date: dt.date) -> dict[str, Any]:
     params = urllib.parse.urlencode(
         {
             "period1": _unix_seconds(dt.datetime.combine(start_date, dt.time.min)),
@@ -223,7 +221,10 @@ def fetch_yahoo_series(
         }
     )
     url = f"{YAHOO_CHART_URL.format(symbol=urllib.parse.quote(symbol, safe=''))}?{params}"
-    payload = http_json(url)
+    return http_json(url)
+
+
+def parse_yahoo_series(payload: dict[str, Any], symbol: str):
     chart = payload.get("chart", {})
     if chart.get("error"):
         raise CollectionError(f"Yahoo chart error for {symbol}: {chart['error']}")
@@ -237,7 +238,14 @@ def fetch_yahoo_series(
     quote_groups = result.get("indicators", {}).get("quote") or []
     adjusted = adjclose_groups[0].get("adjclose", []) if adjclose_groups else []
     closes = quote_groups[0].get("close", []) if quote_groups else []
+    # ETF raw closes cannot silently masquerade as dividend-adjusted returns.
+    if not symbol.startswith("^") and not adjusted:
+        raise CollectionError(f"Missing adjusted closes for ETF {symbol}; refusing raw-close fallback")
+    if len(timestamps) != len(adjusted if adjusted else closes):
+        raise CollectionError(f"Timestamp/price length mismatch for {symbol}")
     prices = adjusted if adjusted else closes
+    korean_symbol = symbol.endswith(".KS") or symbol in ("^KS11", "^KS200")
+    exchange_zone = ZoneInfo(result.get("meta", {}).get("exchangeTimezoneName") or ("Asia/Seoul" if korean_symbol else "America/New_York"))
     points: list[tuple[dt.date, float]] = []
     for timestamp, price in zip(timestamps, prices):
         if price is None:
@@ -245,7 +253,7 @@ def fetch_yahoo_series(
         number = float(price)
         if not math.isfinite(number) or number <= 0:
             continue
-        date = dt.datetime.fromtimestamp(int(timestamp), tz=dt.timezone.utc).date()
+        date = dt.datetime.fromtimestamp(int(timestamp), tz=exchange_zone).date()
         points.append((date, number))
     if len(points) < 3:
         raise CollectionError(f"Yahoo chart returned fewer than three usable prices for {symbol}")
@@ -260,7 +268,7 @@ def fetch_yahoo_series(
         number = float(price)
         if not math.isfinite(number) or number <= 0:
             continue
-        date = dt.datetime.fromtimestamp(int(timestamp), tz=dt.timezone.utc).date().isoformat()
+        date = dt.datetime.fromtimestamp(int(timestamp), tz=exchange_zone).date().isoformat()
         raw_by_date[date] = number
     recent_raw_closes = [
         {"date": date, "close": round(raw_by_date[date], 6)} for date in sorted(raw_by_date)[-10:]
@@ -268,6 +276,10 @@ def fetch_yahoo_series(
 
     events = result.get("events", {}).get("dividends", {}) or {}
     return points, result.get("meta", {}), len(events), recent_raw_closes
+
+
+def fetch_yahoo_series(symbol: str, start_date: dt.date, end_date: dt.date):
+    return parse_yahoo_series(fetch_yahoo_payload(symbol, start_date, end_date), symbol)
 
 
 def last_complete_month(today: dt.date) -> str:
@@ -332,6 +344,7 @@ def monthly_returns_from_prices(
                     "month": month,
                     "return": round(value, 10),
                     "observation_date": observation_date.isoformat(),
+                    "previous_observation_date": ordered[index - 1][1][0].isoformat(),
                 }
             )
     if len(returns) < 2:
@@ -343,17 +356,11 @@ def monthly_returns_from_prices(
 def trim_stale_trailing_returns(
     returns: list[dict[str, Any]], *, max_trim: int = 3
 ) -> tuple[list[dict[str, Any]], int]:
-    """Drop trailing months whose return is exactly zero.
+    """Compatibility shim: 0% is a valid return, not evidence of staleness.
 
-    지수가 소수점까지 정확히 0% 월 수익률을 내는 일은 사실상 없으므로, 말단의
-    0% 행은 원천이 최신 시세를 채우지 못한 스테일 데이터로 간주하고 제거한다.
+    Calendar/date checks in audit_market_data determine eligibility instead.
     """
-    trimmed = 0
-    end = len(returns)
-    while end > 0 and trimmed < max_trim and abs(float(returns[end - 1]["return"])) < 1e-9:
-        end -= 1
-        trimmed += 1
-    return returns[:end], trimmed
+    return returns[:], 0
 
 
 def fetch_seibro_listing_date(ticker: str, name: str) -> tuple[str | None, str]:

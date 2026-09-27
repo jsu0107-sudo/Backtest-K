@@ -1,6 +1,8 @@
 // 백테스트K 전략 랜딩 페이지 글루 코드.
 // 페이지가 window.PORTFOLIO_PAGE로 전략 구성을 선언하면, 데이터마트에서 실데이터를
 // 불러와 사용 가능한 전체 기간으로 결과를 계산해 표시한다. engine.js 필요.
+import "./engine.js";
+import { dataQualityMessages } from "./core/data-loader.js";
 (() => {
   "use strict";
 
@@ -58,6 +60,14 @@
       const periodEl = $("#pfPeriod");
       if (periodEl) {
         periodEl.textContent = `분석 기간 ${fmtDate(result.months[0])} – ${fmtDate(result.months.at(-1))} (${result.months.length}개월) · 초기 ${fmtCompactKRW(settings.i)} + 월 ${fmtCompactKRW(settings.m)} 적립 · ${K.rebalanceLabel(settings.r)} 리밸런싱 · 데이터 기준일 ${catalog.data_as_of || "—"}`;
+        const quality = document.createElement("details");
+        const summary = document.createElement("summary");
+        summary.textContent = "데이터 품질·분석 제한 확인";
+        const text = document.createElement("p");
+        text.style.whiteSpace = "pre-line";
+        text.textContent = neededIds.flatMap(id => dataQualityMessages(payloads.get(id)).map(message => `${catalogById.get(id).name}: ${message}`)).join("\n");
+        quality.append(summary, text);
+        periodEl.after(quality);
       }
 
       const cta = $("#pfCta");

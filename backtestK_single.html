@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="ko" data-theme="dark">
+<html lang="ko" data-theme="light">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="한국 투자자를 위한 원화 기준 포트폴리오 백테스트·적립식 투자·몬테카를로 시뮬레이션 도구" />
-  <meta name="theme-color" content="#07111f" />
+  <meta name="theme-color" content="#f5f6f2" />
   <title>백테스트K — 한국 투자자용 포트폴리오 시뮬레이터 (단일 파일)</title>
   <!-- 자동 생성물 — 수동 편집 금지. npm run build:single 로 재생성한다. -->
   <link rel="canonical" href="https://backtest-k.vercel.app/" />
@@ -20,57 +20,61 @@
   <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMwYjE3MjgiLz48cGF0aCBkPSJNMTMgNDUgMjYgMzFsOSA5IDE3LTIxIiBmaWxsPSJub25lIiBzdHJva2U9IiM0NWUzYjUiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTQyIDE5aDEwdjEwIiBmaWxsPSJub25lIiBzdHJva2U9IiM0NWUzYjUiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+Cg==" type="image/svg+xml" />
   <style>
 :root {
-  --bg: #07111f;
-  --bg-elevated: #0b1728;
-  --surface: #101f32;
-  --surface-2: #13263b;
-  --surface-3: #182c43;
+  color-scheme: dark;
+  --bg: #101916;
+  --bg-elevated: #17221d;
+  --surface: #19251f;
+  --surface-2: #202f27;
+  --surface-3: #293b31;
   --border: rgba(151, 177, 204, 0.16);
   --border-strong: rgba(151, 177, 204, 0.28);
-  --text: #edf5fb;
-  --muted: #91a6b8;
-  --muted-2: #6f8498;
-  --accent: #45e3b5;
-  --accent-strong: #20c997;
-  --accent-soft: rgba(69, 227, 181, 0.13);
+  --text: #eff4ee;
+  --muted: #b1c0b5;
+  --muted-2: #a0b1a5;
+  --accent: #9cdbb2;
+  --accent-strong: #b3ebc6;
+  --accent-soft: rgba(156, 219, 178, 0.1);
+  --on-accent: #152b1e;
   --blue: #5ea9ff;
   --blue-soft: rgba(94, 169, 255, 0.13);
   --orange: #ffb45e;
   --red: #ff7f8c;
   --purple: #a58bff;
   --yellow: #ffd166;
-  --shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
-  --radius: 18px;
-  --radius-sm: 11px;
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  --radius: 16px;
+  --radius-sm: 8px;
   --grid-line: rgba(147, 170, 194, 0.1);
-  --input-bg: rgba(6, 15, 27, 0.55);
-  --topbar-bg: rgba(7, 17, 31, 0.9);
+  --input-bg: #131e18;
+  --topbar-bg: rgba(16, 25, 22, 0.96);
 }
 
 html[data-theme="light"] {
-  --bg: #f1f5f9;
-  --bg-elevated: #f8fafc;
+  color-scheme: light;
+  --bg: #f5f6f2;
+  --bg-elevated: #ffffff;
   --surface: #ffffff;
-  --surface-2: #f7fafc;
-  --surface-3: #edf3f8;
-  --border: rgba(35, 56, 76, 0.12);
-  --border-strong: rgba(35, 56, 76, 0.2);
-  --text: #102033;
-  --muted: #62778c;
-  --muted-2: #8292a2;
-  --accent: #0eb489;
-  --accent-strong: #079a75;
-  --accent-soft: rgba(14, 180, 137, 0.11);
-  --blue: #267bd8;
+  --surface-2: #f6f8f4;
+  --surface-3: #eaf0e8;
+  --border: #e1e6dd;
+  --border-strong: #b7c5b9;
+  --text: #1d3025;
+  --muted: #5a6b60;
+  --muted-2: #66746a;
+  --accent: #246043;
+  --accent-strong: #194c33;
+  --accent-soft: #eaf2e9;
+  --on-accent: #ffffff;
+  --blue: #346bb0;
   --blue-soft: rgba(38, 123, 216, 0.1);
-  --orange: #d7862a;
-  --red: #db5364;
+  --orange: #996016;
+  --red: #bc4253;
   --purple: #7558d8;
   --yellow: #bd8a15;
-  --shadow: 0 18px 44px rgba(41, 67, 93, 0.11);
-  --grid-line: rgba(55, 83, 110, 0.1);
-  --input-bg: #f8fafc;
-  --topbar-bg: rgba(248, 250, 252, 0.9);
+  --shadow: 0 2px 4px rgba(29, 48, 37, 0.02);
+  --grid-line: #e8ede5;
+  --input-bg: #ffffff;
+  --topbar-bg: rgba(255, 255, 255, 0.96);
 }
 
 * { box-sizing: border-box; }
@@ -78,10 +82,7 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   min-width: 320px;
-  background:
-    radial-gradient(circle at 10% -10%, rgba(69, 227, 181, 0.08), transparent 30%),
-    radial-gradient(circle at 90% 0%, rgba(94, 169, 255, 0.08), transparent 32%),
-    var(--bg);
+  background: var(--bg);
   color: var(--text);
   font-family: Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   line-height: 1.5;
@@ -97,12 +98,12 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
   position: sticky;
   top: 0;
   z-index: 50;
-  height: 72px;
+  height: 80px;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 22px;
-  padding: 0 30px;
+  padding: 0 max(28px, calc((100vw - 1480px) / 2));
   border-bottom: 1px solid var(--border);
   background: var(--topbar-bg);
   backdrop-filter: blur(18px);
@@ -111,9 +112,9 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
 .brand-mark {
   width: 39px; height: 39px; border-radius: 12px;
   display: grid; place-items: center;
-  background: linear-gradient(145deg, var(--accent-soft), rgba(94,169,255,.09));
-  border: 1px solid rgba(69, 227, 181, 0.25);
-  color: var(--accent);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: var(--on-accent);
 }
 .brand-mark svg { width: 24px; height: 24px; stroke-width: 2.4; }
 .brand-copy { display: flex; flex-direction: column; line-height: 1; gap: 5px; }
@@ -124,13 +125,13 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
   padding: 3px 7px; border-radius: 999px; font-size: 10px; letter-spacing: .08em;
   color: var(--accent); background: var(--accent-soft); border: 1px solid rgba(69,227,181,.18);
 }
-.main-nav { display: flex; align-items: center; gap: 5px; padding: 5px; border-radius: 13px; background: rgba(118,146,174,.06); border: 1px solid var(--border); }
+.main-nav { display: flex; align-items: center; gap: 6px; padding: 4px; border-radius: 12px; background: var(--surface-2); }
 .nav-btn {
   border: 0; background: transparent; color: var(--muted); padding: 9px 15px; border-radius: 9px; font-size: 15px; font-weight: 700;
   transition: .18s ease;
 }
 .nav-btn:hover { color: var(--text); background: rgba(118,146,174,.08); }
-.nav-btn.active { color: var(--text); background: var(--surface-3); box-shadow: inset 0 0 0 1px var(--border); }
+.nav-btn.active { color: var(--accent); background: var(--surface); box-shadow: 0 1px 4px rgba(29,48,37,.08); }
 .top-actions { justify-self: end; display: flex; align-items: center; gap: 9px; }
 .icon-btn {
   width: 38px; height: 38px; display: grid; place-items: center; border-radius: 11px;
@@ -139,19 +140,19 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
 .icon-btn:hover { color: var(--text); border-color: var(--border-strong); }
 .icon-btn svg { width: 18px; height: 18px; }
 
-.app-shell { width: min(1540px, calc(100% - 44px)); margin: 0 auto; padding: 42px 0 70px; }
+.app-shell { width: min(1480px, calc(100% - 64px)); margin: 0 auto; padding: 38px 0 70px; }
 .app-view { display: none; animation: fadeIn .28s ease; }
 .app-view.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
-.page-heading { display: flex; justify-content: space-between; gap: 30px; align-items: flex-end; margin-bottom: 26px; }
-.page-heading h1 { margin: 4px 0 8px; font-size: clamp(27px, 3vw, 42px); line-height: 1.16; letter-spacing: -.045em; }
+.page-heading { display: flex; justify-content: space-between; gap: 30px; align-items: flex-end; margin-bottom: 30px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+.page-heading h1 { margin: 10px 0 12px; font-size: clamp(28px, 2.7vw, 38px); font-weight: 750; line-height: 1.3; letter-spacing: -.055em; text-wrap: balance; }
 .page-heading p:not(.eyebrow) { margin: 0; color: var(--muted); font-size: 14px; }
-.eyebrow { margin: 0; color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+.eyebrow { margin: 0; color: var(--accent); font-size: 10px; font-weight: 750; letter-spacing: .16em; text-transform: uppercase; }
 .heading-actions { display: flex; gap: 9px; align-items: center; }
 
-.card { background: linear-gradient(150deg, rgba(255,255,255,.018), transparent 45%), var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
-.workspace-grid { display: grid; grid-template-columns: 385px minmax(0, 1fr); gap: 20px; align-items: start; }
-.control-panel { position: sticky; top: 128px; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,.18); max-height: calc(100vh - 150px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--surface-3) transparent; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+.workspace-grid { display: grid; grid-template-columns: 350px minmax(0, 1fr); gap: 24px; align-items: start; }
+.control-panel { position: sticky; top: 100px; padding: 22px; max-height: calc(100vh - 120px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
 .control-panel::-webkit-scrollbar { width: 5px; }
 .control-panel::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 999px; }
 .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 15px; }
@@ -199,16 +200,16 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
 .allocation-meter span { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, var(--accent), var(--blue)); border-radius: inherit; transition: .2s; }
 .allocation-summary { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
 .allocation-summary strong { color: var(--text); }
-.section-divider { height: 1px; background: var(--border); margin: 18px -20px; }
+.section-divider { height: 1px; background: var(--border); margin: 22px 0; }
 
 .field { display: grid; gap: 6px; margin-bottom: 11px; }
 .field > span { font-size: 12px; color: var(--muted); font-weight: 700; }
 input, select {
-  width: 100%; min-height: 40px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 9px;
+  width: 100%; min-height: 44px; padding: 10px; border: 1px solid var(--border-strong); border-radius: 8px;
   background: var(--input-bg); color: var(--text); outline: none; font-size: 14px;
   transition: border-color .15s, box-shadow .15s;
 }
-input:focus, select:focus { border-color: rgba(69,227,181,.5); box-shadow: 0 0 0 3px rgba(69,227,181,.08); }
+input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 select option { color: #102033; background: #fff; }
 .input-affix { position: relative; }
 .input-affix span { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--muted-2); font-size: 12px; pointer-events: none; }
@@ -224,8 +225,8 @@ select option { color: #102033; background: #fff; }
 .primary-btn, .secondary-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 10px; font-weight: 800; transition: .18s ease;
 }
-.primary-btn { border: 1px solid rgba(69,227,181,.2); background: linear-gradient(135deg, var(--accent), var(--accent-strong)); color: #052017; padding: 11px 15px; box-shadow: 0 10px 25px rgba(32,201,151,.15); }
-.primary-btn:hover { transform: translateY(-1px); filter: brightness(1.04); box-shadow: 0 13px 30px rgba(32,201,151,.22); }
+.primary-btn { border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent); padding: 13px 16px; box-shadow: none; }
+.primary-btn:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
 .primary-btn:active { transform: none; }
 .primary-btn svg { width: 17px; height: 17px; stroke-width: 2.5; }
 .primary-btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
@@ -235,30 +236,30 @@ select option { color: #102033; background: #fff; }
 .full-width { width: 100%; }
 .danger-text { color: var(--red); }
 
-.results-area { min-width: 0; display: grid; gap: 14px; }
+.results-area { min-width: 0; display: grid; gap: 16px; }
 .results-area > *, .result-tab-panel > *, .two-card-grid > * { min-width: 0; }
-.results-toolbar { padding: 17px 20px; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+.results-toolbar { padding: 4px 0 8px; display: flex; justify-content: space-between; align-items: center; gap: 20px; background: none; border: 0; box-shadow: none; }
 .results-toolbar h2 { margin: 3px 0 3px; font-size: 20px; letter-spacing: -.035em; }
 .results-toolbar p:last-child { margin: 0; color: var(--muted); font-size: 12px; }
 .result-status { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
 .result-status span { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px var(--accent-soft); }
 .metric-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
 .metric-grid.four { grid-template-columns: repeat(4, minmax(0,1fr)); }
-.metric-card { min-width: 0; padding: 14px 15px; position: relative; overflow: hidden; }
-.metric-card::after { content: ""; position: absolute; width: 58px; height: 58px; border-radius: 50%; background: var(--accent-soft); right: -27px; top: -26px; }
+.metric-card { min-width: 0; padding: 20px 18px; position: relative; overflow: hidden; }
+.metric-card::after { content: none; }
 .metric-card.blue::after { background: var(--blue-soft); }
 .metric-card.orange::after { background: rgba(255,180,94,.1); }
 .metric-card.red::after { background: rgba(255,127,140,.09); }
 .metric-label { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 12px; font-weight: 700; }
-.metric-value { display: block; margin-top: 7px; font-size: clamp(20px, 1.9vw, 26px); font-weight: 800; letter-spacing: -.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.metric-value { display: block; margin-top: 12px; font-size: clamp(20px, 1.9vw, 28px); font-weight: 750; letter-spacing: -.045em; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .metric-sub { display: flex; gap: 5px; align-items: center; margin-top: 5px; color: var(--muted-2); font-size: 11px; }
 .metric-sub .positive { color: var(--accent); }
 .metric-sub .negative { color: var(--red); }
 .metric-info { display: inline-grid; place-items: center; width: 13px; height: 13px; border-radius: 50%; border: 1px solid var(--border-strong); font-size: 11px; color: var(--muted-2); cursor: help; }
 
-.chart-card { padding: 17px 18px 13px; }
+.chart-card { padding: 24px 24px 18px; }
 .card-header { min-height: 34px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 12px; }
-.card-header h3 { margin: 3px 0 0; font-size: 16px; letter-spacing: -.025em; }
+.card-header h3 { margin: 5px 0 0; font-size: 17px; letter-spacing: -.035em; }
 .chart-legend { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; }
 .legend-item { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; }
 .legend-line { width: 15px; height: 2px; border-radius: 99px; }
@@ -267,19 +268,19 @@ select option { color: #102033; background: #fff; }
 .drawdown-card-header .chart-legend { gap: 10px; }
 .drawdown-card-header .legend-item { font-size: 11px; }
 .chart-wrap { position: relative; width: 100%; }
-.chart-wrap.large { height: 330px; }
+.chart-wrap.large { height: 350px; }
 .chart-wrap.medium { height: 260px; }
 .chart-wrap.xlarge { height: 450px; }
 /* 세로 스크롤은 유지하면서 가로 드래그는 툴팁 추적에 쓴다(터치 지원). */
 .chart-wrap canvas { width: 100%; height: 100%; display: block; touch-action: pan-y; }
 .chart-tooltip {
   position: absolute; z-index: 4; pointer-events: none; display: none; min-width: 175px; padding: 10px 12px;
-  background: rgba(4, 13, 24, .94); color: #eaf3fb; border: 1px solid rgba(151,177,204,.22); border-radius: 9px;
+  background: var(--surface); color: var(--text); border: 1px solid var(--border-strong); border-radius: 9px;
   box-shadow: 0 10px 30px rgba(0,0,0,.35); font-size: 12px; line-height: 1.6; backdrop-filter: blur(10px);
 }
-.chart-tooltip strong { display: block; color: #fff; font-size: 12px; margin-bottom: 3px; }
+.chart-tooltip strong { display: block; color: var(--text); font-size: 12px; margin-bottom: 3px; }
 .chart-tooltip .tip-row { display: flex; justify-content: space-between; gap: 16px; }
-.chart-tooltip .tip-row span:first-child { color: #91a6b8; }
+.chart-tooltip .tip-row span:first-child { color: var(--muted); }
 
 .analysis-tabs { padding: 5px; display: flex; gap: 4px; box-shadow: none; }
 .analysis-tab { flex: 1; border: 0; background: transparent; color: var(--muted); border-radius: 10px; padding: 10px; font-size: 12px; font-weight: 800; }
@@ -359,6 +360,19 @@ tbody tr:hover { background: rgba(118,146,174,.035); }
 .monte-grid { grid-template-columns: 385px minmax(0,1fr); }
 .assumption-list { margin: 0; padding: 0 0 0 17px; display: grid; gap: 10px; color: var(--muted); font-size: 12px; line-height: 1.55; }
 .assumption-list li::marker { color: var(--accent); }
+.mc-context-card { padding: 24px; }
+.mc-context-card .card-header { margin-bottom: 20px; }
+.mc-context-card .risk-copy { min-width: 0; }
+.mc-context-card .risk-copy span { display: block; line-height: 1.65; overflow-wrap: anywhere; }
+.mc-context-card .risk-value { text-align: right; overflow-wrap: anywhere; }
+.mc-context-card .assumption-list { padding-left: 20px; gap: 14px; font-size: 13px; line-height: 1.75; }
+@media (max-width: 620px) {
+  .mc-context-card { padding: 20px; }
+}
+@media (max-width: 390px) {
+  .mc-context-card .risk-item { grid-template-columns: 31px minmax(0, 1fr); gap: 8px 12px; }
+  .mc-context-card .risk-value { grid-column: 2; text-align: left; font-size: 16px; }
+}
 
 .inline-field { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: 12px; font-weight: 700; }
 .inline-field input { width: 145px; }
@@ -451,7 +465,7 @@ html.quick-mode .quick-hint { display: block; }
   color: var(--accent); background: var(--accent-soft);
   border: 1px solid rgba(69,227,181,.28); cursor: pointer; transition: .16s ease;
 }
-.rename-btn:hover { background: var(--accent); color: #052017; border-color: var(--accent); }
+.rename-btn:hover { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
 .rename-btn svg { width: 13px; height: 13px; stroke-width: 2.2; }
 .rename-input { font: inherit; letter-spacing: inherit; width: min(340px, 55vw); min-height: 0; padding: 3px 10px; border-radius: 8px; }
 @media (max-width: 620px) { .rename-btn span { display: none; } .rename-btn { padding: 6px; } }
@@ -513,10 +527,67 @@ html.quick-mode .quick-hint { display: block; }
 .summary-table td .metric-info { margin-left: 5px; vertical-align: 1px; }
 .summary-table tr.summary-section td { padding-top: 16px; color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; border-bottom-color: var(--border-strong); }
 
+/* Research workspace: shared visual language for all views and public reports. */
+.nav-btn { display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-height: 44px; font-size: 13px; }
+.nav-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+.workspace-eyebrow { display: flex; align-items: center; gap: 8px; }
+h1, h2, h3 { word-break: keep-all; }
+html { scroll-padding-top: 100px; }
+.workspace-eyebrow > span { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.workspace-tags { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 18px; color: var(--muted); font-size: 12px; }
+.workspace-tags span { display: inline-flex; align-items: center; gap: 6px; }
+.workspace-tags span::before { content: ""; width: 5px; height: 5px; border: 1px solid var(--accent); border-radius: 50%; }
+.heading-actions { flex-shrink: 0; }
+.secondary-btn, .icon-btn, .preset-chip, .mode-btn, .add-row-btn, .analysis-tab { min-height: 44px; }
+.icon-btn { width: 44px; }
+.preset-chip { padding: 7px 10px; border-radius: 8px; }
+.preset-chip.active { border-color: var(--accent); }
+.mode-switch { background: var(--surface-2); border: 0; padding: 4px; margin-bottom: 24px; }
+.mode-btn.active { background: var(--surface); color: var(--accent); box-shadow: 0 1px 4px rgba(29,48,37,.08); }
+.step-index { font-variant-numeric: tabular-nums; background: none; border: 1px solid var(--border); border-radius: 50%; }
+.asset-row { grid-template-columns: minmax(0, 1fr) 68px 32px; }
+.asset-row .asset-search-input { font-size: 12px; }
+.remove-asset { min-height: 44px; border-color: transparent; }
+.allocation-meter span { background: var(--accent); }
+.metric-grid > .metric-card:first-child { background: #244d38; border-color: #244d38; color: #fff; }
+.metric-grid > .metric-card:first-child .metric-label,
+.metric-grid > .metric-card:first-child .metric-sub,
+.metric-grid > .metric-card:first-child .metric-info { color: #d4e7d9; }
+.metric-grid > .metric-card:first-child .metric-info { border-color: #87a893; }
+.metric-grid > .metric-card:first-child .positive { color: #c4f0cf; }
+.metric-grid > .metric-card:first-child .negative { color: #ffb9be; }
+.metric-sub { font-size: 12px; flex-wrap: wrap; }
+.chart-controls { justify-content: flex-start; }
+.analysis-tabs { background: transparent; border: 0; border-bottom: 1px solid var(--border); padding: 0; border-radius: 0; gap: 20px; }
+.analysis-tab { flex: 0 1 auto; border-radius: 0; border-bottom: 2px solid transparent; padding: 12px 6px; font-size: 13px; }
+.analysis-tab.active { background: none; border-bottom-color: var(--accent); }
+.table-card, .risk-summary-card, .upload-card, .schema-card, .production-card { padding: 22px; }
+thead { background: var(--surface-2); }
+th { padding: 12px 10px; letter-spacing: .02em; }
+td { padding: 13px 10px; font-variant-numeric: tabular-nums; }
+.risk-item { background: transparent; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; padding: 12px 0; }
+.risk-item:last-child { border-bottom: 0; }
+.comparison-card { padding: 22px; }
+.asset-selector-grid { max-height: 340px; overflow-y: auto; padding: 2px; scrollbar-width: thin; }
+.comparison-stats div { padding: 10px; }
+.comparison-stats strong { font-size: 16px; font-variant-numeric: tabular-nums; }
+.asset-suggestions { box-shadow: 0 12px 28px rgba(18,43,28,.14); }
+.asset-suggestion { min-height: 48px; }
+.asset-suggestion-empty { color: var(--muted); }
+.share-topbar, .topbar:has(> .brand:only-child) { display: flex; justify-content: center; }
+.skip-link { position: fixed; top: -80px; left: 20px; z-index: 150; padding: 12px 20px; border-radius: 8px; color: var(--on-accent); background: var(--accent); }
+.skip-link:focus { top: 12px; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+input:focus-visible, select:focus-visible { outline-offset: 1px; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
 @media (max-width: 1180px) {
   .topbar { grid-template-columns: auto 1fr auto; }
   .main-nav { justify-self: center; }
-  .workspace-grid, .monte-grid { grid-template-columns: 350px minmax(0,1fr); }
+  .workspace-grid, .monte-grid { grid-template-columns: 330px minmax(0,1fr); }
   .metric-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .asset-selector-grid, .comparison-card-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
@@ -526,6 +597,7 @@ html.quick-mode .quick-hint { display: block; }
   .main-nav { order: 3; grid-column: 1 / -1; width: 100%; overflow-x: auto; justify-content: stretch; }
   .nav-btn { flex: 1; white-space: nowrap; }
   .top-actions { grid-column: 2; grid-row: 1; }
+  html { scroll-padding-top: 150px; }
   .app-shell { width: min(100% - 28px, 760px); padding-top: 30px; }
   .workspace-grid, .monte-grid { grid-template-columns: 1fr; }
   .control-panel { position: static; max-height: none; }
@@ -546,7 +618,7 @@ html.quick-mode .quick-hint { display: block; }
   .icon-btn { width: 44px; height: 44px; }
   .remove-asset { width: 44px; height: 44px; }
   .rename-btn { min-width: 44px; justify-content: center; }
-  .asset-row { grid-template-columns: 1fr 88px 44px; }
+  .asset-row { grid-template-columns: minmax(0,1fr) 68px 44px; }
   input, select { min-height: 44px; }
   .chart-toggle { min-height: 44px; }
   .chart-toggle input { width: 20px; height: 20px; }
@@ -573,15 +645,29 @@ html.quick-mode .quick-hint { display: block; }
 /* 등장 효과는 두지 않는다. transform/rAF에 기대면 렌더링이 멈춘 탭에서
    바가 화면 밖에 걸린 채로 남는다(실제로 겪음). 표시/숨김만 단순하게 처리한다. */
 .sticky-run[hidden] { display: none; }
+body:not(:has(#view-backtest.active)) .sticky-run { display: none; }
 .sticky-run .primary-btn { width: 100%; min-height: 52px; font-size: 15px; }
 .sticky-run .primary-btn:disabled { opacity: .5; }
 @media (min-width: 768px) { .sticky-run { display: none !important; } }
 
 @media (max-width: 620px) {
   .brand-copy small, .mvp-badge, #exportButton { display: none; }
-  .app-shell { width: calc(100% - 20px); padding-top: 24px; }
+  .app-shell { width: calc(100% - 28px); padding-top: 24px; padding-bottom: 90px; }
   .page-heading { align-items: flex-start; flex-direction: column; gap: 14px; }
-  .page-heading h1 { font-size: 29px; }
+  .page-heading h1 { font-size: 28px; }
+  .page-heading { padding-bottom: 22px; margin-bottom: 22px; }
+  .workspace-tags { gap: 12px; }
+  .nav-btn { gap: 5px; padding: 9px; }
+  .nav-btn svg { display: none; }
+  .control-panel, .chart-card, .table-card, .risk-summary-card { padding: 18px; }
+  .card-header { gap: 12px; flex-wrap: wrap; }
+  .chart-legend { justify-content: flex-start; }
+  .asset-suggestions, .benchmark-search .asset-suggestions { min-width: min(305px, calc(100vw - 66px)); }
+  .metric-card { padding: 17px 14px; }
+  .analysis-tabs { gap: 12px; }
+  .results-toolbar { flex-wrap: wrap; gap: 10px; }
+  .results-toolbar > div:first-child { min-width: 0; max-width: 100%; }
+  .toast { bottom: 86px; }
   .heading-actions { width: 100%; }
   .heading-actions .secondary-btn { flex: 1; }
   .metric-grid, .metric-grid.four { grid-template-columns: repeat(2,minmax(0,1fr)); }
@@ -602,12 +688,13 @@ html.quick-mode .quick-hint { display: block; }
   .drawdown-head-meta { width: 100%; justify-items: start; }
   .drawdown-card-header .chart-legend { justify-content: flex-start; }
   .footer { width: calc(100% - 20px); flex-direction: column; }
-  .toast { left: 12px; right: 12px; bottom: 12px; max-width: none; }
+  .toast { left: 12px; right: 12px; bottom: 86px; max-width: none; }
 }
 
 @media (max-width: 390px) {
   .form-grid.two-col { grid-template-columns: 1fr; }
-  .metric-grid, .metric-grid.four { grid-template-columns: 1fr; }
+  .metric-grid, .metric-grid.four { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .metric-value { font-size: 18px; }
   .main-nav { padding: 3px; }
   .nav-btn { padding: 8px 9px; font-size: 13px; }
 }
@@ -626,20 +713,20 @@ html.quick-mode .quick-hint { display: block; }
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
   <header class="topbar">
     <a class="brand" href="#backtest" aria-label="백테스트K 홈">
       <span class="brand-mark" aria-hidden="true">
         <svg viewBox="0 0 32 32" role="img"><path d="M6 23.5 12.2 17l4.4 4.2L26 10.8"/><path d="M20.5 10.8H26v5.5"/></svg>
       </span>
       <span class="brand-copy"><strong>백테스트<span>K</span></strong><small>PORTFOLIO ANALYTICS</small></span>
-      <span class="mvp-badge">MVP</span>
     </a>
 
     <nav class="main-nav" aria-label="주요 메뉴">
-      <button class="nav-btn active" data-view="backtest">백테스트</button>
-      <button class="nav-btn" data-view="montecarlo">몬테카를로</button>
-      <button class="nav-btn" data-view="compare">자산 비교</button>
-      <button class="nav-btn" data-view="data">데이터</button>
+      <button class="nav-btn active" data-view="backtest"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 4v16h16M8 15l4-5 4 2 4-7"/></svg>백테스트</button>
+      <button class="nav-btn" data-view="montecarlo"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 18c7 0 6-12 10-12s3 12 8 12M3 18h18"/></svg>몬테카를로</button>
+      <button class="nav-btn" data-view="compare"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>자산 비교</button>
+      <button class="nav-btn" data-view="data"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M4 10h16M10 10v10"/></svg>데이터</button>
     </nav>
 
     <div class="top-actions">
@@ -650,13 +737,14 @@ html.quick-mode .quick-hint { display: block; }
     </div>
   </header>
 
-  <main class="app-shell">
+  <main id="main-content" class="app-shell" tabindex="-1">
     <section id="view-backtest" class="app-view active" aria-labelledby="backtest-title">
       <div class="page-heading">
         <div>
-          <p class="eyebrow">HISTORICAL BACKTEST</p>
-          <h1 id="backtest-title">내 포트폴리오, 한국 투자자의 조건으로 검증</h1>
-          <p>원화 금액·월 적립·리밸런싱·거래비용을 반영해 수익과 위험을 함께 봅니다.</p>
+          <p class="eyebrow workspace-eyebrow"><span></span> YOUR PERSONAL INVESTMENT LAB</p>
+          <h1 id="backtest-title">투자의 확신, 데이터에서 시작하세요.</h1>
+          <p>나만의 포트폴리오를 설계하고, 과거의 수익과 위험을 함께 확인하세요.</p>
+          <div class="workspace-tags" aria-label="분석 조건"><span>원화 기준</span><span>월 적립 투자</span><span>벤치마크 비교</span></div>
         </div>
         <div class="heading-actions">
           <button id="loadSample" class="secondary-btn">샘플 불러오기</button>
@@ -667,7 +755,7 @@ html.quick-mode .quick-hint { display: block; }
       <div class="workspace-grid">
         <aside class="control-panel card" aria-label="백테스트 설정">
           <div class="mode-switch" role="group" aria-label="입력 모드">
-            <button id="modeQuick" class="mode-btn" type="button">⚡ 빠른 체크</button>
+            <button id="modeQuick" class="mode-btn" type="button">빠른 체크</button>
             <button id="modeLab" class="mode-btn" type="button">상세 설정</button>
           </div>
 
@@ -759,6 +847,7 @@ html.quick-mode .quick-hint { display: block; }
           </div>
 
           <div id="priceIndexNotice" class="notice-banner" role="note" hidden></div>
+          <details id="dataQualityNotice" class="notice-banner" hidden><summary>데이터 품질·분석 제한 확인</summary><p id="dataQualityDetails" style="white-space:pre-line"></p></details>
 
           <div id="metricCards" class="metric-grid"></div>
 
@@ -779,11 +868,11 @@ html.quick-mode .quick-hint { display: block; }
             <div class="table-scroll"><table class="summary-table"><thead><tr><th>지표</th><th>포트폴리오</th><th id="summaryBenchmarkHead">벤치마크</th></tr></thead><tbody id="performanceSummaryBody"></tbody></table></div>
           </div>
 
-          <div class="analysis-tabs card" role="tablist" aria-label="분석 결과 탭">
-            <button class="analysis-tab active" data-result-tab="risk">위험 분석</button>
-            <button class="analysis-tab" data-result-tab="returns">연도별 수익</button>
-            <button class="analysis-tab" data-result-tab="diversification">분산 효과</button>
-            <button class="analysis-tab" data-result-tab="insights">해석</button>
+          <div class="analysis-tabs card" role="group" aria-label="분석 결과 선택">
+            <button class="analysis-tab active" data-result-tab="risk" aria-pressed="true" aria-controls="result-risk">위험 분석</button>
+            <button class="analysis-tab" data-result-tab="returns" aria-pressed="false" aria-controls="result-returns">연도별 수익</button>
+            <button class="analysis-tab" data-result-tab="diversification" aria-pressed="false" aria-controls="result-diversification">분산 효과</button>
+            <button class="analysis-tab" data-result-tab="insights" aria-pressed="false" aria-controls="result-insights">해석</button>
           </div>
 
           <div id="result-risk" class="result-tab-panel active">
@@ -869,7 +958,7 @@ html.quick-mode .quick-hint { display: block; }
           </div>
           <label class="field"><span>모형</span><select id="mcMethod"><option value="bootstrap">과거 월 수익률 재표본추출</option><option value="normal">정규분포 근사</option></select></label>
           <button id="runMonteCarlo" class="primary-btn full-width"><span>시뮬레이션 실행</span><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
-          <button id="reseedMonteCarlo" class="secondary-btn full-width" style="margin-top:8px" title="같은 조건에 새로운 난수를 적용합니다">🎲 다른 난수로 다시 굴리기</button>
+          <button id="reseedMonteCarlo" class="secondary-btn full-width" style="margin-top:8px" title="같은 조건에 새로운 난수를 적용합니다">새 난수로 다시 시뮬레이션</button>
           <p class="control-footnote">같은 조건이면 항상 같은 결과가 나옵니다. 확률은 입력한 과거 자료와 모형에 의존하며, 예측치가 아니라 조건부 시나리오입니다.</p>
         </aside>
         <section class="results-area">
@@ -888,9 +977,9 @@ html.quick-mode .quick-hint { display: block; }
             <div class="card-header"><div><p class="eyebrow">PERCENTILE FAN</p><h3>예상 자산 범위</h3></div><div class="chart-legend" id="mcLegend"></div></div>
             <div class="chart-wrap xlarge"><canvas id="mcChart"></canvas><div id="mcTooltip" class="chart-tooltip"></div></div>
           </div>
-          <div class="two-card-grid">
-            <div class="card"><div class="card-header"><div><p class="eyebrow">INTERPRETATION</p><h3>결과 해석</h3></div></div><div id="mcInsights" class="risk-list"></div></div>
-            <div class="card"><div class="card-header"><div><p class="eyebrow">ASSUMPTIONS</p><h3>모형 전제</h3></div></div><ul class="assumption-list"><li>백테스트에서 계산한 월 수익률 분포를 사용</li><li>세금·추가 보수·시장 충격의 구조 변화는 별도 미반영</li><li>인출 후 자산이 0원 이하면 파산 경로로 집계</li><li>결과는 투자 권유가 아닌 위험 이해용 시뮬레이션</li></ul></div>
+          <div class="two-card-grid mc-context-grid">
+            <div class="card mc-context-card"><div class="card-header"><div><p class="eyebrow">INTERPRETATION</p><h3>결과 해석</h3></div></div><div id="mcInsights" class="risk-list"></div></div>
+            <div class="card mc-context-card"><div class="card-header"><div><p class="eyebrow">ASSUMPTIONS</p><h3>모형 전제</h3></div></div><ul class="assumption-list"><li>백테스트에서 계산한 월 수익률 분포를 사용</li><li>세금·추가 보수·시장 충격의 구조 변화는 별도 미반영</li><li>인출 후 자산이 0원 이하면 파산 경로로 집계</li><li>결과는 투자 권유가 아닌 위험 이해용 시뮬레이션</li></ul></div>
           </div>
         </section>
       </div>
@@ -977,332 +1066,12 @@ html.quick-mode .quick-hint { display: block; }
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <!-- BEGIN PRECOMPUTED — 자동 생성물, 수동 편집 금지 (npm run precompute) -->
-  <script id="precomputedSample" type="application/json">{"schemaVersion":1,"generatedAt":"2026-08-05T14:35:52Z","dataAsOf":"2026-08-05","dataRelease":"2026-08-05T14:35:46Z","engineVersion":"1.0","presetKey":"korea6040","note":"자동 생성물 — 수동 편집 금지. npm run precompute 로 재생성한다.","settings":{"allocations":[{"assetId":"069500","weight":0.6},{"assetId":"114260","weight":0.4}],"startDate":"2009-08","endDate":"2026-07","initialAmount":50000000,"monthlyContribution":1000000,"contributionTiming":"start","rebalance":"annual","tradingCostBps":1.5,"inflationRate":0.02,"riskFreeRate":0.03,"benchmarkId":"INDEX_KOSPI","name":"한국 60/40 포트폴리오"},"assets":{"114260":{"code":"114260","name":"KODEX 국고채3년","category":"채권","assetType":"etf","distributionIncluded":true},"069500":{"code":"069500","name":"KODEX 200","category":"국내주식","assetType":"etf","distributionIncluded":true},"INDEX_KOSPI":{"code":"KOSPI","name":"KOSPI","category":"대표지수","assetType":"index","distributionIncluded":false}},"dates":["2009-08","2009-09","2009-10","2009-11","2009-12","2010-01","2010-02","2010-03","2010-04","2010-05","2010-06","2010-07","2010-08","2010-09","2010-10","2010-11","2010-12","2011-01","2011-02","2011-03","2011-04","2011-05","2011-06","2011-07","2011-08","2011-09","2011-10","2011-11","2011-12","2012-01","2012-02","2012-03","2012-04","2012-05","2012-06","2012-07","2012-08","2012-09","2012-10","2012-11","2012-12","2013-01","2013-02","2013-03","2013-04","2013-05","2013-06","2013-07","2013-08","2013-09","2013-10","2013-11","2013-12","2014-01","2014-02","2014-03","2014-04","2014-05","2014-06","2014-07","2014-08","2014-09","2014-10","2014-11","2014-12","2015-01","2015-02","2015-03","2015-04","2015-05","2015-06","2015-07","2015-08","2015-09","2015-10","2015-11","2015-12","2016-01","2016-02","2016-03","2016-04","2016-05","2016-06","2016-07","2016-08","2016-09","2016-10","2016-11","2016-12","2017-01","2017-02","2017-03","2017-04","2017-05","2017-06","2017-07","2017-08","2017-09","2017-10","2017-11","2017-12","2018-01","2018-02","2018-03","2018-04","2018-05","2018-06","2018-07","2018-08","2018-09","2018-10","2018-11","2018-12","2019-01","2019-02","2019-03","2019-04","2019-05","2019-06","2019-07","2019-08","2019-09","2019-10","2019-11","2019-12","2020-01","2020-02","2020-03","2020-04","2020-05","2020-06","2020-07","2020-08","2020-09","2020-10","2020-11","2020-12","2021-01","2021-02","2021-03","2021-04","2021-05","2021-06","2021-07","2021-08","2021-09","2021-10","2021-11","2021-12","2022-01","2022-02","2022-03","2022-04","2022-05","2022-06","2022-07","2022-08","2022-09","2022-10","2022-11","2022-12","2023-01","2023-02","2023-03","2023-04","2023-05","2023-06","2023-07","2023-08","2023-09","2023-10","2023-11","2023-12","2024-01","2024-02","2024-03","2024-04","2024-05","2024-06","2024-07","2024-08","2024-09","2024-10","2024-11","2024-12","2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07"],"metrics":{"totalReturn":3.4003143701361873,"annualizedReturn":0.09106841231565244,"mwrr":0.1057725513457799,"volatility":0.1596542862470179,"sharpe":0.4386348112383058,"sortino":0.6936967175147938,"benchmarkAnnualized":0.08861671021365147,"benchmarkVolatility":0.21853931953560313,"benchmarkSharpe":0.3599026702518467,"benchmarkSortino":0.44860718203889116,"benchmarkMaxDrawdown":-0.34616340232129916,"activeReturn":0.0024517021020009633,"trackingError":0.06950557748063219,"informationRatio":0.03527345848876852,"maxDrawdown":-0.2343366711293452,"drawdownPeakIndex":142,"drawdownTroughIndex":157,"recoveryIndex":190,"recoveryMonths":33,"drawdownMonths":15,"correlationBenchmark":0.9804593111012235,"beta":0.7162762830997426,"finalBalance":818547102.0052748,"principal":254000000,"realFinalBalance":584575695.866334,"benchmarkFinal":815060071.450634,"realBenchmarkFinal":582085389.1900382,"initialAmount":50000000,"totalTradingCost":45745.763164981756,"rebalanceCost":15145.763164981754,"contributionCost":30600,"benchmarkMwrr":0.10540733701118188,"worstYear":{"year":"2022","portfolio":-0.15596347335067928,"benchmark":-0.24893792907803403,"spread":0.09297445572735474},"bestYear":{"year":"2026","portfolio":0.5470671793867006,"benchmark":0.5650650824131622,"spread":-0.017997903026461648},"benchmarkWorstYear":{"year":"2022","portfolio":-0.15596347335067928,"benchmark":-0.24893792907803403,"spread":0.09297445572735474},"benchmarkBestYear":{"year":"2025","portfolio":0.5155968994827349,"benchmark":0.7562773502173088,"spread":-0.2406804507345739}},"series":{"balance":[51546576,54685924,53687907,54680724,58637964,57868729,58724506,62334481,64735583,63304312,65441746,68180532,69101166,73007468,74426653,77011524,82205578,83451910,81404008,87107270,90581367,90454176,89742869,91155531,85114094,83603603,89157681,88536560,89403256,94629273,97859226,98691542,99619949,96049628,97371096,100154166,101353064,105439038,103566438,105725047,109462389,109176343,113065200,113039197,112115701,114292671,109907214,112712023,114693399,118693657,121564100,123055234,123544204,121426236,123918674,125061817,125448238,128135288,129461262,133812885,133407519,132212304,131650592,133795110,132939767,136470596,137639671,140869519,145034353,144314361,142349184,140690036,138039231,141119232,147284106,145970135,146742039,144904279,147720841,152627892,153461977,153897489,155750601,159716180,162465155,163947645,164110214,164137092,169001705,173558510,175142479,180989663,184754345,193406873,197413355,199447832,197799469,202052699,209189981,207193527,209207310,213543652,206846493,209221793,213603559,209872018,206897408,207359104,209584343,211221846,197074457,201655935,200416147,212151613,212314422,211023872,215553395,207428284,215305348,211922390,209648772,218008354,220101279,221581455,232977365,229975600,223086638,208457274,220692531,227107786,234834335,246079170,250967685,254039180,250428460,273859703,298890100,308364245,312220955,315449055,320448099,323676204,330218874,324666425,323268462,315125619,308577540,304369815,317197180,300280170,303061072,305054083,299969264,300881311,278078613,289007994,286972290,265553164,276962056,291634037,278927447,296098823,294474078,302105226,305520643,313849752,314197997,318627835,314723033,311314581,299975770,322092767,337616904,325677435,338116427,351859112,347415130,345398319,362674345,363015733,353730816,346189379,343840783,337964866,335286264,346000426,349315238,351074884,356616672,370962171,406060669,422165689,419046180,445400362,508398703,493786557,523893678,621586489,722970027,611459004,760295821,969149618,993366390,818547102],"principal":[51000000,52000000,53000000,54000000,55000000,56000000,57000000,58000000,59000000,60000000,61000000,62000000,63000000,64000000,65000000,66000000,67000000,68000000,69000000,70000000,71000000,72000000,73000000,74000000,75000000,76000000,77000000,78000000,79000000,80000000,81000000,82000000,83000000,84000000,85000000,86000000,87000000,88000000,89000000,90000000,91000000,92000000,93000000,94000000,95000000,96000000,97000000,98000000,99000000,100000000,101000000,102000000,103000000,104000000,105000000,106000000,107000000,108000000,109000000,110000000,111000000,112000000,113000000,114000000,115000000,116000000,117000000,118000000,119000000,120000000,121000000,122000000,123000000,124000000,125000000,126000000,127000000,128000000,129000000,130000000,131000000,132000000,133000000,134000000,135000000,136000000,137000000,138000000,139000000,140000000,141000000,142000000,143000000,144000000,145000000,146000000,147000000,148000000,149000000,150000000,151000000,152000000,153000000,154000000,155000000,156000000,157000000,158000000,159000000,160000000,161000000,162000000,163000000,164000000,165000000,166000000,167000000,168000000,169000000,170000000,171000000,172000000,173000000,174000000,175000000,176000000,177000000,178000000,179000000,180000000,181000000,182000000,183000000,184000000,185000000,186000000,187000000,188000000,189000000,190000000,191000000,192000000,193000000,194000000,195000000,196000000,197000000,198000000,199000000,200000000,201000000,202000000,203000000,204000000,205000000,206000000,207000000,208000000,209000000,210000000,211000000,212000000,213000000,214000000,215000000,216000000,217000000,218000000,219000000,220000000,221000000,222000000,223000000,224000000,225000000,226000000,227000000,228000000,229000000,230000000,231000000,232000000,233000000,234000000,235000000,236000000,237000000,238000000,239000000,240000000,241000000,242000000,243000000,244000000,245000000,246000000,247000000,248000000,249000000,250000000,251000000,252000000,253000000,254000000],"benchmarkBalance":[52131810,55845060,53704062,53835756,59318570,57438799,58152515,62797938,65633661,62795707,66012865,69421440,69757787,76038385,77455491,79358818,86534359,88333733,83704113,92015752,96797849,95572326,94689081,97170409,86522738,82380614,89947783,88016918,87967993,95305309,99971801,100165620,99555740,93527964,95068427,97518254,99729061,105545244,102053847,104177054,108667721,107739654,112317312,112109484,110799777,113911736,107002486,110941764,112662880,117828558,120799950,122686712,121658603,118378173,121766780,123115241,122626319,125716591,127177099,132908666,133419755,131271328,128626831,130705717,127371110,130627470,134094905,138852226,145754568,145901164,144080944,142000550,136754803,139267529,145031220,143332895,142111358,139517722,140855775,147716779,148590110,148783705,148798182,153283220,155695825,157387406,155640696,154713296,159087444,163335084,166248207,172732693,177368624,189848253,194458917,196351302,194105247,197687730,209388538,206464971,206721013,216052614,205288555,207859922,214797320,207872803,200521362,198846989,202251836,205018476,178463988,185403135,181440936,197083305,197237898,193292423,200003211,186239853,195390696,186613648,182353737,192229826,195143338,196565094,207945972,201467291,189854948,168535501,188175676,197144599,205830816,220667087,229235423,230405659,225367754,258737120,288015771,299349437,304057117,309964636,319744824,326456925,336937470,328264789,328951181,316497451,307343958,294677179,310116245,278275954,283034094,290186876,284576807,284607226,248043052,261733088,264935486,231880935,247803548,268212213,243502065,265130170,264788043,272839080,276566561,285953940,285524238,294155861,286600239,277339536,257215681,287381264,302029748,284976564,302613458,315594303,310304232,304881698,324595279,322438021,312187062,303696505,300335073,289518151,283844042,298837620,301673056,296499577,306551231,324520232,370653382,392674659,386465757,416481827,500731927,479633746,515834918,640726798,766988795,621420872,812925689,1045475425,1046516177,815060071],"realBalance":[51461583,54505734,53422774,54320972,58156128,57298580,58050051,61516965,63781237,62268224,64264537,66843658,67634537,71340106,72606963,75004759,79931453,81009513,78891253,84279274,87496075,87229150,86400507,87615851,81674119,80092396,85272378,84538702,85225506,90058575,92978956,93615151,94339994,90808925,91906499,94377507,95349778,99030177,97111012,98971612,102301265,101865692,105320200,105122360,104091626,105937826,101704974,104128487,105784261,109293281,111751821,112936072,113197878,111073833,113166870,114022511,114186234,116439747,117450714,121198453,120632066,119354185,118651140,120385078,119418236,122387805,123232711,125916524,129425513,128570663,126610765,124928726,122372778,124896944,130138204,128764532,129232014,127403129,129665361,133751736,134260923,134419939,135814209,139042546,141202487,142256008,142162275,141951115,145917197,149604489,150720916,155495964,158468639,165616610,168768673,170226804,168541582,171881810,177659921,175674241,177089200,180461767,174513898,176226858,179620947,176192068,173408422,173508823,175081641,176158631,164088728,167626523,166321256,175769981,175614828,174259553,177706450,170725981,176917088,173850172,171701434,178253496,179668030,180578054,189552103,186801327,180906876,168764808,178375740,183258234,189180508,197912381,201511221,203641108,200415705,218806147,238410970,245562497,248223784,250376690,253925128,256060196,260805359,255997260,254474690,247655677,242109710,238414571,248052639,234436110,236217097,237378473,233036832,233359960,215318842,223412580,221473133,204604832,213043358,223959378,213848207,226638853,225023601,230474328,232695614,238645224,238516094,241480078,238127440,235160132,226221422,242500056,253768886,244390983,253306946,263167921,259415663,257484449,269917436,269726037,262393842,256376256,254217105,249460767,247075555,254550510,256565459,257432715,261065172,271119178,296281721,307524829,304749118,323380967,368512007,357330256,378492261,448330961,520595941,439573142,545669558,694418482,710596759,584575696],"realBenchmarkBalance":[52045852,55661051,53438849,53481563,58831140,56872886,57484629,61974344,64666074,61767944,64825383,68060235,68277222,74301803,75561748,77290888,84140483,85748460,81120359,89028398,93500817,92164819,91162503,93397164,83025831,78920771,86028050,84042525,83857311,90701958,94986177,95013408,94279188,88424849,89733059,91893628,93821967,99129928,95692703,97522501,101558584,100525207,104623542,104257761,102869882,105584738,99017023,102493041,103911468,108496696,111049351,112597855,111470188,108285638,111201685,112247760,111617650,114241816,115378460,120379473,120643130,118504722,115925952,117605329,114415976,117147647,120058981,124113362,130068217,129984356,128151057,126092424,121234124,123258102,128147585,126438145,125153890,122667146,123639392,129448001,129998621,129953364,129751714,133442267,135319095,136563744,134825463,133801109,137357158,140792069,143066845,148402047,152133713,162569321,166242924,167583945,165393798,168168627,177828550,175056516,174984607,182582044,173199485,175079758,180624790,174513685,168064420,166386266,168956244,170985032,148593224,154116381,150574118,163285719,163144356,159617255,164886573,153286626,160553154,153088189,149346920,157175805,159294936,160190942,169186377,163645001,153958416,136444562,152093845,159080284,165815524,177474382,184061585,184696170,180359841,206723632,229737016,238383653,241733320,246023624,253367849,258260023,266111676,258834546,258948087,248733793,241141843,230822276,242515248,217256877,220607324,225809526,221078909,220737974,192062030,202328190,204466055,178660872,190614197,205972667,186688261,202934942,202338893,208147354,210643134,217433793,216749077,222933380,216849019,209496136,193974657,216366153,227019891,213848720,226709159,236044183,231704872,227280481,241577401,239576199,231577117,224907457,222051358,213700971,209167305,219853107,221573174,217414274,224414213,237176902,270446833,286042212,281055178,302384793,362954756,347088528,372670129,462136270,552292956,446734651,583442378,749107717,748617038,582085389],"realPrincipal":[50915908,51828660,52738264,53644727,54548057,55448262,56345351,57239331,58130209,59017994,59902693,60784314,61662865,62538353,63410787,64280173,65146521,66009836,66870128,67727403,68581669,69432934,70281205,71126490,71968796,72808132,73644504,74477919,75308387,76135913,76960505,77782171,78600918,79416754,80229686,81039721,81846866,82651130,83452519,84251040,85046701,85839509,86629472,87416596,88200889,88982358,89761009,90536852,91309891,92080136,92847592,93612267,94374167,95133301,95889675,96643295,97394170,98142306,98887710,99630389,100370350,101107600,101842146,102573995,103303153,104029628,104753426,105474555,106193020,106908830,107621991,108332509,109040391,109745644,110448276,111148291,111845698,112540503,113232713,113922334,114609373,115293836,115975731,116655064,117331841,118006069,118677755,119346905,120013525,120677623,121339205,121998276,122654845,123308916,123960497,124609594,125256214,125900362,126542046,127181271,127818044,128452372,129084260,129713715,130340744,130965352,131587546,132207332,132824716,133439706,134052305,134662522,135270362,135875832,136478937,137079684,137678079,138274127,138867836,139459211,140048258,140634984,141219394,141801494,142381291,142958790,143533998,144106920,144677563,145245932,145812033,146375873,146937457,147496791,148053881,148608733,149161352,149711746,150259918,150805876,151349625,151891171,152430519,152967676,153502647,154035438,154566055,155094503,155620788,156144916,156666893,157186723,157704414,158219970,158733396,159244700,159753886,160260960,160765927,161268794,161769565,162268246,162764843,163259361,163751806,164242183,164730498,165216755,165700962,166183122,166663242,167141327,167617382,168091413,168563425,169033423,169501413,169967401,170431390,170893388,171353399,171811428,172267480,172721562,173173678,173623833,174072033,174518284,174962589,175404954,175845385,176283887,176720465,177155123,177587868,178018704,178447636,178874670,179299811,179723063,180144433,180563923,180981541,181397291],"unitIndex":[101.072015,105.187298,101.413439,101.400396,106.786127,103.618443,103.364851,107.88219,110.269049,106.190922,108.069511,110.897949,110.770965,115.363629,116.017295,118.455295,124.823926,125.193696,120.675622,127.563493,131.145764,129.531824,127.10821,127.686458,117.930359,114.492525,120.65569,118.486383,118.310176,123.840943,126.728955,126.514191,126.423526,120.681344,121.081277,123.276179,123.518759,127.24307,123.809182,125.181182,128.392078,126.897459,130.224927,129.053739,126.877159,128.197487,122.209391,124.19829,125.270331,128.519113,130.527634,131.050839,130.51115,127.243952,128.795278,128.943019,128.315568,130.027686,130.356065,133.705138,132.311467,130.150631,128.624958,129.734889,127.949338,130.367123,130.527604,132.627122,135.58592,133.989127,131.255179,128.820512,125.501438,127.379054,132.008382,129.948524,129.746978,127.254988,128.839492,132.224373,132.081702,131.599131,132.324054,134.827634,136.295007,136.697426,136.003543,135.202092,138.366279,141.261327,141.734025,145.634462,147.846978,153.93796,156.318715,157.13384,155.057868,157.595412,162.358865,160.044402,160.823842,163.376503,157.515171,158.557549,161.108324,157.556347,154.586765,154.186608,155.093401,155.563028,144.459778,147.071935,145.446579,153.198985,152.597376,150.958906,153.472,147.00511,151.855634,148.778712,146.491387,151.609567,152.366254,152.697258,159.829258,157.095765,151.730264,141.147632,148.718876,152.351717,156.844438,163.657992,166.233731,167.600484,164.570619,179.252928,194.924736,200.432922,202.283844,203.72289,206.297483,207.727523,211.273815,207.094314,205.569522,199.773522,195.003655,191.723389,199.14918,187.9356,189.046603,189.66409,185.893372,185.83914,171.186205,177.276961,175.421377,161.764613,168.08161,176.349052,168.089182,177.79977,176.229072,180.184167,181.620127,185.962874,185.57801,187.597473,184.71881,182.139662,174.943838,187.218303,195.634504,188.158863,194.747554,202.065505,198.948082,197.225541,206.492558,206.118686,200.295082,195.472331,193.587109,189.727182,187.668258,193.08944,194.377608,194.799192,197.312198,204.675559,223.438656,231.730001,229.474196,243.325451,277.119814,268.626673,284.429431,336.825436,391.134015,330.348572,410.089,522.054193,534.54762,440.031437],"benchmarkIndex":[102.219236,107.439204,101.502604,99.891474,108.057586,102.898626,102.394539,108.704861,111.832736,105.391414,109.05419,112.973814,111.909147,120.260838,120.911963,122.304128,131.703148,132.905877,124.530434,135.279871,140.780462,137.576811,134.893943,136.982187,120.729597,113.636508,122.586672,118.636218,117.238276,125.589324,130.370705,129.329797,127.271731,118.376791,119.05361,120.85032,122.335592,128.184854,122.781242,124.119462,128.238799,125.984235,130.129259,128.742236,126.113306,128.495656,119.651439,122.907742,123.6995,128.233014,130.360428,131.309515,129.156414,124.649229,127.143303,127.504186,125.974609,128.104586,128.570139,133.316214,132.829466,129.718287,126.144135,127.194034,123.007912,125.170004,127.516391,131.062935,136.594332,135.800011,133.192912,130.364928,124.671059,126.040109,130.320616,127.912587,125.943788,122.781242,123.076626,128.161738,128.052577,127.362275,126.524278,129.467851,130.653248,131.22989,128.954138,127.367409,130.127331,132.76718,134.312802,138.717254,141.620372,150.734919,153.586678,154.287891,151.750148,153.758768,162.039817,159.017913,158.447683,164.802952,155.870779,157.058097,161.52289,155.591441,149.370369,147.388088,149.161673,150.458168,130.334741,134.648014,131.063578,141.582495,140.978231,137.461222,141.501585,131.108524,136.815883,130.004688,126.359894,132.476931,133.788821,134.076499,141.121427,136.07035,127.594087,112.672654,125.060843,130.328964,135.384548,144.441309,149.37294,149.483387,145.583022,166.400608,184.517328,191.114685,193.473911,196.586368,202.137048,205.736879,211.693381,205.634146,205.438289,197.061561,190.75958,182.304512,191.20715,171.024024,173.325448,177.080045,173.060251,172.472682,149.788404,157.4209,158.740503,138.41288,147.282141,158.771325,143.608438,155.724368,154.939031,159.049377,160.633534,165.487485,164.66297,169.048797,164.148614,158.29229,146.279109,162.801403,170.506454,160.348427,169.676813,176.372404,172.868251,169.301797,179.659537,177.9174,171.728451,166.524536,164.140901,157.704079,154.081124,161.650691,162.640225,159.32293,164.170453,173.228484,197.246491,208.40305,204.58681,219.907661,263.759473,252.142503,270.609187,335.477639,400.961268,324.439239,423.740597,544.288487,544.309682,423.52099]}}</script>
+  <script id="precomputedSample" type="application/json">{"schemaVersion":1,"generatedAt":"2026-09-27T01:59:49Z","dataAsOf":"2026-08-31","dataRelease":"2026-09-27T01:59:48.638384Z","engineVersion":"1.0","presetKey":"korea6040","note":"자동 생성물 — 수동 편집 금지. npm run precompute 로 재생성한다.","settings":{"allocations":[{"assetId":"069500","weight":0.6},{"assetId":"114260","weight":0.4}],"startDate":"2023-09","endDate":"2026-07","initialAmount":50000000,"monthlyContribution":1000000,"contributionTiming":"start","rebalance":"annual","tradingCostBps":1.5,"inflationRate":0.02,"riskFreeRate":0.03,"benchmarkId":"INDEX_KOSPI","name":"한국 60/40 포트폴리오"},"assets":{"114260":{"code":"114260","name":"KODEX 국고채3년","category":"채권","assetType":"etf","distributionIncluded":true,"qualityMessages":["월말 불일치·연속성 제한으로 169개월 제외; 사용 2023-09~2026-07","최신 완료월 2026-08 대비 지연: 사용 가능 2026-07","기존 데이터의 첫 기준가격 관측일은 미확인","분배금: 공급자 수정종가 반영 · 독립 총수익 대사 미완료"]},"069500":{"code":"069500","name":"KODEX 200","category":"국내주식","assetType":"etf","distributionIncluded":true,"qualityMessages":["월말 불일치·연속성 제한으로 172개월 제외; 사용 2023-09~2026-07","최신 완료월 2026-08 대비 지연: 사용 가능 2026-07","기존 데이터의 첫 기준가격 관측일은 미확인","분배금: 공급자 수정종가 반영 · 독립 총수익 대사 미완료"]},"INDEX_KOSPI":{"code":"KOSPI","name":"KOSPI","category":"대표지수","assetType":"index","distributionIncluded":false,"qualityMessages":["월말 불일치·연속성 제한으로 23개월 제외; 사용 1998-12~2026-07","최신 완료월 2026-08 대비 지연: 사용 가능 2026-07","기존 데이터의 첫 기준가격 관측일은 미확인","가격수익률: 분배금/배당 제외"]}},"dates":["2023-09","2023-10","2023-11","2023-12","2024-01","2024-02","2024-03","2024-04","2024-05","2024-06","2024-07","2024-08","2024-09","2024-10","2024-11","2024-12","2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07"],"metrics":{"totalReturn":1.35544113450714,"annualizedReturn":0.34142881259800695,"mwrr":0.3773468196007319,"volatility":0.3047631443566393,"sharpe":1.0196799349558137,"sortino":2.129950894708764,"benchmarkAnnualized":0.3839899361365049,"benchmarkVolatility":0.3934442185362186,"benchmarkSharpe":0.9441287936283308,"benchmarkSortino":1.834584489940841,"benchmarkMaxDrawdown":-0.22191170969999996,"activeReturn":-0.04256112353849795,"trackingError":0.10113000485629844,"informationRatio":-0.42085554726290725,"maxDrawdown":-0.17283888570197659,"drawdownPeakIndex":33,"drawdownTroughIndex":34,"recoveryIndex":null,"recoveryMonths":null,"drawdownMonths":1,"correlationBenchmark":0.9901467841392505,"beta":0.7669708515010597,"finalBalance":185860007.93596247,"principal":85000000,"realFinalBalance":175429294.5867768,"benchmarkFinal":204606137.2519817,"realBenchmarkFinal":193123365.94006565,"initialAmount":50000000,"totalTradingCost":6310.641030117742,"rebalanceCost":1060.6410301177423,"contributionCost":5250,"benchmarkMwrr":0.43024452829717785,"worstYear":{"year":"2024","portfolio":-0.04210341646084326,"benchmark":-0.09633260386178044,"spread":0.054229187400937184},"bestYear":{"year":"2026","portfolio":0.5283820600567872,"benchmark":0.5650650824131622,"spread":-0.036683022356374995},"benchmarkWorstYear":{"year":"2024","portfolio":-0.04210341646084326,"benchmark":-0.09633260386178044,"spread":0.054229187400937184},"benchmarkBestYear":{"year":"2025","portfolio":0.5190334004924886,"benchmark":0.7562773502173088,"spread":-0.2372439497248202}},"series":{"balance":[50287761,49261167,53789200,57253060,56026277,59023759,62279307,62303191,62755664,66748644,67626739,66692191,66029516,66372687,65985625,66245323,69222050,70697304,71853397,73797213,77650404,86009258,90293152,90386119,97371464,111504373,109151921,116362218,138243306,161062930,137490319,170873849,217557822,223696409,185860008],"principal":[51000000,52000000,53000000,54000000,55000000,56000000,57000000,58000000,59000000,60000000,61000000,62000000,63000000,64000000,65000000,66000000,67000000,68000000,69000000,70000000,71000000,72000000,73000000,74000000,75000000,76000000,77000000,78000000,79000000,80000000,81000000,82000000,83000000,84000000,85000000],"benchmarkBalance":[49180475,46372158,52722866,56265457,53853832,58044994,61374959,61135699,60853774,65637935,65991755,64661412,63671664,63745952,62206925,61754865,65837833,67246976,66854975,69919515,74832467,86346585,92287040,91578784,99511713,120554765,116201031,125784727,157176633,189051954,153781216,202155217,260949851,261960052,204606137],"realBalance":[50204844,49098852,53523567,56876385,55565901,58442230,61564025,61486085,61830506,65656184,66410226,65384501,64628081,64856853,64372314,64519103,67307101,68628198,69635447,71401337,75005553,82942710,86930294,86876316,93436094,106821382,104395312,111107896,131783295,153283415,130633634,162084621,206027043,211490985,175429295],"realBenchmarkBalance":[49099383,46219362,52462498,55895279,53411308,57473108,60670064,60333905,59956654,64563654,64804652,63393541,62320273,62290107,60686001,60145658,64016504,65278851,64791315,67649531,72283598,83268010,88849923,88022668,95489843,115491674,111137237,120104932,149831881,179920538,146112099,191756972,247119252,247666869,193123366],"realPrincipal":[50915908,51828660,52738264,53644727,54548057,55448262,56345351,57239331,58130209,59017994,59902693,60784314,61662865,62538353,63410787,64280173,65146521,66009836,66870128,67727403,68581669,69432934,70281205,71126490,71968796,72808132,73644504,74477919,75308387,76135913,76960505,77782171,78600918,79416754,80229686],"unitIndex":[98.603743,94.707774,101.355995,105.914245,101.865827,105.434198,109.396434,107.709192,106.777839,111.790738,111.589833,108.444417,105.781008,104.744684,102.58844,101.454894,104.437471,105.144514,105.373647,106.738983,110.810836,121.178983,125.752724,124.503527,132.658118,150.368635,145.888083,154.113372,181.533458,209.980236,178.142381,219.798088,278.220539,284.762073,235.544113],"benchmarkIndex":[96.432304,89.113825,99.179274,103.873222,97.684911,103.367801,107.446782,105.312038,103.13934,109.449317,108.388,104.617667,101.447421,99.995301,96.073963,93.866844,98.478255,99.081083,97.060174,100.013304,105.531493,120.16336,126.959981,124.635112,133.968637,160.683338,153.606233,164.856212,204.374335,244.267227,197.649698,258.144487,331.582749,331.595661,258.010701]}}</script>
   <!-- END PRECOMPUTED -->
   <script>
 // ⚠️ 이 파일은 자동 생성물이다. 직접 수정하지 마라 — npm run build:single 로 재생성한다.
 
 // 소스: index.html, styles.css, engine.js, core/*.js, app.js
-
-// 백테스트K 공용 정적 엔진.
-// share.js(공유 페이지)와 portfolio.js(전략 랜딩)가 함께 사용하는 순수 계산·차트 모듈.
-// 산식은 app.js의 runBacktest와 동일하게 유지해야 한다 (본편 엔진 분리 전까지의 기준 사본).
-(() => {
-  "use strict";
-
-  // 계산 산식이 바뀌면 반드시 올린다. 스냅숏 공유 링크에 기록되어
-  // "어떤 엔진으로 계산된 결과인지"를 식별한다.
-  const ENGINE_VERSION = "1.0";
-
-  const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  const sum = (values) => values.reduce((a, b) => a + b, 0);
-  const fmtPct = (value, digits = 2) => Number.isFinite(value) ? `${(value * 100).toFixed(digits)}%` : "—";
-  const fmtKRW = (value) => Number.isFinite(value) ? new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW", maximumFractionDigits: 0 }).format(value) : "—";
-  const fmtCompactKRW = (value) => {
-    if (!Number.isFinite(value)) return "—";
-    const abs = Math.abs(value);
-    const sign = value < 0 ? "-" : "";
-    if (abs >= 1e12) return `${sign}${(abs / 1e12).toFixed(abs >= 1e13 ? 0 : 1)}조원`;
-    if (abs >= 1e8) return `${sign}${(abs / 1e8).toFixed(abs >= 1e9 ? 0 : 1)}억원`;
-    if (abs >= 1e4) return `${sign}${(abs / 1e4).toFixed(abs >= 1e5 ? 0 : 1)}만원`;
-    return `${sign}${Math.round(abs).toLocaleString("ko-KR")}원`;
-  };
-  const fmtDate = (month) => month ? month.replace("-", ".") : "";
-  const escapeHtml = (value) => String(value ?? "")
-    .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;").replaceAll("'", "&#039;");
-
-  function applySavedTheme() {
-    let saved = null;
-    try { saved = window.localStorage.getItem("backtestK.theme"); } catch (_) { /* 무시 */ }
-    if (saved === "light" || saved === "dark") document.documentElement.dataset.theme = saved;
-  }
-
-  function bytesToBase64Url(bytes) {
-    let binary = "";
-    bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
-    return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
-  }
-
-  function base64UrlToBytes(raw) {
-    let base64 = String(raw).replaceAll("-", "+").replaceAll("_", "/");
-    while (base64.length % 4) base64 += "=";
-    return Uint8Array.from(atob(base64), (ch) => ch.charCodeAt(0));
-  }
-
-  function encodeShareConfig(payload) {
-    return bytesToBase64Url(new TextEncoder().encode(JSON.stringify(payload)));
-  }
-
-  // 스냅숏(v2) 코덱: deflate 압축 + base64url. 접두사 "1"=deflate, "0"=무압축 폴백.
-  async function encodeSnapshot(payload) {
-    const bytes = new TextEncoder().encode(JSON.stringify(payload));
-    if (typeof CompressionStream === "undefined") return `0${bytesToBase64Url(bytes)}`;
-    const stream = new Blob([bytes]).stream().pipeThrough(new CompressionStream("deflate-raw"));
-    const compressed = new Uint8Array(await new Response(stream).arrayBuffer());
-    return `1${bytesToBase64Url(compressed)}`;
-  }
-
-  async function decodeSnapshot(raw) {
-    try {
-      const text = String(raw);
-      const bytes = base64UrlToBytes(text.slice(1));
-      let jsonBytes = bytes;
-      if (text[0] === "1") {
-        if (typeof DecompressionStream === "undefined") return null;
-        const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
-        jsonBytes = new Uint8Array(await new Response(stream).arrayBuffer());
-      } else if (text[0] !== "0") {
-        return null;
-      }
-      const payload = JSON.parse(new TextDecoder().decode(jsonBytes));
-      if (payload?.v !== 2 || !Array.isArray(payload.a) || !payload.a.length) return null;
-      return payload;
-    } catch (_) {
-      return null;
-    }
-  }
-
-  function shortHash(text) {
-    let hash = 5381;
-    for (let i = 0; i < text.length; i += 1) hash = ((hash << 5) + hash + text.charCodeAt(i)) >>> 0;
-    return hash.toString(16).slice(0, 5).padStart(5, "0");
-  }
-
-  function decodeShareConfig(raw) {
-    try {
-      let base64 = String(raw).replaceAll("-", "+").replaceAll("_", "/");
-      while (base64.length % 4) base64 += "=";
-      const bytes = Uint8Array.from(atob(base64), (ch) => ch.charCodeAt(0));
-      const payload = JSON.parse(new TextDecoder().decode(bytes));
-      if (payload?.v !== 1 || !Array.isArray(payload.a) || !payload.a.length) return null;
-      return payload;
-    } catch (_) {
-      return null;
-    }
-  }
-
-  async function fetchJson(url) {
-    const response = await fetch(url, { cache: "no-cache" });
-    if (!response.ok) throw new Error(`${url}: ${response.status}`);
-    return response.json();
-  }
-
-  function returnMapFrom(payload) {
-    const map = new Map();
-    (payload.monthly_returns || []).forEach((row) => {
-      const value = Number(row.return);
-      if (row.month && Number.isFinite(value) && value > -1) map.set(row.month, value);
-    });
-    return map;
-  }
-
-  function isRebalanceMonth(mode, index) {
-    if (index === 0 || mode === "none") return false;
-    if (mode === "monthly") return true;
-    if (mode === "quarterly") return index % 3 === 0;
-    if (mode === "semiannual") return index % 6 === 0;
-    if (mode === "annual") return index % 12 === 0;
-    return false;
-  }
-
-  function rebalanceLabel(value) {
-    return ({ none: "리밸런싱 없음", monthly: "매월", quarterly: "분기", semiannual: "반기", annual: "연 1회" })[value] || value;
-  }
-
-  // config: {s,e,i,m,t,r,c} — 공유 코덱과 동일한 축약 키.
-  // assets: [{weight(비율 합 1로 정규화됨), returnMap}], benchmark: {returnMap}
-  function runStaticBacktest(config, assets, benchmark) {
-    const totalWeight = sum(assets.map((asset) => asset.weight));
-    if (totalWeight <= 0) return null;
-    assets.forEach((asset) => { asset.weight /= totalWeight; });
-
-    let dates = null;
-    [...assets.map((asset) => asset.returnMap), benchmark.returnMap].forEach((map) => {
-      const months = new Set(map.keys());
-      dates = dates === null ? months : new Set([...dates].filter((month) => months.has(month)));
-    });
-    const start = config.s || "0000-01";
-    const end = config.e || "9999-12";
-    const months = [...dates].filter((month) => month >= start && month <= end).sort();
-    if (months.length < 12) return null;
-
-    const initial = Number(config.i) || 0;
-    const monthly = Number(config.m) || 0;
-    const timing = config.t === "end" ? "end" : "start";
-    const costRate = (Number(config.c) || 0) / 10000;
-    let holdings = assets.map((asset) => initial * asset.weight);
-    let principal = initial;
-    let benchmarkBalance = initial;
-    let unitIndex = 100;
-    let benchmarkIndex = 100;
-    const monthlyReturns = [];
-    const series = [];
-
-    months.forEach((month, index) => {
-      if (timing === "start" && monthly > 0) {
-        const net = monthly - monthly * costRate;
-        holdings = holdings.map((value, i) => value + net * assets[i].weight);
-        benchmarkBalance += monthly;
-        principal += monthly;
-      }
-      const startBalance = sum(holdings);
-      const benchmarkStart = benchmarkBalance;
-      holdings = holdings.map((value, i) => value * (1 + assets[i].returnMap.get(month)));
-      benchmarkBalance *= 1 + benchmark.returnMap.get(month);
-      if (isRebalanceMonth(config.r, index)) {
-        const before = sum(holdings);
-        const targets = assets.map((asset) => before * asset.weight);
-        const turnover = sum(targets.map((target, i) => Math.abs(target - holdings[i]))) / 2;
-        const afterCost = Math.max(0, before - turnover * costRate);
-        holdings = assets.map((asset) => afterCost * asset.weight);
-      }
-      const endBalance = sum(holdings);
-      const monthReturn = startBalance > 0 ? endBalance / startBalance - 1 : 0;
-      const benchmarkReturn = benchmarkStart > 0 ? benchmarkBalance / benchmarkStart - 1 : 0;
-      monthlyReturns.push(monthReturn);
-      unitIndex *= 1 + monthReturn;
-      benchmarkIndex *= 1 + benchmarkReturn;
-      if (timing === "end" && monthly > 0) {
-        const net = monthly - monthly * costRate;
-        holdings = holdings.map((value, i) => value + net * assets[i].weight);
-        benchmarkBalance += monthly;
-        principal += monthly;
-      }
-      series.push({ month, balance: sum(holdings), principal, benchmarkBalance, unitIndex, benchmarkIndex });
-    });
-
-    const count = monthlyReturns.length;
-    const totalReturn = monthlyReturns.reduce((acc, value) => acc * (1 + value), 1) - 1;
-    const cagr = Math.pow(1 + totalReturn, 12 / count) - 1;
-    const meanReturn = sum(monthlyReturns) / count;
-    const variance = monthlyReturns.reduce((acc, value) => acc + (value - meanReturn) ** 2, 0) / (count - 1);
-    const volatility = Math.sqrt(variance) * Math.sqrt(12);
-    let peak = series[0].unitIndex;
-    let mdd = 0;
-    series.forEach((point) => {
-      peak = Math.max(peak, point.unitIndex);
-      mdd = Math.min(mdd, point.unitIndex / peak - 1);
-    });
-    let benchmarkPeak = series[0].benchmarkIndex;
-    let benchmarkMdd = 0;
-    series.forEach((point) => {
-      benchmarkPeak = Math.max(benchmarkPeak, point.benchmarkIndex);
-      benchmarkMdd = Math.min(benchmarkMdd, point.benchmarkIndex / benchmarkPeak - 1);
-    });
-    const benchmarkTotal = series.at(-1).benchmarkIndex / 100 - 1;
-    const benchmarkCagr = Math.pow(1 + benchmarkTotal, 12 / count) - 1;
-
-    return {
-      months,
-      series,
-      cagr,
-      volatility,
-      mdd,
-      benchmarkCagr,
-      benchmarkMdd,
-      finalBalance: series.at(-1).balance,
-      principal: series.at(-1).principal,
-    };
-  }
-
-  function drawGrowthChart(canvas, result, options = {}) {
-    const rect = canvas.getBoundingClientRect();
-    const dpr = Math.max(1, window.devicePixelRatio || 1);
-    canvas.width = Math.floor(rect.width * dpr);
-    canvas.height = Math.floor(rect.height * dpr);
-    const ctx = canvas.getContext("2d");
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const width = rect.width;
-    const height = rect.height;
-    ctx.clearRect(0, 0, width, height);
-
-    const margin = { left: 70, right: 15, top: 14, bottom: 32 };
-    const plotWidth = width - margin.left - margin.right;
-    const plotHeight = height - margin.top - margin.bottom;
-    const { series, months } = result;
-    const yFormatter = options.yFormatter || fmtCompactKRW;
-    const values = series.flatMap((point) => options.hidePrincipal
-      ? [point.balance, point.benchmarkBalance]
-      : [point.balance, point.benchmarkBalance, point.principal]);
-    const max = Math.max(...values) * 1.05;
-    const min = options.hidePrincipal ? Math.min(...values) * 0.95 : 0;
-    const xFor = (index) => margin.left + index / Math.max(1, series.length - 1) * plotWidth;
-    const yFor = (value) => margin.top + (max - value) / (max - min) * plotHeight;
-
-    ctx.font = '11px system-ui, -apple-system, "Segoe UI", sans-serif';
-    ctx.textBaseline = "middle";
-    for (let i = 0; i <= 4; i += 1) {
-      const y = margin.top + plotHeight * i / 4;
-      ctx.strokeStyle = cssVar("--grid-line");
-      ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(margin.left, y); ctx.lineTo(width - margin.right, y); ctx.stroke();
-      ctx.fillStyle = cssVar("--muted-2");
-      ctx.textAlign = "right";
-      ctx.fillText(yFormatter(max - (max - min) * i / 4), margin.left - 8, y);
-    }
-    const labelCount = width < 520 ? 4 : 6;
-    for (let i = 0; i < labelCount; i += 1) {
-      const index = Math.round(i * (months.length - 1) / Math.max(1, labelCount - 1));
-      ctx.fillStyle = cssVar("--muted-2");
-      ctx.textAlign = i === 0 ? "left" : i === labelCount - 1 ? "right" : "center";
-      ctx.fillText(fmtDate(months[index]), xFor(index), height - 11);
-    }
-
-    const lines = [
-      { key: "balance", color: cssVar("--accent"), width: 2.3, fill: true },
-      { key: "benchmarkBalance", color: cssVar("--blue"), width: 1.6 },
-      ...(options.hidePrincipal ? [] : [{ key: "principal", color: cssVar("--muted-2"), width: 1.2, dash: [5, 5] }]),
-    ];
-    lines.forEach((line) => {
-      const points = series.map((point, index) => [xFor(index), yFor(point[line.key])]);
-      if (line.fill) {
-        const gradient = ctx.createLinearGradient(0, margin.top, 0, margin.top + plotHeight);
-        gradient.addColorStop(0, "rgba(69,227,181,.18)");
-        gradient.addColorStop(1, "rgba(69,227,181,0)");
-        ctx.beginPath();
-        ctx.moveTo(points[0][0], margin.top + plotHeight);
-        points.forEach(([x, y]) => ctx.lineTo(x, y));
-        ctx.lineTo(points.at(-1)[0], margin.top + plotHeight);
-        ctx.closePath();
-        ctx.fillStyle = gradient;
-        ctx.fill();
-      }
-      ctx.beginPath();
-      points.forEach(([x, y], index) => index === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y));
-      ctx.strokeStyle = line.color;
-      ctx.lineWidth = line.width;
-      ctx.setLineDash(line.dash || []);
-      ctx.stroke();
-      ctx.setLineDash([]);
-    });
-
-    // Backtest-K 워터마크
-    ctx.font = '700 12px system-ui, -apple-system, "Segoe UI", sans-serif';
-    ctx.textAlign = "right";
-    ctx.globalAlpha = 0.45;
-    ctx.fillStyle = cssVar("--muted");
-    ctx.fillText("BACKTEST-K · backtest-k.vercel.app", width - margin.right - 4, margin.top + 10);
-    ctx.globalAlpha = 1;
-
-    if (options.legendEl) {
-      options.legendEl.innerHTML = [
-        ["포트폴리오", cssVar("--accent"), "line"],
-        [options.benchmarkName || "벤치마크", cssVar("--blue"), "line"],
-        ...(options.hidePrincipal ? [] : [["납입 원금", cssVar("--muted-2"), "dash"]]),
-      ].map(([label, color, type]) => `<span class="legend-item"><i class="${type === "dash" ? "legend-dash" : "legend-line"}" style="${type === "dash" ? `color:${color}` : `background:${color}`}"></i>${escapeHtml(label)}</span>`).join("");
-    }
-  }
-
-  window.BacktestK = {
-    ENGINE_VERSION,
-    cssVar, sum, fmtPct, fmtKRW, fmtCompactKRW, fmtDate, escapeHtml,
-    applySavedTheme, encodeShareConfig, decodeShareConfig, fetchJson,
-    encodeSnapshot, decodeSnapshot, shortHash,
-    returnMapFrom, isRebalanceMonth, rebalanceLabel, runStaticBacktest, drawGrowthChart,
-  };
-})();
-
 
 // 계산 엔진 버전. 산식이 바뀌면 올린다.
 // 공유 스냅숏(share)과 사전 계산 산출물에 기록되어 "어떤 엔진으로 계산했는지"를 남긴다.
@@ -1358,15 +1127,43 @@ function normalizeMonth(value) {
 
 function returnMapFromPayload(payload) {
   if (!payload || !Array.isArray(payload.monthly_returns)) throw new Error("월 수익률 배열이 없습니다.");
+  // CSV/demo payloads have no market identity; they remain user-supplied inputs.
+  if (payload.asset_type) {
+    if (payload.currency !== "KRW") throw new Error(`${payload.name || payload.id}: ${payload.currency || '통화 미상'} 수익률은 원화 환산이 검증되지 않아 분석할 수 없습니다. 국내 상장 원화 ETF를 선택하세요.`);
+    if (payload.month_end_quality?.version !== 1) throw new Error(`${payload.name || payload.id}: 월말 검사가 없는 데이터입니다. 데이터 갱신이 필요합니다.`);
+  }
+  const quality = payload.month_end_quality;
+  const excluded = new Set((quality?.excluded_months || []).map(row => row.month));
   const returns = new Map();
   payload.monthly_returns.forEach((row) => {
     const month = normalizeMonth(row.month);
     const value = Number(row.return);
     if (!month || !Number.isFinite(value) || value <= -1) return;
+    if (quality && (excluded.has(month) || !quality.usable_first_month || !quality.usable_last_month
+      || month < quality.usable_first_month || month > quality.usable_last_month)) return;
     returns.set(month, value);
   });
   if (returns.size < 2) throw new Error("유효한 월 수익률이 2개월 미만입니다.");
-  return new Map([...returns.entries()].sort((a, b) => a[0].localeCompare(b[0])));
+  const sorted = [...returns.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  if (payload.asset_type) {
+    const ordinal = month => Number(month.slice(0, 4)) * 12 + Number(month.slice(5));
+    if (sorted.length !== quality.usable_month_count || sorted.some(([month], i) => i && ordinal(month) !== ordinal(sorted[i - 1][0]) + 1)) {
+      throw new Error('월말 검사와 수익률 연속성이 일치하지 않습니다. 데이터 갱신이 필요합니다.');
+    }
+  }
+  return new Map(sorted);
+}
+
+function dataQualityMessages(payload, now = new Date()) {
+  const messages = [];
+  const quality = payload.month_end_quality;
+  if (quality?.outside_usable_window_count) messages.push(`월말 불일치·연속성 제한으로 ${quality.outside_usable_window_count}개월 제외; 사용 ${quality.usable_first_month}~${quality.usable_last_month}`);
+  const expected = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 0)).toISOString().slice(0, 7);
+  if (quality?.usable_last_month && quality.usable_last_month < expected) messages.push(`최신 완료월 ${expected} 대비 지연: 사용 가능 ${quality.usable_last_month}`);
+  if (quality?.baseline_verification === 'legacy_first_baseline_unavailable') messages.push('기존 데이터의 첫 기준가격 관측일은 미확인');
+  if (payload.distribution?.included && payload.distribution.verification_status !== 'independently_reconciled') messages.push('분배금: 공급자 수정종가 반영 · 독립 총수익 대사 미완료');
+  if (payload.distribution?.included === false) messages.push('가격수익률: 분배금/배당 제외');
+  return messages;
 }
 
 // 첫 화면 샘플 포트폴리오의 단일 정의.
@@ -1791,8 +1588,325 @@ function runBacktest({ settings, dates, returnsById }) {
   };
 }
 
+// 백테스트K 공용 정적 엔진.
+// share.js(공유 페이지)와 portfolio.js(전략 랜딩)가 함께 사용하는 순수 계산·차트 모듈.
+// 산식은 app.js의 runBacktest와 동일하게 유지해야 한다 (본편 엔진 분리 전까지의 기준 사본).
+
+
+(() => {
+  "use strict";
+
+  // 계산 산식이 바뀌면 반드시 올린다. 스냅숏 공유 링크에 기록되어
+  // "어떤 엔진으로 계산된 결과인지"를 식별한다.
+  const ENGINE_VERSION = "1.0";
+
+  const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const sum = (values) => values.reduce((a, b) => a + b, 0);
+  const fmtPct = (value, digits = 2) => Number.isFinite(value) ? `${(value * 100).toFixed(digits)}%` : "—";
+  const fmtKRW = (value) => Number.isFinite(value) ? new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW", maximumFractionDigits: 0 }).format(value) : "—";
+  const fmtCompactKRW = (value) => {
+    if (!Number.isFinite(value)) return "—";
+    const abs = Math.abs(value);
+    const sign = value < 0 ? "-" : "";
+    if (abs >= 1e12) return `${sign}${(abs / 1e12).toFixed(abs >= 1e13 ? 0 : 1)}조원`;
+    if (abs >= 1e8) return `${sign}${(abs / 1e8).toFixed(abs >= 1e9 ? 0 : 1)}억원`;
+    if (abs >= 1e4) return `${sign}${(abs / 1e4).toFixed(abs >= 1e5 ? 0 : 1)}만원`;
+    return `${sign}${Math.round(abs).toLocaleString("ko-KR")}원`;
+  };
+  const fmtDate = (month) => month ? month.replace("-", ".") : "";
+  const escapeHtml = (value) => String(value ?? "")
+    .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+
+  function applySavedTheme() {
+    let saved = null;
+    try { saved = window.localStorage.getItem("backtestK.theme"); } catch (_) { /* 무시 */ }
+    if (saved === "light" || saved === "dark") document.documentElement.dataset.theme = saved;
+  }
+
+  function bytesToBase64Url(bytes) {
+    let binary = "";
+    bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
+    return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+  }
+
+  function base64UrlToBytes(raw) {
+    let base64 = String(raw).replaceAll("-", "+").replaceAll("_", "/");
+    while (base64.length % 4) base64 += "=";
+    return Uint8Array.from(atob(base64), (ch) => ch.charCodeAt(0));
+  }
+
+  function encodeShareConfig(payload) {
+    return bytesToBase64Url(new TextEncoder().encode(JSON.stringify(payload)));
+  }
+
+  // 스냅숏(v2) 코덱: deflate 압축 + base64url. 접두사 "1"=deflate, "0"=무압축 폴백.
+  async function encodeSnapshot(payload) {
+    const bytes = new TextEncoder().encode(JSON.stringify(payload));
+    if (typeof CompressionStream === "undefined") return `0${bytesToBase64Url(bytes)}`;
+    const stream = new Blob([bytes]).stream().pipeThrough(new CompressionStream("deflate-raw"));
+    const compressed = new Uint8Array(await new Response(stream).arrayBuffer());
+    return `1${bytesToBase64Url(compressed)}`;
+  }
+
+  async function decodeSnapshot(raw) {
+    try {
+      const text = String(raw);
+      const bytes = base64UrlToBytes(text.slice(1));
+      let jsonBytes = bytes;
+      if (text[0] === "1") {
+        if (typeof DecompressionStream === "undefined") return null;
+        const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+        jsonBytes = new Uint8Array(await new Response(stream).arrayBuffer());
+      } else if (text[0] !== "0") {
+        return null;
+      }
+      const payload = JSON.parse(new TextDecoder().decode(jsonBytes));
+      if (payload?.v !== 2 || !Array.isArray(payload.a) || !payload.a.length) return null;
+      return payload;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function shortHash(text) {
+    let hash = 5381;
+    for (let i = 0; i < text.length; i += 1) hash = ((hash << 5) + hash + text.charCodeAt(i)) >>> 0;
+    return hash.toString(16).slice(0, 5).padStart(5, "0");
+  }
+
+  function decodeShareConfig(raw) {
+    try {
+      let base64 = String(raw).replaceAll("-", "+").replaceAll("_", "/");
+      while (base64.length % 4) base64 += "=";
+      const bytes = Uint8Array.from(atob(base64), (ch) => ch.charCodeAt(0));
+      const payload = JSON.parse(new TextDecoder().decode(bytes));
+      if (payload?.v !== 1 || !Array.isArray(payload.a) || !payload.a.length) return null;
+      return payload;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  async function fetchJson(url) {
+    const response = await fetch(url, { cache: "no-cache" });
+    if (!response.ok) throw new Error(`${url}: ${response.status}`);
+    return response.json();
+  }
+
+  function returnMapFrom(payload) {
+    return returnMapFromPayload(payload);
+  }
+
+  function isRebalanceMonth(mode, index) {
+    if (index === 0 || mode === "none") return false;
+    if (mode === "monthly") return true;
+    if (mode === "quarterly") return index % 3 === 0;
+    if (mode === "semiannual") return index % 6 === 0;
+    if (mode === "annual") return index % 12 === 0;
+    return false;
+  }
+
+  function rebalanceLabel(value) {
+    return ({ none: "리밸런싱 없음", monthly: "매월", quarterly: "분기", semiannual: "반기", annual: "연 1회" })[value] || value;
+  }
+
+  // config: {s,e,i,m,t,r,c} — 공유 코덱과 동일한 축약 키.
+  // assets: [{weight(비율 합 1로 정규화됨), returnMap}], benchmark: {returnMap}
+  function runStaticBacktest(config, assets, benchmark) {
+    const totalWeight = sum(assets.map((asset) => asset.weight));
+    if (totalWeight <= 0) return null;
+    assets.forEach((asset) => { asset.weight /= totalWeight; });
+
+    let dates = null;
+    [...assets.map((asset) => asset.returnMap), benchmark.returnMap].forEach((map) => {
+      const months = new Set(map.keys());
+      dates = dates === null ? months : new Set([...dates].filter((month) => months.has(month)));
+    });
+    const start = config.s || "0000-01";
+    const end = config.e || "9999-12";
+    const months = [...dates].filter((month) => month >= start && month <= end).sort();
+    if (months.length < 12) return null;
+
+    const initial = Number(config.i) || 0;
+    const monthly = Number(config.m) || 0;
+    const timing = config.t === "end" ? "end" : "start";
+    const costRate = (Number(config.c) || 0) / 10000;
+    let holdings = assets.map((asset) => initial * asset.weight);
+    let principal = initial;
+    let benchmarkBalance = initial;
+    let unitIndex = 100;
+    let benchmarkIndex = 100;
+    const monthlyReturns = [];
+    const series = [];
+
+    months.forEach((month, index) => {
+      if (timing === "start" && monthly > 0) {
+        const net = monthly - monthly * costRate;
+        holdings = holdings.map((value, i) => value + net * assets[i].weight);
+        benchmarkBalance += monthly;
+        principal += monthly;
+      }
+      const startBalance = sum(holdings);
+      const benchmarkStart = benchmarkBalance;
+      holdings = holdings.map((value, i) => value * (1 + assets[i].returnMap.get(month)));
+      benchmarkBalance *= 1 + benchmark.returnMap.get(month);
+      if (isRebalanceMonth(config.r, index)) {
+        const before = sum(holdings);
+        const targets = assets.map((asset) => before * asset.weight);
+        const turnover = sum(targets.map((target, i) => Math.abs(target - holdings[i]))) / 2;
+        const afterCost = Math.max(0, before - turnover * costRate);
+        holdings = assets.map((asset) => afterCost * asset.weight);
+      }
+      const endBalance = sum(holdings);
+      const monthReturn = startBalance > 0 ? endBalance / startBalance - 1 : 0;
+      const benchmarkReturn = benchmarkStart > 0 ? benchmarkBalance / benchmarkStart - 1 : 0;
+      monthlyReturns.push(monthReturn);
+      unitIndex *= 1 + monthReturn;
+      benchmarkIndex *= 1 + benchmarkReturn;
+      if (timing === "end" && monthly > 0) {
+        const net = monthly - monthly * costRate;
+        holdings = holdings.map((value, i) => value + net * assets[i].weight);
+        benchmarkBalance += monthly;
+        principal += monthly;
+      }
+      series.push({ month, balance: sum(holdings), principal, benchmarkBalance, unitIndex, benchmarkIndex });
+    });
+
+    const count = monthlyReturns.length;
+    const totalReturn = monthlyReturns.reduce((acc, value) => acc * (1 + value), 1) - 1;
+    const cagr = Math.pow(1 + totalReturn, 12 / count) - 1;
+    const meanReturn = sum(monthlyReturns) / count;
+    const variance = monthlyReturns.reduce((acc, value) => acc + (value - meanReturn) ** 2, 0) / (count - 1);
+    const volatility = Math.sqrt(variance) * Math.sqrt(12);
+    let peak = series[0].unitIndex;
+    let mdd = 0;
+    series.forEach((point) => {
+      peak = Math.max(peak, point.unitIndex);
+      mdd = Math.min(mdd, point.unitIndex / peak - 1);
+    });
+    let benchmarkPeak = series[0].benchmarkIndex;
+    let benchmarkMdd = 0;
+    series.forEach((point) => {
+      benchmarkPeak = Math.max(benchmarkPeak, point.benchmarkIndex);
+      benchmarkMdd = Math.min(benchmarkMdd, point.benchmarkIndex / benchmarkPeak - 1);
+    });
+    const benchmarkTotal = series.at(-1).benchmarkIndex / 100 - 1;
+    const benchmarkCagr = Math.pow(1 + benchmarkTotal, 12 / count) - 1;
+
+    return {
+      months,
+      series,
+      cagr,
+      volatility,
+      mdd,
+      benchmarkCagr,
+      benchmarkMdd,
+      finalBalance: series.at(-1).balance,
+      principal: series.at(-1).principal,
+    };
+  }
+
+  function drawGrowthChart(canvas, result, options = {}) {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    canvas.width = Math.floor(rect.width * dpr);
+    canvas.height = Math.floor(rect.height * dpr);
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const width = rect.width;
+    const height = rect.height;
+    ctx.clearRect(0, 0, width, height);
+
+    const margin = { left: 70, right: 15, top: 14, bottom: 32 };
+    const plotWidth = width - margin.left - margin.right;
+    const plotHeight = height - margin.top - margin.bottom;
+    const { series, months } = result;
+    const yFormatter = options.yFormatter || fmtCompactKRW;
+    const values = series.flatMap((point) => options.hidePrincipal
+      ? [point.balance, point.benchmarkBalance]
+      : [point.balance, point.benchmarkBalance, point.principal]);
+    const max = Math.max(...values) * 1.05;
+    const min = options.hidePrincipal ? Math.min(...values) * 0.95 : 0;
+    const xFor = (index) => margin.left + index / Math.max(1, series.length - 1) * plotWidth;
+    const yFor = (value) => margin.top + (max - value) / (max - min) * plotHeight;
+
+    ctx.font = '11px system-ui, -apple-system, "Segoe UI", sans-serif';
+    ctx.textBaseline = "middle";
+    for (let i = 0; i <= 4; i += 1) {
+      const y = margin.top + plotHeight * i / 4;
+      ctx.strokeStyle = cssVar("--grid-line");
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(margin.left, y); ctx.lineTo(width - margin.right, y); ctx.stroke();
+      ctx.fillStyle = cssVar("--muted-2");
+      ctx.textAlign = "right";
+      ctx.fillText(yFormatter(max - (max - min) * i / 4), margin.left - 8, y);
+    }
+    const labelCount = width < 520 ? 4 : 6;
+    for (let i = 0; i < labelCount; i += 1) {
+      const index = Math.round(i * (months.length - 1) / Math.max(1, labelCount - 1));
+      ctx.fillStyle = cssVar("--muted-2");
+      ctx.textAlign = i === 0 ? "left" : i === labelCount - 1 ? "right" : "center";
+      ctx.fillText(fmtDate(months[index]), xFor(index), height - 11);
+    }
+
+    const lines = [
+      { key: "balance", color: cssVar("--accent"), width: 2.3, fill: true },
+      { key: "benchmarkBalance", color: cssVar("--blue"), width: 1.6 },
+      ...(options.hidePrincipal ? [] : [{ key: "principal", color: cssVar("--muted-2"), width: 1.2, dash: [5, 5] }]),
+    ];
+    lines.forEach((line) => {
+      const points = series.map((point, index) => [xFor(index), yFor(point[line.key])]);
+      if (line.fill) {
+        const gradient = ctx.createLinearGradient(0, margin.top, 0, margin.top + plotHeight);
+        gradient.addColorStop(0, "rgba(69,227,181,.18)");
+        gradient.addColorStop(1, "rgba(69,227,181,0)");
+        ctx.beginPath();
+        ctx.moveTo(points[0][0], margin.top + plotHeight);
+        points.forEach(([x, y]) => ctx.lineTo(x, y));
+        ctx.lineTo(points.at(-1)[0], margin.top + plotHeight);
+        ctx.closePath();
+        ctx.fillStyle = gradient;
+        ctx.fill();
+      }
+      ctx.beginPath();
+      points.forEach(([x, y], index) => index === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y));
+      ctx.strokeStyle = line.color;
+      ctx.lineWidth = line.width;
+      ctx.setLineDash(line.dash || []);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    });
+
+    // Backtest-K 워터마크
+    ctx.font = '700 12px system-ui, -apple-system, "Segoe UI", sans-serif';
+    ctx.textAlign = "right";
+    ctx.globalAlpha = 0.45;
+    ctx.fillStyle = cssVar("--muted");
+    ctx.fillText("BACKTEST-K · backtest-k.vercel.app", width - margin.right - 4, margin.top + 10);
+    ctx.globalAlpha = 1;
+
+    if (options.legendEl) {
+      options.legendEl.innerHTML = [
+        ["포트폴리오", cssVar("--accent"), "line"],
+        [options.benchmarkName || "벤치마크", cssVar("--blue"), "line"],
+        ...(options.hidePrincipal ? [] : [["납입 원금", cssVar("--muted-2"), "dash"]]),
+      ].map(([label, color, type]) => `<span class="legend-item"><i class="${type === "dash" ? "legend-dash" : "legend-line"}" style="${type === "dash" ? `color:${color}` : `background:${color}`}"></i>${escapeHtml(label)}</span>`).join("");
+    }
+  }
+
+  window.BacktestK = {
+    ENGINE_VERSION,
+    cssVar, sum, fmtPct, fmtKRW, fmtCompactKRW, fmtDate, escapeHtml,
+    applySavedTheme, encodeShareConfig, decodeShareConfig, fetchJson,
+    encodeSnapshot, decodeSnapshot, shortHash,
+    returnMapFrom, isRebalanceMonth, rebalanceLabel, runStaticBacktest, drawGrowthChart,
+  };
+})();
+
 const runBacktestCore = runBacktest;
 // 계산은 core/에만 있다. 이 파일은 DOM 입출력·렌더링·오케스트레이션 담당.
+
 
 
 
@@ -2010,11 +2124,14 @@ const runBacktestCore = runBacktest;
         returnMap: null,
         listingDate: item.listing_date || null,
         dataAsOf: item.data_as_of || catalog.data_as_of || null,
-        firstMonth: item.first_month || null,
-        lastMonth: item.last_month || null,
+        firstMonth: item.month_end_quality?.usable_first_month || item.first_month || null,
+        lastMonth: item.month_end_quality?.usable_last_month || item.last_month || null,
         observationCount: Number(item.monthly_return_count) || 0,
         distributionIncluded: item.distribution_included === true,
+        qualityMessages: dataQualityMessages({ ...item, distribution: { included: item.distribution_included, verification_status: item.distribution_verification_status } }),
         distributionMethod: item.distribution_method || "unknown",
+        currency: item.currency || null,
+        monthEndQuality: item.month_end_quality || null,
         providerStatus: item.provider_status || catalog.provider_status || "unknown",
         universeRank: Number(item.universe_rank) || null,
       };
@@ -2049,16 +2166,7 @@ const runBacktestCore = runBacktest;
   }
 
   function validateMonthlyReturns(payload) {
-    if (!payload || !Array.isArray(payload.monthly_returns)) throw new Error("월 수익률 배열이 없습니다.");
-    const returns = new Map();
-    payload.monthly_returns.forEach((row) => {
-      const month = normalizeMonth(row.month);
-      const value = Number(row.return);
-      if (!month || !Number.isFinite(value) || value <= -1) return;
-      returns.set(month, value);
-    });
-    if (returns.size < 2) throw new Error("유효한 월 수익률이 2개월 미만입니다.");
-    return new Map([...returns.entries()].sort((a, b) => a[0].localeCompare(b[0])));
+    return returnMapFromPayload(payload);
   }
 
   async function ensureAssetLoaded(id) {
@@ -2075,8 +2183,9 @@ const runBacktestCore = runBacktest;
       asset.returnMap = validateMonthlyReturns(payload);
       asset.listingDate = payload.listing_date || asset.listingDate;
       asset.dataAsOf = payload.data_as_of || asset.dataAsOf;
-      asset.firstMonth = payload.first_month || [...asset.returnMap.keys()][0];
-      asset.lastMonth = payload.last_month || [...asset.returnMap.keys()].at(-1);
+      asset.firstMonth = [...asset.returnMap.keys()][0];
+      asset.lastMonth = [...asset.returnMap.keys()].at(-1);
+      asset.qualityMessages = dataQualityMessages(payload);
       asset.observationCount = asset.returnMap.size;
       asset.distributionIncluded = payload.distribution?.included === true;
       asset.distributionMethod = payload.distribution?.method || asset.distributionMethod;
@@ -2163,7 +2272,7 @@ const runBacktestCore = runBacktest;
       <button type="button" class="asset-suggestion ${index === 0 ? "active" : ""}" data-asset-id="${escapeHtml(id)}">
         <span class="asset-suggestion-code">${escapeHtml(asset.code)}</span>
         <span class="asset-suggestion-copy"><strong>${escapeHtml(asset.name)}</strong><small>${escapeHtml(asset.category)} · ${escapeHtml(asset.firstMonth || "기간 미확인")}–${escapeHtml(asset.lastMonth || "")}</small></span>
-        <span class="asset-suggestion-badge ${asset.distributionIncluded ? "" : "price"}">${asset.distributionIncluded ? "TR" : "가격"}</span>
+        <span class="asset-suggestion-badge ${asset.distributionIncluded ? "" : "price"}">${asset.currency && asset.currency !== "KRW" ? "원화 환산 미검증" : asset.distributionIncluded ? "수정주가" : "가격"}</span>
       </button>
     </li>`).join("");
   }
@@ -2577,7 +2686,7 @@ const runBacktestCore = runBacktest;
       settings = gatherBacktestSettings();
     } catch (error) {
       showToast(error.message);
-      return fail(`${error.message} 네트워크 상태를 확인한 뒤 다시 시도해주세요.`);
+      return fail(error.message);
     } finally {
       state.backtestLoading = false;
       $("#runBacktest span").textContent = "백테스트 실행";
@@ -2639,6 +2748,13 @@ const runBacktestCore = runBacktest;
         : "";
     }
 
+    const qualityNotice = $("#dataQualityNotice");
+    if (qualityNotice) {
+      const used = [...new Set([...settings.allocations.map(item => item.assetId), settings.benchmarkId])];
+      const details = used.flatMap(id => (state.assets[id]?.qualityMessages || []).map(message => `${state.assets[id].name}: ${message}`));
+      qualityNotice.hidden = !details.length;
+      $("#dataQualityDetails").textContent = details.join("\n");
+    }
     const gain = metrics.finalBalance - metrics.principal;
     const benchmarkGap = metrics.annualizedReturn - metrics.benchmarkAnnualized;
     const cards = [
@@ -3710,8 +3826,8 @@ const runBacktestCore = runBacktest;
       const dates = asset.returnMap instanceof Map ? [...asset.returnMap.keys()].sort() : [];
       const firstMonth = dates[0] || asset.firstMonth || "";
       const lastMonth = dates.at(-1) || asset.lastMonth || "";
-      const count = dates.length || asset.observationCount || 0;
-      const sourceText = asset.source === "custom" ? "사용자 CSV" : asset.source === "market" ? `${asset.distributionIncluded ? "수정종가 TR" : "가격지수"} · ${asset.dataAsOf || ""}` : "합성 데모";
+      const count = dates.length || asset.monthEndQuality?.usable_month_count || asset.observationCount || 0;
+      const sourceText = asset.source === "custom" ? "사용자 CSV" : asset.source === "market" ? `${asset.currency !== "KRW" ? "원화 환산 미검증 · " : ""}${asset.distributionIncluded ? "공급자 수정종가 · 총수익 독립 대사 미완료" : "가격지수"} · ${asset.dataAsOf || ""}` : "합성 데모";
       return `<tr><td>${escapeHtml(asset.code)}</td><td>${escapeHtml(asset.name)}</td><td>${escapeHtml(asset.category)}</td><td>${fmtDate(firstMonth)} – ${fmtDate(lastMonth)}</td><td>${count.toLocaleString()}개월</td><td><span class="source-pill ${asset.source}">${escapeHtml(sourceText)}</span></td></tr>`;
     }).join("");
     $("#assetDataCount").textContent = `총 ${state.assetOrder.length}개`;
@@ -3906,8 +4022,10 @@ const runBacktestCore = runBacktest;
       eng: window.BacktestK?.ENGINE_VERSION || "1.0",
       seed: state.monteCarlo?.seed ?? null,
       ver: state.officialVerification?.status === "ok"
-        ? `공식시세 대사 ${state.officialVerification.matched}/${state.officialVerification.checked} 일치`
-        : "프로토타입 데이터 (독립 대사 진행 중)",
+        ? `원시 종가 표본 대사 ${state.officialVerification.matched}/${state.officialVerification.checked} 일치 · 총수익 독립 대사 미완료`
+        : "공급자 데이터 · 총수익 독립 대사 미완료",
+      dq: [...new Set([...settings.allocations.map(item => item.assetId), settings.benchmarkId])]
+        .flatMap(id => (state.assets[id]?.qualityMessages || []).map(message => `${state.assets[id].name}: ${message}`)),
       mx: {
         cagr: round(metrics.annualizedReturn),
         mwrr: round(metrics.mwrr),
@@ -3979,23 +4097,33 @@ const runBacktestCore = runBacktest;
     const quick = mode === "quick";
     document.documentElement.classList.toggle("quick-mode", quick);
     $("#modeQuick")?.classList.toggle("active", quick);
+    $("#modeQuick")?.setAttribute("aria-pressed", String(quick));
     $("#modeLab")?.classList.toggle("active", !quick);
+    $("#modeLab")?.setAttribute("aria-pressed", String(!quick));
     if (save) storage.setItem("backtestK.uiMode", quick ? "quick" : "lab");
     if (quick && save) syncDateInputs(true);
   }
 
   function switchView(viewName) {
     $$(".app-view").forEach((view) => view.classList.toggle("active", view.id === `view-${viewName}`));
-    $$(".nav-btn").forEach((button) => button.classList.toggle("active", button.dataset.view === viewName));
+    $$(".nav-btn").forEach((button) => {
+      const active = button.dataset.view === viewName;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
     history.replaceState(null, "", `#${viewName}`);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
     if (viewName === "montecarlo" && !state.monteCarlo) runMonteCarlo();
     if (viewName === "compare") renderComparison();
     setTimeout(redrawAllCharts, 80);
   }
 
   function switchResultTab(tabName) {
-    $$(".analysis-tab").forEach((button) => button.classList.toggle("active", button.dataset.resultTab === tabName));
+    $$(".analysis-tab").forEach((button) => {
+      const active = button.dataset.resultTab === tabName;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
     $$(".result-tab-panel").forEach((panel) => panel.classList.toggle("active", panel.id === `result-${tabName}`));
     setTimeout(redrawAllCharts, 50);
   }
@@ -4178,6 +4306,7 @@ const runBacktestCore = runBacktest;
           firstMonth: payload.dates[0],
           lastMonth: payload.dates.at(-1),
           distributionIncluded: info.distributionIncluded,
+          qualityMessages: info.qualityMessages || [],
         };
       });
 
@@ -4330,7 +4459,7 @@ const runBacktestCore = runBacktest;
     $("#stickyRunButton")?.addEventListener("click", () => {
       runBacktest({ userInitiated: true });
       // 결과를 바로 볼 수 있게 결과 영역으로 이동한다.
-      $(".results-area")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      $(".results-area")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" });
     });
     sync();
   }
@@ -4342,6 +4471,7 @@ const runBacktestCore = runBacktest;
 
   async function init() {
     const savedTheme = storage.getItem("backtestK.theme");
+    $$(".nav-btn").forEach((button) => button.setAttribute("aria-pressed", String(button.classList.contains("active"))));
     if (savedTheme === "light" || savedTheme === "dark") document.documentElement.dataset.theme = savedTheme;
     // 공유 링크로 들어온 경우엔 샘플을 그리지 않는다 (곧 해당 조합으로 덮어쓰므로).
     const hasSharedConfig = new URLSearchParams(window.location.search).has("c");

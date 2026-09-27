@@ -189,5 +189,23 @@
       "return": 0.0477260759,
       "observation_date": "2026-07-31"
     }
-  ]
+  ],
+  "month_end_quality": {
+    "version": 1,
+    "checked_as_of": "2026-09-27",
+    "calendar": "XKRX",
+    "calendar_source": "exchange_calendars 4.13.2",
+    "expected_complete_month": "2026-08",
+    "last_complete_month": "2026-07",
+    "usable_first_month": "2025-01",
+    "usable_last_month": "2026-07",
+    "usable_month_count": 19,
+    "excluded_months": [],
+    "outside_usable_window_count": 0,
+    "status": "stale",
+    "baseline_verification": "legacy_first_baseline_unavailable",
+    "note": "거래일 달력 대조이며 시세·분배금 독립 검증이 아닙니다. 제외된 원본 수익률은 보존합니다."
+  },
+  "return_currency": "KRW",
+  "krw_comparable": true
 }

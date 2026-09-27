@@ -10,6 +10,11 @@ import math
 from pathlib import Path
 from typing import Any
 
+if __package__:
+    from .audit_market_data import annotate_payload
+else:
+    from audit_market_data import annotate_payload
+
 
 REQUIRED_INDEX_IDS = {"INDEX_KOSPI", "INDEX_KOSPI200", "INDEX_SP500"}
 REQUIRED_ASSET_FIELDS = {
@@ -87,6 +92,22 @@ def validate_asset(path: Path, record: dict[str, Any]) -> list[str]:
         errors.append(f"{path.name}: monthly_return_count mismatch")
     if payload["first_month"] != months[0] or payload["last_month"] != months[-1]:
         errors.append(f"{path.name}: first_month/last_month mismatch")
+    quality = payload.get("month_end_quality")
+    if not isinstance(quality, dict) or quality.get("version") != 1:
+        errors.append(f"{path.name}: month-end audit is required")
+    elif not errors:
+        try:
+            checked = dt.date.fromisoformat(quality["checked_as_of"])
+            expected = annotate_payload(dict(payload), checked)
+            if quality != expected:
+                errors.append(f"{path.name}: month-end audit does not match observations")
+        except (KeyError, TypeError, ValueError) as error:
+            errors.append(f"{path.name}: invalid month-end audit: {error}")
+    for key in ("month_end_quality", "return_currency", "krw_comparable"):
+        if record.get(key) != payload.get(key):
+            errors.append(f"{path.name}: catalog mismatch for {key}")
+    if payload.get("return_currency") != payload["currency"] or payload.get("krw_comparable") is not (payload["currency"] == "KRW"):
+        errors.append(f"{path.name}: inconsistent return currency")
     return errors
 
 

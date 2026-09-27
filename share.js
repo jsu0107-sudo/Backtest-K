@@ -3,6 +3,8 @@
 //   데이터가 갱신돼도 수치가 절대 변하지 않는다. /p/<slug>#<payload>.
 // - 레거시 모드(v1, ?c= 파라미터): 설정만 담긴 과거 링크. 최신 데이터로 재계산한다.
 // 계산·차트·코덱은 engine.js(window.BacktestK)를 사용한다.
+import "./engine.js";
+import { dataQualityMessages } from "./core/data-loader.js";
 (() => {
   "use strict";
 
@@ -68,7 +70,7 @@
       releaseId: payload.rel,
       engine: payload.eng,
       seed: payload.seed,
-      verify: payload.ver,
+      verify: [payload.ver, ...(Array.isArray(payload.dq) ? payload.dq : [])].filter(Boolean).join(" / "),
       metrics: payload.mx || {},
       chart: { months, portfolio: points, benchmark: payload.sr?.b || [] },
       clonePayload: {
@@ -113,7 +115,7 @@
       releaseId: catalog.generated_at,
       engine: K.ENGINE_VERSION,
       seed: null,
-      verify: catalog.provider_status === "provisional" ? "프로토타입 데이터 (독립 대사 진행 중)" : String(catalog.provider_status),
+      verify: ["공급자 데이터 · 독립 총수익 대사 미완료", ...neededIds.flatMap(id => dataQualityMessages(payloads.get(id)).map(message => `${catalogById.get(id).name}: ${message}`))].join(" / "),
       metrics: {
         cagr: result.cagr, vol: result.volatility, mdd: result.mdd,
         bCagr: result.benchmarkCagr, bMdd: result.benchmarkMdd,

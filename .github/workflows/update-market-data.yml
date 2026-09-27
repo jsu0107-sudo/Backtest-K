@@ -26,7 +26,15 @@ jobs:
           python-version: "3.12"
 
       - name: Build top-150 ETF and index data
-        run: python scripts/build_market_data.py --limit 150 --min-etfs 100 --workers 8
+        # Month-end calendar version is pinned for reproducible eligibility.
+        run: |
+          python -m pip install -r scripts/requirements-market-data.txt
+          python scripts/build_market_data.py --limit 150 --min-etfs 100 --workers 8
+
+      - name: Audit month-end eligibility without rewriting returns
+        run: |
+          python -m scripts.restore_index_months --write
+          python scripts/audit_market_data.py data --write
 
       - name: Validate static data contract
         run: |

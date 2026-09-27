@@ -45,7 +45,7 @@ function stripModuleSyntax(source, label) {
     }
     return "";
   });
-  const withoutExports = withoutImports.replace(/^export\s+(?=(const|let|var|function|async|class)\b)/gm, "");
+  const withoutExports = withoutImports.replace(/^import\s+["'][^"']+["'];?\s*$/gm, "").replace(/^export\s+(?=(const|let|var|function|async|class)\b)/gm, "");
   if (/^\s*export\s/m.test(withoutExports)) {
     throw new Error(`${label}: 처리하지 못한 export 문이 있다. build_single.mjs를 확장하라.`);
   }
@@ -82,13 +82,13 @@ export function buildSingleHtml() {
   const bundle = [
     "// ⚠️ 이 파일은 자동 생성물이다. 직접 수정하지 마라 — npm run build:single 로 재생성한다.",
     "// 소스: index.html, styles.css, engine.js, core/*.js, app.js",
-    read("engine.js"),
     ...CORE_MODULES.map((path) => stripModuleSyntax(read(path), path)),
+    stripModuleSyntax(read("engine.js"), "engine.js"),
     stripModuleSyntax(read("app.js"), "app.js"),
   ].join("\n\n");
 
   html = html.replace(
-    /\s*<script src="\.\/engine\.js"><\/script>\s*<script type="module" src="\.\/app\.js"><\/script>/,
+    /\s*<script type="module" src="\.\/engine\.js"><\/script>\s*<script type="module" src="\.\/app\.js"><\/script>/,
     () => `\n  <script>\n${bundle}\n  </script>`,
   );
   if (html.includes('src="./app.js"')) throw new Error("app.js 스크립트 태그를 인라인하지 못했다.");

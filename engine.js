@@ -1,6 +1,8 @@
 // 백테스트K 공용 정적 엔진.
 // share.js(공유 페이지)와 portfolio.js(전략 랜딩)가 함께 사용하는 순수 계산·차트 모듈.
 // 산식은 app.js의 runBacktest와 동일하게 유지해야 한다 (본편 엔진 분리 전까지의 기준 사본).
+import { returnMapFromPayload } from "./core/data-loader.js";
+
 (() => {
   "use strict";
 
@@ -103,12 +105,7 @@
   }
 
   function returnMapFrom(payload) {
-    const map = new Map();
-    (payload.monthly_returns || []).forEach((row) => {
-      const value = Number(row.return);
-      if (row.month && Number.isFinite(value) && value > -1) map.set(row.month, value);
-    });
-    return map;
+    return returnMapFromPayload(payload);
   }
 
   function isRebalanceMonth(mode, index) {

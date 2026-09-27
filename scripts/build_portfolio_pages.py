@@ -201,12 +201,12 @@ def render_page(page: dict) -> str:
     alloc_js = json.dumps([[ticker, weight] for ticker, weight, _, _ in page["alloc"]], ensure_ascii=False)
     head_extra = HEAD_EXTRA.replace("{{", "{").replace("}}", "}")
     return f"""<!doctype html>
-<html lang=\"ko\" data-theme=\"dark\">
+<html lang=\"ko\" data-theme=\"light\">
 <head>
   <meta charset=\"utf-8\" />
   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
   <meta name=\"description\" content=\"{page['description']}\" />
-  <meta name=\"theme-color\" content=\"#07111f\" />
+  <meta name=\"theme-color\" content=\"#f5f6f2\" />
   <title>{page['title']} | 백테스트K</title>
   <link rel=\"canonical\" href=\"{SITE}/portfolio/{page['slug']}\" />
   <meta property=\"og:type\" content=\"article\" />
@@ -277,8 +277,7 @@ def render_page(page: dict) -> str:
     }};
   </script>
   <script src=\"/analytics.js\"></script>
-  <script src=\"/engine.js\"></script>
-  <script src=\"/portfolio.js\"></script>
+  <script type=\"module\" src=\"/portfolio.js\"></script>
 </body>
 </html>
 """
@@ -296,7 +295,7 @@ def render_index(pages: list[dict]) -> str:
     )
     description = "올웨더, 한국 60/40, 균형 성장, 글로벌 성장 — 국내 상장 ETF로 구성한 대표 자산배분 전략들의 실데이터 백테스트 결과 모음."
     return f"""<!doctype html>
-<html lang=\"ko\" data-theme=\"dark\">
+<html lang=\"ko\" data-theme=\"light\">
 <head>
   <meta charset=\"utf-8\" />
   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
