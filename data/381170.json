@@ -6,13 +6,13 @@
   "asset_type": "etf",
   "category": "해외주식",
   "currency": "KRW",
-  "description": "순자산 상위 ETF #20 (수집 시점 시가총액 기준)",
+  "description": "순자산 상위 ETF #22 (수집 시점 시가총액 기준)",
   "listing_date": "2021-04-08",
   "listing_date_source": "한국예탁결제원 SEIBro",
-  "data_as_of": "2026-08-05",
+  "data_as_of": "2026-09-14",
   "first_month": "2021-05",
-  "last_month": "2026-07",
-  "monthly_return_count": 63,
+  "last_month": "2026-08",
+  "monthly_return_count": 64,
   "distribution": {
     "included": true,
     "method": "adjusted_close",
@@ -45,52 +45,52 @@
       "상업적 서비스 전 데이터 제공자 이용조건과 재배포 권한을 다시 확인해야 합니다."
     ]
   },
-  "universe_rank": 20,
-  "market_value_krw_100m": 39435.0,
+  "universe_rank": 22,
+  "market_value_krw_100m": 37526.0,
   "latest_raw_close": {
-    "date": "2026-08-05",
-    "close": 32390.0
+    "date": "2026-09-14",
+    "close": 29980.0
   },
   "recent_raw_closes": [
     {
-      "date": "2026-07-23",
-      "close": 31700.0
+      "date": "2026-09-01",
+      "close": 30570.0
     },
     {
-      "date": "2026-07-24",
-      "close": 30835.0
+      "date": "2026-09-02",
+      "close": 30270.0
     },
     {
-      "date": "2026-07-27",
-      "close": 31290.0
+      "date": "2026-09-03",
+      "close": 30400.0
     },
     {
-      "date": "2026-07-28",
-      "close": 30330.0
+      "date": "2026-09-04",
+      "close": 30700.0
     },
     {
-      "date": "2026-07-29",
-      "close": 30155.0
+      "date": "2026-09-07",
+      "close": 30340.0
     },
     {
-      "date": "2026-07-30",
-      "close": 29730.0
+      "date": "2026-09-08",
+      "close": 30275.0
     },
     {
-      "date": "2026-07-31",
-      "close": 30515.0
+      "date": "2026-09-09",
+      "close": 30090.0
     },
     {
-      "date": "2026-08-03",
-      "close": 31155.0
+      "date": "2026-09-10",
+      "close": 29970.0
     },
     {
-      "date": "2026-08-04",
-      "close": 31875.0
+      "date": "2026-09-11",
+      "close": 30045.0
     },
     {
-      "date": "2026-08-05",
-      "close": 32390.0
+      "date": "2026-09-14",
+      "close": 29980.0
     }
   ],
   "monthly_returns": [
@@ -408,6 +408,11 @@
       "month": "2026-07",
       "return": -0.0590502621,
       "observation_date": "2026-07-31"
+    },
+    {
+      "month": "2026-08",
+      "return": 0.0044240537,
+      "observation_date": "2026-08-31"
     }
   ],
   "month_end_quality": {
@@ -416,10 +421,10 @@
     "calendar": "XKRX",
     "calendar_source": "exchange_calendars 4.13.2",
     "expected_complete_month": "2026-08",
-    "last_complete_month": "2026-07",
+    "last_complete_month": "2026-08",
     "usable_first_month": "2023-09",
-    "usable_last_month": "2026-07",
-    "usable_month_count": 35,
+    "usable_last_month": "2026-08",
+    "usable_month_count": 36,
     "excluded_months": [
       {
         "month": "2023-07",
@@ -435,7 +440,7 @@
       }
     ],
     "outside_usable_window_count": 28,
-    "status": "stale",
+    "status": "current",
     "baseline_verification": "legacy_first_baseline_unavailable",
     "note": "거래일 달력 대조이며 시세·분배금 독립 검증이 아닙니다. 제외된 원본 수익률은 보존합니다."
   },

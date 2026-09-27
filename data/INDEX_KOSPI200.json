@@ -1883,6 +1883,16 @@
       "source_ref": "repairs/kospi200-month-ends.json"
     }
   ],
+  "recovery": {
+    "method": "official_month_end_price_ratio_v1",
+    "months": [
+      "2013-03",
+      "2013-04",
+      "2026-07",
+      "2026-08"
+    ],
+    "note": "부분 월 복구이며 나머지 Yahoo 히스토리와 ETF 총수익의 독립 검증을 뜻하지 않습니다."
+  },
   "month_end_quality": {
     "version": 1,
     "checked_as_of": "2026-09-27",
@@ -2021,15 +2031,5 @@
     "note": "거래일 달력 대조이며 시세·분배금 독립 검증이 아닙니다. 제외된 원본 수익률은 보존합니다."
   },
   "return_currency": "KRW",
-  "krw_comparable": true,
-  "recovery": {
-    "method": "official_month_end_price_ratio_v1",
-    "months": [
-      "2013-03",
-      "2013-04",
-      "2026-07",
-      "2026-08"
-    ],
-    "note": "부분 월 복구이며 나머지 Yahoo 히스토리와 ETF 총수익의 독립 검증을 뜻하지 않습니다."
-  }
+  "krw_comparable": true
 }
