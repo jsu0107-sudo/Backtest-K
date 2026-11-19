@@ -1895,10 +1895,10 @@
   },
   "month_end_quality": {
     "version": 1,
-    "checked_as_of": "2026-09-27",
+    "checked_as_of": "2026-11-20",
     "calendar": "XKRX",
     "calendar_source": "exchange_calendars 4.13.2",
-    "expected_complete_month": "2026-08",
+    "expected_complete_month": "2026-10",
     "last_complete_month": "2026-08",
     "usable_first_month": "1998-12",
     "usable_last_month": "2026-08",
@@ -2026,10 +2026,20 @@
       }
     ],
     "outside_usable_window_count": 32,
-    "status": "current",
+    "status": "stale",
     "baseline_verification": "legacy_first_baseline_unavailable",
     "note": "거래일 달력 대조이며 시세·분배금 독립 검증이 아닙니다. 제외된 원본 수익률은 보존합니다."
   },
   "return_currency": "KRW",
-  "krw_comparable": true
+  "krw_comparable": true,
+  "refresh": {
+    "status": "retained",
+    "attempted_as_of": "2026-11-20",
+    "reason": "Yahoo chart returned fewer than three usable prices for ^KS200",
+    "official_error": "KRX credential not configured",
+    "observation_as_of": "2026-08-31",
+    "expected_complete_month": "2026-10",
+    "usable_last_month": "2026-08",
+    "note": "관측일은 유지하며 생성일로 대체하지 않습니다. 이전 지수 보존 시 지연을 표시합니다."
+  }
 }
