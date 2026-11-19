@@ -9,10 +9,10 @@
   "description": "한국 유가증권시장 대표 200종목 가격지수",
   "listing_date": "1996-03-20",
   "listing_date_source": "Yahoo Finance 최초 거래일",
-  "data_as_of": "2026-08-31",
+  "data_as_of": "2026-10-30",
   "first_month": "1996-04",
-  "last_month": "2026-08",
-  "monthly_return_count": 365,
+  "last_month": "2026-10",
+  "monthly_return_count": 367,
   "distribution": {
     "included": false,
     "method": "price_index",
@@ -36,6 +36,11 @@
         "102110"
       ],
       "role": "일부 결측 월의 공식 가격지수 복구 (전체 히스토리 검증 아님)"
+    },
+    {
+      "name": "KRX OPEN API ETF reference-index field",
+      "url": "https://data-dbg.krx.co.kr/svc/apis/etp/etf_bydd_trd",
+      "role": "KOSPI200 가격지수 월말값 (ETF 종가·총수익 아님)"
     }
   ],
   "data_quality": {
@@ -1881,6 +1886,20 @@
       "observation_date": "2026-08-31",
       "previous_observation_date": "2026-07-31",
       "source_ref": "repairs/kospi200-month-ends.json"
+    },
+    {
+      "month": "2026-09",
+      "return": 0.0093016747,
+      "observation_date": "2026-09-30",
+      "previous_observation_date": "2026-08-31",
+      "source_ref": "official_index_evidence"
+    },
+    {
+      "month": "2026-10",
+      "return": -0.1682719861,
+      "observation_date": "2026-10-30",
+      "previous_observation_date": "2026-09-30",
+      "source_ref": "official_index_evidence"
     }
   ],
   "recovery": {
@@ -1899,10 +1918,10 @@
     "calendar": "XKRX",
     "calendar_source": "exchange_calendars 4.13.2",
     "expected_complete_month": "2026-10",
-    "last_complete_month": "2026-08",
+    "last_complete_month": "2026-10",
     "usable_first_month": "1998-12",
-    "usable_last_month": "2026-08",
-    "usable_month_count": 333,
+    "usable_last_month": "2026-10",
+    "usable_month_count": 335,
     "excluded_months": [
       {
         "month": "1996-06",
@@ -2026,20 +2045,52 @@
       }
     ],
     "outside_usable_window_count": 32,
-    "status": "stale",
+    "status": "current",
     "baseline_verification": "legacy_first_baseline_unavailable",
     "note": "거래일 달력 대조이며 시세·분배금 독립 검증이 아닙니다. 제외된 원본 수익률은 보존합니다."
   },
   "return_currency": "KRW",
   "krw_comparable": true,
   "refresh": {
-    "status": "retained",
+    "status": "official_month_end",
     "attempted_as_of": "2026-11-20",
     "reason": "Yahoo chart returned fewer than three usable prices for ^KS200",
-    "official_error": "KRX credential not configured",
-    "observation_as_of": "2026-08-31",
+    "official_error": null,
+    "observation_as_of": "2026-10-30",
     "expected_complete_month": "2026-10",
-    "usable_last_month": "2026-08",
+    "usable_last_month": "2026-10",
     "note": "관측일은 유지하며 생성일로 대체하지 않습니다. 이전 지수 보존 시 지연을 표시합니다."
+  },
+  "official_index_evidence": {
+    "id": "INDEX_KOSPI200",
+    "currency": "KRW",
+    "return_basis": "price_index",
+    "field": "OBJ_STKPRC_IDX",
+    "reference_etfs": [
+      "069500",
+      "102110"
+    ],
+    "retrieved_at": "2026-11-19T23:07:03.332265+00:00",
+    "points": [
+      {
+        "date": "2026-08-31",
+        "close": 1071.85,
+        "krx_response_sha256": "9ab90d205480fc9a825a346356bb84fc1d610a9ab8701c43dde4343fd5fbbfe4",
+        "cross_check": "two distinct KRX ETF reference-index fields"
+      },
+      {
+        "date": "2026-09-30",
+        "close": 1081.82,
+        "krx_response_sha256": "115e99a86647285a29b62c3b4e2e9259a28c3f3838fb3799d39d5ce89f2d272e",
+        "cross_check": "two distinct KRX ETF reference-index fields"
+      },
+      {
+        "date": "2026-10-30",
+        "close": 899.78,
+        "krx_response_sha256": "36da1ed873e952b5f8030b34b12125db13e5b3a377ff97e59b5c6421ae36998b",
+        "cross_check": "two distinct KRX ETF reference-index fields"
+      }
+    ],
+    "note": "두 ETF의 코스피200 기초지수 값 일치 확인. ETF 종가 및 총수익으로 대체하지 않음."
   }
 }
