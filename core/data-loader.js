@@ -40,12 +40,41 @@ export function returnMapFromPayload(payload) {
   return new Map(sorted);
 }
 
+export function expectedCompleteMonth(now = new Date()) {
+  // The market-data release uses the Korean market date, including at UTC month boundaries.
+  const koreanDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  return new Date(Date.UTC(koreanDate.getUTCFullYear(), koreanDate.getUTCMonth(), 0)).toISOString().slice(0, 7);
+}
+
+export function catalogFreshness(catalog, now = new Date()) {
+  const assets = catalog.assets || [];
+  const observed = assets.map(asset => asset.data_as_of).filter(Boolean).sort();
+  const usable = assets.map(asset => asset.month_end_quality?.usable_last_month || "").sort();
+  const expected = expectedCompleteMonth(now);
+  return {
+    observationMin: observed[0] || null, observationMax: observed.at(-1) || null,
+    usableCompleteMonth: usable[0] || null, expectedCompleteMonth: expected,
+    delayedCount: assets.filter(asset => !asset.month_end_quality?.usable_last_month || asset.month_end_quality.usable_last_month < expected).length,
+    retainedCount: assets.filter(asset => asset.refresh?.status === "retained").length,
+  };
+}
+
+export function sampleQualityMessages(info, lastMonth, now = new Date()) {
+  const payload = { ...info, month_end_quality: info.month_end_quality || { usable_last_month: lastMonth },
+    distribution: info.distribution || { included: info.distributionIncluded } };
+  // Legacy samples contain text captured on their build date. Recalculate date warnings.
+  const staticMessages = (info.qualityMessages || []).filter(message => !message.startsWith("최신 완료월 "));
+  return [...new Set([...staticMessages, ...dataQualityMessages(payload, now)])];
+}
+
 export function dataQualityMessages(payload, now = new Date()) {
   const messages = [];
   const quality = payload.month_end_quality;
   if (quality?.outside_usable_window_count) messages.push(`월말 불일치·연속성 제한으로 ${quality.outside_usable_window_count}개월 제외; 사용 ${quality.usable_first_month}~${quality.usable_last_month}`);
-  const expected = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 0)).toISOString().slice(0, 7);
+  const expected = expectedCompleteMonth(now);
   if (quality?.usable_last_month && quality.usable_last_month < expected) messages.push(`최신 완료월 ${expected} 대비 지연: 사용 가능 ${quality.usable_last_month}`);
+  if (payload.refresh?.status === "retained") messages.push(`지수 수집 실패로 이전 데이터 유지: 관측 ${payload.data_as_of || payload.refresh.observation_as_of || "미확인"} · 재시도 ${payload.refresh.attempted_as_of}`);
+  if (payload.refresh?.status === "official_month_end") messages.push(`KRX 공식 가격지수 월말 복구: 관측 ${payload.data_as_of} · 전체 과거 시세 검증 아님`);
   if (quality?.baseline_verification === 'legacy_first_baseline_unavailable') messages.push('기존 데이터의 첫 기준가격 관측일은 미확인');
   if (payload.distribution?.included && payload.distribution.verification_status !== 'independently_reconciled') messages.push('분배금: 공급자 수정종가 반영 · 독립 총수익 대사 미완료');
   if (payload.distribution?.included === false) messages.push('가격수익률: 분배금/배당 제외');

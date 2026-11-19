@@ -17,7 +17,8 @@ import exchange_calendars as xcals
 
 @lru_cache(maxsize=8)
 def trading_calendar(name: str, year: int):
-    return xcals.get_calendar(name, start="1970-01-01", end=f"{year + 1}-12-31")
+    # Include a baseline year so Jan 1970 does not start before the first session.
+    return xcals.get_calendar(name, start="1969-01-01", end=f"{year + 1}-12-31")
 
 
 def month_ordinal(month: str) -> int:

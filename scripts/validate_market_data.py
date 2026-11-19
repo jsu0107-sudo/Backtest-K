@@ -7,6 +7,7 @@ import argparse
 import datetime as dt
 import json
 import math
+import re
 from pathlib import Path
 from typing import Any
 
@@ -108,6 +109,49 @@ def validate_asset(path: Path, record: dict[str, Any]) -> list[str]:
             errors.append(f"{path.name}: catalog mismatch for {key}")
     if payload.get("return_currency") != payload["currency"] or payload.get("krw_comparable") is not (payload["currency"] == "KRW"):
         errors.append(f"{path.name}: inconsistent return currency")
+    refresh = payload.get("refresh")
+    if refresh is not None:
+        try:
+            attempted = dt.date.fromisoformat(refresh["attempted_as_of"])
+            if (refresh["status"] not in ("collected", "retained", "official_month_end")
+                    or refresh["observation_as_of"] != payload["data_as_of"]
+                    or dt.date.fromisoformat(payload["data_as_of"]) > attempted
+                    or refresh["usable_last_month"] != quality["usable_last_month"]
+                    or refresh["expected_complete_month"] != (attempted.replace(day=1) - dt.timedelta(days=1)).strftime("%Y-%m")
+                    or record.get("refresh") != refresh):
+                raise ValueError("inconsistent refresh metadata")
+            if refresh["status"] != "collected" and payload["asset_type"] != "index":
+                raise ValueError("ETF fallback forbidden")
+        except (KeyError, TypeError, ValueError):
+            errors.append(f"{path.name}: invalid refresh metadata")
+    evidence = payload.get("official_index_evidence")
+    if evidence is not None:
+        try:
+            if (payload["id"] != "INDEX_KOSPI200" or payload["asset_type"] != "index"
+                    or payload["currency"] != "KRW" or payload["distribution"]["included"] is not False
+                    or payload["distribution"]["method"] != "price_index"
+                    or evidence["id"] != payload["id"] or evidence["currency"] != "KRW"
+                    or evidence["return_basis"] != "price_index" or evidence["field"] != "OBJ_STKPRC_IDX"
+                    or evidence["reference_etfs"] != ["069500", "102110"]):
+                raise ValueError("wrong official index identity or return basis")
+            points = {point["date"]: point for point in evidence["points"]}
+            if not points or len(points) != len(evidence["points"]):
+                raise ValueError("empty or duplicate official evidence")
+            for date, point in points.items():
+                if (dt.date.fromisoformat(date) > dt.date.fromisoformat(payload["data_as_of"])
+                        or not math.isfinite(point["close"]) or point["close"] <= 0
+                        or not re.fullmatch(r"[0-9a-f]{64}", point["krx_response_sha256"])):
+                    raise ValueError("invalid official price evidence")
+            for row in rows:
+                if row.get("source_ref") == "official_index_evidence":
+                    end = points[row["observation_date"]]
+                    before = points[row["previous_observation_date"]]
+                    if row["return"] != round(end["close"] / before["close"] - 1, 10):
+                        raise ValueError("official return does not match price evidence")
+                    if row["month"] in {item["month"] for item in quality["excluded_months"]}:
+                        raise ValueError("official return not a complete adjacent month")
+        except (KeyError, TypeError, ValueError, OverflowError):
+            errors.append(f"{path.name}: invalid official index evidence")
     return errors
 
 

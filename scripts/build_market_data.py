@@ -38,6 +38,14 @@ from pathlib import Path
 from typing import Any, Iterable
 from zoneinfo import ZoneInfo
 
+if not __package__:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from scripts.audit_market_data import annotate_payload, previous_month
+from scripts.index_fallback import index_fallback, read_krx_key
+from scripts.restore_index_months import repaired_payload
+from scripts.validate_market_data import validate_asset
+
 
 SCHEMA_VERSION = "1.0"
 USER_AGENT = "Backtest-K-Market-Data/1.0 (+https://github.com/jsu0107-sudo/Backtest-K)"
@@ -506,9 +514,17 @@ def catalog_record(payload: dict[str, Any], filename: str) -> dict[str, Any]:
         "distribution_included": payload["distribution"]["included"],
         "distribution_method": payload["distribution"]["method"],
         "provider_status": payload["provider_status"],
-        "source_label": "Yahoo 수정종가" if payload["asset_type"] == "etf" else "Yahoo 가격지수",
+        "source_label": "Yahoo 수정종가" if payload["asset_type"] == "etf" else (
+            "이전 가격지수 유지" if (payload.get("refresh") or {}).get("status") == "retained" else
+            "Yahoo 가격지수 + KRX 월말 복구" if payload.get("recovery") or payload.get("official_index_evidence") else "Yahoo 가격지수"
+        ),
         "universe_rank": payload["universe_rank"],
         "market_value_krw_100m": payload["market_value_krw_100m"],
+        "month_end_quality": payload["month_end_quality"],
+        "return_currency": payload["return_currency"],
+        "krw_comparable": payload["krw_comparable"],
+        "distribution_verification_status": payload["distribution"].get("verification_status", "unknown"),
+        "refresh": payload.get("refresh"),
     }
 
 
@@ -573,6 +589,19 @@ def publish_dataset(output_dir: Path, payloads: list[dict[str, Any]], *, request
         }
         _write_json(staging / "assets.json", catalog)
 
+        # Reject invalid retained/official series before replacing any live file.
+        for record in records:
+            errors = validate_asset(staging / Path(record["file"]).name, record)
+            if errors:
+                raise CollectionError("\n".join(errors))
+        catalog["observation_as_of_min"] = min(record["data_as_of"] for record in records)
+        catalog["usable_complete_month_min"] = min(
+            record["month_end_quality"]["usable_last_month"] or "" for record in records
+        )
+        catalog["retained_index_ids"] = [record["id"] for record in records
+                                         if (record.get("refresh") or {}).get("status") == "retained"]
+        _write_json(staging / "assets.json", catalog)
+
         old_files: set[str] = set()
         old_catalog = output_dir / "assets.json"
         if old_catalog.exists():
@@ -621,6 +650,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--start-date", type=dt.date.fromisoformat, default=dt.date(2000, 1, 1))
     parser.add_argument("--as-of", type=dt.date.fromisoformat, default=None, help="Override today's KST date for reproducible tests")
+    parser.add_argument("--official-env-file", type=Path, help="Local KRX_AUTH_KEY file; read only, never copied")
     return parser.parse_args(argv)
 
 
@@ -631,6 +661,8 @@ def main(argv: list[str] | None = None) -> int:
     if not 1 <= args.workers <= 16:
         raise SystemExit("--workers must be between 1 and 16")
     today = args.as_of or dt.datetime.now(ZoneInfo("Asia/Seoul")).date()
+    key = read_krx_key(args.official_env_file)
+    repairs = Path(__file__).resolve().parents[1] / "data/repairs/kospi200-month-ends.json"
     requests = build_requests(args.limit)
     payloads: list[dict[str, Any]] = []
     failures: list[tuple[str, str]] = []
@@ -651,6 +683,28 @@ def main(argv: list[str] | None = None) -> int:
             except Exception as error:  # one bad remote symbol must not discard the full refresh
                 failures.append((request.ticker, str(error)))
                 print(f"[{completed:03d}/{len(requests):03d}] fail {request.ticker}: {error}", file=sys.stderr, flush=True)
+                if request.asset_type == "index":
+                    try:
+                        payload = index_fallback(args.output_dir, request.id, today, key, str(error), repairs)
+                        payloads.append(payload)
+                        print(f"index fallback {request.id}: {payload['refresh']['status']}; "
+                              f"observed {payload['data_as_of']}; usable {payload['month_end_quality']['usable_last_month']}", flush=True)
+                    except (ValueError, OSError, KeyError, StopIteration) as fallback_error:
+                        print(f"index fallback rejected {request.id}: {type(fallback_error).__name__}", file=sys.stderr, flush=True)
+
+    # Recovery and audit precede the mandatory-index gate. No ETF raw-close fallback.
+    for index, payload in enumerate(payloads):
+        if payload["id"] == "INDEX_KOSPI200" and repairs.is_file():
+            payload, _ = repaired_payload(payload, json.loads(repairs.read_text(encoding="utf-8")), today)
+            payloads[index] = payload
+        annotate_payload(payload, today)
+        if "refresh" not in payload or payload["refresh"] is None:
+            payload["refresh"] = {
+                "status": "collected", "attempted_as_of": today.isoformat(),
+                "observation_as_of": payload["data_as_of"],
+                "expected_complete_month": previous_month(today.strftime("%Y-%m")),
+                "usable_last_month": payload["month_end_quality"]["usable_last_month"],
+            }
 
     etf_count = sum(payload["asset_type"] == "etf" for payload in payloads)
     index_ids = {payload["id"] for payload in payloads if payload["asset_type"] == "index"}

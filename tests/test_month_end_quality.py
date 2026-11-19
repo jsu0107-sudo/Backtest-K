@@ -5,6 +5,10 @@ from scripts.audit_market_data import annotate_payload, expected_month_end
 
 
 class MonthEndQualityTests(unittest.TestCase):
+    def test_first_1970_month_baseline_is_within_calendar_bounds(self):
+        from scripts.audit_market_data import expected_month_end
+        self.assertEqual(expected_month_end("XNYS", "1970-01", 2026), "1970-01-30")
+
     def payload(self, rows):
         return {"id": "069500", "currency": "KRW", "monthly_returns": rows}
 

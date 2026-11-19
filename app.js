@@ -8,7 +8,7 @@ import {
   correlationMatrix,
 } from "./core/backtest.js";
 import { SAMPLE_PORTFOLIO } from "./core/sample-portfolio.js";
-import { returnMapFromPayload, dataQualityMessages } from "./core/data-loader.js";
+import { returnMapFromPayload, dataQualityMessages, catalogFreshness, sampleQualityMessages } from "./core/data-loader.js";
 import "./engine.js";
 
 (() => {
@@ -232,6 +232,7 @@ import "./engine.js";
         distributionMethod: item.distribution_method || "unknown",
         currency: item.currency || null,
         monthEndQuality: item.month_end_quality || null,
+        refresh: item.refresh || null,
         providerStatus: item.provider_status || catalog.provider_status || "unknown",
         universeRank: Number(item.universe_rank) || null,
       };
@@ -286,6 +287,8 @@ import "./engine.js";
       asset.firstMonth = [...asset.returnMap.keys()][0];
       asset.lastMonth = [...asset.returnMap.keys()].at(-1);
       asset.qualityMessages = dataQualityMessages(payload);
+      asset.refresh = payload.refresh || null;
+      asset.monthEndQuality = payload.month_end_quality || null;
       asset.observationCount = asset.returnMap.size;
       asset.distributionIncluded = payload.distribution?.included === true;
       asset.distributionMethod = payload.distribution?.method || asset.distributionMethod;
@@ -830,6 +833,15 @@ import "./engine.js";
   }
 
   function renderBacktestResults() {
+    // Re-evaluate date warnings when a tab spans a Korean market month boundary.
+    for (const asset of Object.values(state.assets)) {
+      if (asset.source !== "market") continue;
+      asset.qualityMessages = sampleQualityMessages({
+        qualityMessages: (asset.qualityMessages || []).filter(message => !message.startsWith("최신 완료월 ")),
+        month_end_quality: asset.monthEndQuality, distributionIncluded: asset.distributionIncluded,
+        data_as_of: asset.dataAsOf, refresh: asset.refresh,
+      }, asset.lastMonth);
+    }
     const result = state.lastBacktest;
     if (!result) return;
     const { settings, dates, metrics, annualReturns } = result;
@@ -1927,7 +1939,7 @@ import "./engine.js";
       const firstMonth = dates[0] || asset.firstMonth || "";
       const lastMonth = dates.at(-1) || asset.lastMonth || "";
       const count = dates.length || asset.monthEndQuality?.usable_month_count || asset.observationCount || 0;
-      const sourceText = asset.source === "custom" ? "사용자 CSV" : asset.source === "market" ? `${asset.currency !== "KRW" ? "원화 환산 미검증 · " : ""}${asset.distributionIncluded ? "공급자 수정종가 · 총수익 독립 대사 미완료" : "가격지수"} · ${asset.dataAsOf || ""}` : "합성 데모";
+      const sourceText = asset.source === "custom" ? "사용자 CSV" : asset.source === "market" ? `${asset.currency !== "KRW" ? "원화 환산 미검증 · " : ""}${asset.distributionIncluded ? "공급자 수정종가 · 총수익 독립 대사 미완료" : "가격지수"} · 관측 ${asset.dataAsOf || "미확인"} · 완료월 ${lastMonth || "미확인"}${asset.refresh?.status === "retained" ? " · 수집 실패, 이전 지수 유지" : asset.refresh?.status === "official_month_end" ? " · KRX 월말 복구" : ""}` : "합성 데모";
       return `<tr><td>${escapeHtml(asset.code)}</td><td>${escapeHtml(asset.name)}</td><td>${escapeHtml(asset.category)}</td><td>${fmtDate(firstMonth)} – ${fmtDate(lastMonth)}</td><td>${count.toLocaleString()}개월</td><td><span class="source-pill ${asset.source}">${escapeHtml(sourceText)}</span></td></tr>`;
     }).join("");
     $("#assetDataCount").textContent = `총 ${state.assetOrder.length}개`;
@@ -1937,6 +1949,7 @@ import "./engine.js";
     const status = $("#marketDataStatus");
     if (state.marketDataReady && state.dataCatalog) {
       const catalog = state.dataCatalog;
+      const freshness = catalogFreshness(catalog);
       const official = state.officialVerification;
       let officialChip = "<span>공식시세 대사 <strong>대기 (API 키 미등록)</strong></span>";
       if (official?.status === "unavailable") {
@@ -1946,7 +1959,16 @@ import "./engine.js";
           ? `<span>공식시세 대사 <strong>${Number(official.matched).toLocaleString()}/${Number(official.checked).toLocaleString()} 일치</strong></span>`
           : `<span>공식시세 대사 <strong>불일치 ${Number(official.mismatched).toLocaleString()}건</strong></span>`;
       }
-      status.innerHTML = `<div class="market-data-status-copy"><strong>정적 실데이터 카탈로그 연결 완료</strong><span>ETF 수정종가는 분배금 조정값을 사용하며, 공공데이터포털 공식 종가와의 대사 결과를 함께 표시합니다. 분배금 원장 독립 검증 전까지는 프로토타입 데이터입니다.</span></div><div class="market-data-stats"><span>ETF <strong>${catalog.etf_count.toLocaleString()}개</strong></span><span>대표지수 <strong>${catalog.index_count.toLocaleString()}개</strong></span><span>기준일 <strong>${escapeHtml(catalog.data_as_of)}</strong></span><span>상태 <strong>${escapeHtml(catalog.provider_status)}</strong></span>${officialChip}</div>`;
+      const releaseDate = catalog.generated_at ? `${catalog.generated_at.slice(0, 10)} UTC` : "미확인";
+      const observationRange = freshness.observationMin === freshness.observationMax ? freshness.observationMax : `${freshness.observationMin}–${freshness.observationMax}`;
+      const verificationDate = official?.official_basdt_end || official?.generated_at?.slice(0, 10) || null;
+      if (official?.generated_at && catalog.generated_at && official.generated_at < catalog.generated_at) {
+        officialChip = officialChip.replace("공식시세 대사", "과거 공식시세 대사");
+      }
+      if (verificationDate) officialChip += `<span>대사 관측일 <strong>${escapeHtml(verificationDate)}</strong></span>`;
+      status.setAttribute("role", "status");
+      status.setAttribute("aria-live", "polite");
+      status.innerHTML = `<div class="market-data-status-copy"><strong>${freshness.delayedCount || freshness.retainedCount ? "데이터 일부 지연 · 종목별 기준일 확인" : "정적 실데이터 카탈로그 연결 완료"}</strong><span>생성일은 파일 작성일이며 시세 관측일과 다릅니다. ETF 분배금은 독립 총수익 대사 전이며, 대표지수는 배당을 제외한 가격지수입니다.</span></div><div class="market-data-stats"><span>ETF <strong>${catalog.etf_count.toLocaleString()}개</strong></span><span>대표지수 <strong>${catalog.index_count.toLocaleString()}개</strong></span><span>파일 생성 <strong>${escapeHtml(releaseDate)}</strong></span><span>시세 관측 <strong>${escapeHtml(observationRange || "미확인")}</strong></span><span>공통 완료월 <strong>${escapeHtml(freshness.usableCompleteMonth || "미확인")}</strong></span><span>기대 완료월 <strong>${escapeHtml(freshness.expectedCompleteMonth)}</strong></span><span>월 데이터 지연 <strong>${freshness.delayedCount}개</strong></span><span>이전 지수 유지 <strong>${freshness.retainedCount}개</strong></span><span>상태 <strong>${escapeHtml(catalog.provider_status)}</strong></span>${officialChip}</div>`;
     } else {
       status.innerHTML = `<div class="market-data-status-copy"><strong>데모 폴백 사용 중</strong><span>${escapeHtml(state.marketDataError?.message || "정적 JSON을 불러오지 못했습니다.")}</span></div>`;
     }
@@ -2379,6 +2401,11 @@ import "./engine.js";
       const view = location.hash.slice(1);
       if (["backtest", "montecarlo", "compare", "data"].includes(view)) switchView(view);
     });
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) return;
+      renderMarketDataStatus();
+      if (state.lastBacktest) renderBacktestResults();
+    });
   }
 
   // 사전 계산된 샘플 결과를 첫 페인트에 렌더한다 (네트워크 왕복 0회).
@@ -2406,7 +2433,11 @@ import "./engine.js";
           firstMonth: payload.dates[0],
           lastMonth: payload.dates.at(-1),
           distributionIncluded: info.distributionIncluded,
-          qualityMessages: info.qualityMessages || [],
+          dataAsOf: info.data_as_of || payload.dataAsOf,
+          currency: info.currency || "KRW",
+          monthEndQuality: info.month_end_quality || { usable_last_month: payload.dates.at(-1) },
+          refresh: info.refresh || null,
+          qualityMessages: sampleQualityMessages(info, payload.dates.at(-1)),
         };
       });
 

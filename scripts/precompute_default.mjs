@@ -50,7 +50,12 @@ function build() {
       category: record.category,
       assetType: record.asset_type,
       distributionIncluded: record.distribution_included === true,
-      qualityMessages: dataQualityMessages(payload, new Date(`${payload.month_end_quality.checked_as_of}T00:00:00Z`)),
+      data_as_of: payload.data_as_of,
+      month_end_quality: payload.month_end_quality,
+      distribution: payload.distribution,
+      refresh: payload.refresh || null,
+      currency: payload.currency,
+      qualityMessages: dataQualityMessages(payload),
     };
   }
 
