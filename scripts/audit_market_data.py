@@ -11,6 +11,7 @@ import datetime as dt
 import json
 from functools import lru_cache
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import exchange_calendars as xcals
 
@@ -99,7 +100,8 @@ def annotate_payload(payload: dict, as_of: dt.date) -> dict:
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("data_dir", type=Path)
-    parser.add_argument("--as-of", type=dt.date.fromisoformat, default=dt.date.today())
+    parser.add_argument("--as-of", type=dt.date.fromisoformat,
+                        default=dt.datetime.now(ZoneInfo("Asia/Seoul")).date())
     parser.add_argument("--write", action="store_true")
     args = parser.parse_args()
     catalog_path = args.data_dir / "assets.json"

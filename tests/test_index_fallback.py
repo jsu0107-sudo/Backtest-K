@@ -127,7 +127,13 @@ class IndexFallbackTests(unittest.TestCase):
         def collect(request, start, today):
             if request.id == "INDEX_KOSPI200":
                 raise builder.CollectionError("Yahoo chart returned fewer than three usable prices")
-            return read(request.id)
+            # Simulate the historical collection, independent of later live refreshes.
+            payload = read(request.id)
+            rows = [row for row in payload["monthly_returns"] if row["month"] <= "2026-08"]
+            payload.update(monthly_returns=rows, monthly_return_count=len(rows),
+                           last_month=rows[-1]["month"], data_as_of="2026-09-15")
+            payload.pop("refresh", None)
+            return payload
         with patch.object(builder, "build_requests", return_value=self.requests()), \
                 patch.object(builder, "build_asset_payload", side_effect=collect), \
                 patch.object(builder, "read_krx_key", return_value=None):
