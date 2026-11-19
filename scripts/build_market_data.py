@@ -690,7 +690,7 @@ def main(argv: list[str] | None = None) -> int:
                         print(f"index fallback {request.id}: {payload['refresh']['status']}; "
                               f"observed {payload['data_as_of']}; usable {payload['month_end_quality']['usable_last_month']}", flush=True)
                     except (ValueError, OSError, KeyError, StopIteration) as fallback_error:
-                        print(f"index fallback rejected {request.id}: {type(fallback_error).__name__}", file=sys.stderr, flush=True)
+                        print(f"index fallback rejected {request.id}: {fallback_error}", file=sys.stderr, flush=True)
 
     # Recovery and audit precede the mandatory-index gate. No ETF raw-close fallback.
     for index, payload in enumerate(payloads):

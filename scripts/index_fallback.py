@@ -44,7 +44,7 @@ def retained_index(output_dir: Path, asset_id: str, as_of: dt.date) -> dict:
         raise ValueError("Unexpected retained index file")
     errors = validate_asset(path, record)
     if errors:
-        raise ValueError("Retained index contract invalid")
+        raise ValueError("Retained index contract invalid: " + "; ".join(errors))
     payload = json.loads(path.read_text(encoding="utf-8"))
     expected_currency = "USD" if asset_id == "INDEX_SP500" else "KRW"
     if (payload["id"] != asset_id or payload["asset_type"] != "index"

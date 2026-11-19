@@ -1,2 +1,10 @@
 # Calendar validation only; no runtime browser/server dependency.
 exchange-calendars==4.13.2
+# Reproduce the dependency versions used to audit retained market history.
+pandas==2.3.3
+numpy==2.4.6
+python-dateutil==2.9.0.post0
+tzdata==2025.3
+korean-lunar-calendar==0.4.0
+pyluach==2.3.0
+toolz==1.1.0
