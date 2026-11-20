@@ -1914,7 +1914,7 @@
   },
   "month_end_quality": {
     "version": 1,
-    "checked_as_of": "2026-11-20",
+    "checked_as_of": "2026-11-21",
     "calendar": "XKRX",
     "calendar_source": "exchange_calendars 4.13.2",
     "expected_complete_month": "2026-10",
@@ -2052,10 +2052,10 @@
   "return_currency": "KRW",
   "krw_comparable": true,
   "refresh": {
-    "status": "official_month_end",
-    "attempted_as_of": "2026-11-20",
+    "status": "retained",
+    "attempted_as_of": "2026-11-21",
     "reason": "Yahoo chart returned fewer than three usable prices for ^KS200",
-    "official_error": null,
+    "official_error": "KRX credential not configured",
     "observation_as_of": "2026-10-30",
     "expected_complete_month": "2026-10",
     "usable_last_month": "2026-10",
